@@ -1,6 +1,6 @@
 
 {} (:package |respo-router)
-  :configs $ {} (:init-fn |respo-router.main/main!) (:reload-fn |respo-router.main/reload!) (:modules $ [] |respo.calcit/compact.cirru |respo-ui.calcit/compact.cirru |memof/compact.cirru |lilac/compact.cirru) (:version |0.5.0)
+  :configs $ {} (:init-fn |respo-router.main/main!) (:reload-fn |respo-router.main/reload!) (:modules $ [] |respo.calcit/compact.cirru |respo-ui.calcit/compact.cirru |memof/compact.cirru |lilac/compact.cirru) (:version |0.5.1)
   :files $ {}
     |respo-router.comp.container $ {}
       :ns $ quote
@@ -85,14 +85,14 @@
                     :hash $ let
                         current-hash $ .-hash js/location
                         old-router $ parse-address (strip-sharp current-hash) dict
-                      echo old-router router (not= old-router router) (= old-router router)
+                      ; echo old-router router (not= old-router router) (= old-router router)
                       if (not= old-router router)
                         let
                             new-hash $ str |#
                               router->string-iter | (:path router) (:query router) (, dict)
                           ; println "|force set path to:" new-hash
                           reset! *ignored? true
-                          echo "\"new:" new-hash
+                          ; echo "\"new:" new-hash
                           aset js/location "\"hash" new-hash
                           js/setTimeout $ fn () (reset! *ignored? false) (; println "|ignore end")
                     :history $ let
@@ -100,7 +100,7 @@
                         old-router $ parse-address old-address dict
                         new-address $ router->string-iter | (:path router) (:query router) (, dict)
                       if (not= old-router router) (.pushState js/history nil nil new-address)
-                    router-mode nil
+                    router-mode $ js/console.warn "\"Unknown router-mode:" (str router-mode)
       :proc $ quote ()
     |respo-router.format $ {}
       :ns $ quote (ns respo-router.format $ :require)
@@ -138,7 +138,7 @@
       :proc $ quote ()
     |respo-router.listener $ {}
       :ns $ quote
-        ns respo-router.listener $ :require ([] respo-router.schema :as schema) ([] respo-router.parser :refer $ [] parse-address) ([] respo-router.format :refer $ [] strip-sharp)
+        ns respo-router.listener $ :require ([] respo-router.parser :refer $ [] parse-address) ([] respo-router.format :refer $ [] strip-sharp)
       :defs $ {}
         |*ignored? $ quote (defatom *ignored? false)
         |listen! $ quote
