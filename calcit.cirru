@@ -2312,4 +2312,4 @@
                 |v $ {} (:type :expr) (:id |ryb9R0OTpZ) (:by |root) (:at 1508900562477)
                   :data $ {}
                     |T $ {} (:type :leaf) (:text |run-tests) (:id |ryb9R0OTpZleaf) (:by |root) (:at 1508900565139)
-  :configs $ {} (:storage-key |calcit.cirru) (:extension |.cljs) (:output |src) (:port 6001) (:compact-output? true) (:init-fn |respo-router.main/main!) (:reload-fn |respo-router.main/reload!) (:modules $ [] |respo.calcit/compact.cirru |respo-ui.calcit/compact.cirru |memof/compact.cirru |lilac/compact.cirru)
+  :configs $ {} (:reload-fn |respo-router.main/reload!) (:modules $ [] |respo.calcit/compact.cirru |respo-ui.calcit/compact.cirru |memof/compact.cirru |lilac/compact.cirru) (:output |src) (:port 6001) (:extension |.cljs) (:init-fn |respo-router.main/main!) (:compact-output? true) (:storage-key |calcit.cirru) (:version |0.5.0)
