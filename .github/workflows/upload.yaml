@@ -12,9 +12,9 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: wget
-      run: mkdir ci-bin/ && wget -O ci-bin/cr_once http://repo.calcit-lang.org/binaries/linux/cr_once
+      run: mkdir ci-bin/ && wget -O ci-bin/calcit_runner http://repo.calcit-lang.org/binaries/linux/calcit_runner
     - name: "permission"
-      run: chmod +x ci-bin/cr_once
+      run: chmod +x ci-bin/calcit_runner
 
     - name: "prepare modules"
       run: >
@@ -24,14 +24,13 @@ jobs:
         && git clone https://github.com/calcit-lang/calcit-test.git
         && git clone https://github.com/Respo/respo.calcit.git
         && git clone https://github.com/Respo/respo-ui.calcit.git
-        && git clone https://github.com/Respo/respo-router.calcit.git
 
     - name: "compiles to js"
       run: >
         yarn
-        && ./ci-bin/cr_once --emit-js --init-fn:respo-router.test/run-tests --reload-fn:respo-router.test/reload!
+        && ./ci-bin/calcit_runner --emit-js --once --init-fn respo-router.test/run-tests --reload-fn respo-router.test/reload!
         && target=node entry=./test.js yarn webpack && node js-out/bundle.js
-        && ./ci-bin/cr_once --emit-js --once
+        && ./ci-bin/calcit_runner --emit-js --once
         && yarn && yarn vite build --base=./
 
     - name: Deploy to server

@@ -2,7 +2,7 @@
 {} (:package |respo-router)
   :configs $ {} (:init-fn |respo-router.main/main!) (:reload-fn |respo-router.main/reload!)
     :modules $ [] |respo.calcit/compact.cirru |respo-ui.calcit/compact.cirru |memof/compact.cirru |lilac/compact.cirru |calcit-test/
-    :version |0.5.2
+    :version |0.5.3
   :files $ {}
     |respo-router.comp.container $ {}
       :ns $ quote
@@ -148,9 +148,9 @@
                 , address
         |stringify-query $ quote
           defn stringify-query (query)
-            if (nil? query) "\"" $ ->> query (to-pairs)
+            if (nil? query) "\"" $ -> query (to-pairs)
               map $ fn (pair)
-                ->> pair $ join-str "\"="
+                -> pair $ join-str "\"="
               join-str "\"&"
         |strip-sharp $ quote
           defn strip-sharp (text)
@@ -169,10 +169,10 @@
                   params $ either
                     get dict $ :name guidepost
                     []
-                  segments $ ->> params
+                  segments $ -> params
                     map $ fn (key-path)
                       get (:data guidepost) key-path
-                  segment-path $ ->>
+                  segment-path $ ->
                     prepend segments $ :name guidepost
                     join-str |/
                 recur (str acc |/ segment-path) (rest path) query dict
@@ -267,10 +267,9 @@
                       {}
                       parse-query $ last segments
                   {}
-                segments $ filter
+                segments $ filter (split text-path |/)
                   fn (piece)
                     not $ &= | (.trim piece)
-                  split text-path |/
               [] segments query
         |parse-address $ quote
           defn parse-address (address dict)
@@ -306,7 +305,7 @@
             if
               &= | $ .trim text
               {}
-              ->> (split text |&)
+              -> (split text |&)
                 map $ fn (piece) (split piece |=)
                 pairs-map
       :ns $ quote
