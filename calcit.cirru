@@ -36,7 +36,7 @@
                       |L $ {} (:text |query) (:type :leaf) (:at 1528821724740) (:by |BJMyLOplX) (:id |SkE1_Oaxm)
                       |N $ {}
                         :data $ {}
-                          |T $ {} (:text |to-pairs) (:type :leaf) (:at 1610621068758) (:by |BJMyLOplX)
+                          |T $ {} (:text |.to-list) (:type :leaf) (:at 1627236539302) (:by |BJMyLOplX)
                         :type :expr
                         :at 1610621067368
                         :by |BJMyLOplX

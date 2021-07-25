@@ -10,7 +10,7 @@
       :defs $ {}
         |stringify-query $ quote
           defn stringify-query (query)
-            if (nil? query) "\"" $ -> query (to-pairs)
+            if (nil? query) "\"" $ -> query (.to-list)
               map $ fn (pair)
                 -> pair $ join-str "\"="
               join-str "\"&"
