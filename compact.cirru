@@ -2,7 +2,7 @@
 {} (:package |respo-router)
   :configs $ {} (:init-fn |respo-router.main/main!) (:reload-fn |respo-router.main/reload!)
     :modules $ [] |respo.calcit/compact.cirru |respo-ui.calcit/compact.cirru |memof/compact.cirru |lilac/compact.cirru |calcit-test/
-    :version |0.5.4
+    :version |0.5.5
   :files $ {}
     |respo-router.format $ {}
       :ns $ quote

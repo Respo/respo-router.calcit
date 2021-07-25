@@ -1,6 +1,6 @@
 
 {}
-  :configs $ {} (:reload-fn |respo-router.main/reload!) (:port 6001) (:output |src) (:compact-output? true) (:storage-key |calcit.cirru) (:version |0.5.4)
+  :configs $ {} (:reload-fn |respo-router.main/reload!) (:port 6001) (:output |src) (:compact-output? true) (:storage-key |calcit.cirru) (:version |0.5.5)
     :modules $ [] |respo.calcit/compact.cirru |respo-ui.calcit/compact.cirru |memof/compact.cirru |lilac/compact.cirru |calcit-test/
     :init-fn |respo-router.main/main!
     :extension |.cljs
