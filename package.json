@@ -1,14 +1,12 @@
 {
   "dependencies": {
-    "@calcit/procs": "^0.4.11"
+    "@calcit/procs": "^0.6.0"
   },
   "scripts": {
-    "test": "cr --emit-js --init-fn:respo-router.test/run-tests --reload-fn:respo-router.test/reload! --once && target=node entry=./test.js yarn webpack && node js-out/bundle.js"
+    "test": "cr --emit-js --init-fn:respo-router.test/run-tests --reload-fn:respo-router.test/reload! --once && node test.mjs"
   },
   "devDependencies": {
-    "vite": "^2.4.3",
-    "webpack": "^5.46.0",
-    "webpack-cli": "^4.7.2"
+    "vite": "^3.0.2"
   },
   "version": "0.5.5"
 }

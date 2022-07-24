@@ -3,7 +3,7 @@ name: Upload
 on:
   push:
     branches:
-      - master
+      - main
   pull_request: {}
 
 jobs:
@@ -19,7 +19,7 @@ jobs:
     - name: add cr
       run: |
         mkdir -p $GITHUB_WORKSPACE/bin
-        wget -O $GITHUB_WORKSPACE/bin/cr http://repo.calcit-lang.org/binaries/linux/cr
+        wget -O $GITHUB_WORKSPACE/bin/cr https://github.com/calcit-lang/calcit/releases/download/0.6.0/cr
         chmod +x $GITHUB_WORKSPACE/bin/cr
         echo "::add-path::$GITHUB_WORKSPACE/bin"
 
@@ -35,9 +35,9 @@ jobs:
     - name: "compiles to js"
       run: >
         yarn
-        && cr --emit-js --once --init-fn respo-router.test/run-tests --reload-fn respo-router.test/reload!
-        && target=node entry=./test.js yarn webpack && node js-out/bundle.js
-        && cr --emit-js --once
+        && cr --emit-js --once --entry test
+        && node test.mjs
+        && cr --emit-js -1
         && yarn && yarn vite build --base=./
 
     - name: Deploy to server
