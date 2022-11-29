@@ -88,12 +88,12 @@
           def style-codeblock $ {} (:line-height |20px) (:margin 8)
       :ns $ quote
         ns respo-router.comp.container $ :require
-          [] respo.util.format :refer $ [] hsl
-          [] respo.core :refer $ [] defcomp div span cursor-> pre a <>
-          [] respo.comp.space :refer $ [] =<
-          [] respo-ui.core :as ui
-          [] respo-router.format :refer $ [] router->string strip-sharp
-          [] respo-router.schema :refer $ [] dict
+          respo.util.format :refer $ hsl
+          respo.core :refer $ defcomp div span cursor-> pre a <>
+          respo.comp.space :refer $ =<
+          respo-ui.core :as ui
+          respo-router.format :refer $ router->string strip-sharp
+          respo-router.schema :refer $ dict
     |respo-router.core $ {}
       :defs $ {}
         |*cached-router $ quote (defatom *cached-router nil)
@@ -206,8 +206,8 @@
               router-mode nil
       :ns $ quote
         ns respo-router.listener $ :require
-          [] respo-router.parser :refer $ [] parse-address
-          [] respo-router.format :refer $ [] strip-sharp
+          respo-router.parser :refer $ parse-address
+          respo-router.format :refer $ strip-sharp
     |respo-router.main $ {}
       :defs $ {}
         |*store $ quote
@@ -238,15 +238,15 @@
         |router-mode $ quote (def router-mode :hash)
       :ns $ quote
         ns respo-router.main $ :require
-          [] respo.core :refer $ [] render! clear-cache!
-          [] respo.cursor :refer $ [] update-states
-          [] respo-router.comp.container :refer $ [] comp-container
-          [] respo-router.listener :refer $ [] listen!
-          [] respo-router.parser :refer $ [] parse-address
-          [] respo-router.format :refer $ [] strip-sharp
-          [] respo-router.schema :as schema
-          [] respo-router.core :refer $ [] render-url!
-          [] respo-router.schema :refer $ [] dict
+          respo.core :refer $ render! clear-cache!
+          respo.cursor :refer $ update-states
+          respo-router.comp.container :refer $ comp-container
+          respo-router.listener :refer $ listen!
+          respo-router.parser :refer $ parse-address
+          respo-router.format :refer $ strip-sharp
+          respo-router.schema :as schema
+          respo-router.core :refer $ render-url!
+          respo-router.schema :refer $ dict
     |respo-router.parser $ {}
       :defs $ {}
         |extract-address $ quote
@@ -306,7 +306,7 @@
                 pairs-map
       :ns $ quote
         ns respo-router.parser $ :require
-          [] respo-router.format :refer $ [] slash-trim-left
+          respo-router.format :refer $ slash-trim-left
     |respo-router.schema $ {}
       :defs $ {}
         |dict $ quote
@@ -372,6 +372,6 @@
                 {} (|a 1) (|b 2)
       :ns $ quote
         ns respo-router.test $ :require
-          [] calcit-test.core :refer $ [] deftest is testing
-          [] respo-router.format :as format
-          [] respo-router.parser :refer $ [] parse-address
+          calcit-test.core :refer $ deftest is testing
+          respo-router.format :as format
+          respo-router.parser :refer $ parse-address
