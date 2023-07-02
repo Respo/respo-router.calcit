@@ -195,14 +195,14 @@
                     ; println "|is ignored?" @*ignored?
                     if (not @*ignored?)
                       js/setTimeout
-                        fn () $ dispatch! :router/route path-info
+                        fn () $ dispatch! (: :router/route path-info)
                         , 0
               :history $ .addEventListener js/window |popstate
                 fn (event)
                   let
                       current-address $ str (.-pathname js/location) (.-search js/location)
                       path-info $ parse-address current-address dict
-                    dispatch! :router/route path-info
+                    dispatch! $ : :router/route path-info
               router-mode nil
       :ns $ quote
         ns respo-router.listener $ :require
@@ -214,13 +214,18 @@
           defatom *store $ assoc schema/store :router
             parse-address (strip-sharp js/window.location.hash) dict
         |dispatch! $ quote
-          defn dispatch! (op op-data) (println |dispatch! op op-data)
-            let
-                new-store $ case-default op @*store
-                  :states $ update-states @*store op-data
-                  :router/route $ assoc @*store :router op-data
-                  :router/nav $ assoc @*store :router (parse-address op-data dict)
-              reset! *store new-store
+          defn dispatch! (op ? op-data) (println |dispatch! op op-data)
+            if (list? op)
+              recur $ : states op op-data
+              let
+                  new-store $ tag-match op
+                      :states cursor s
+                      update-states @*store cursor s
+                    (:router/route d) (assoc @*store :router d)
+                    (:router/nav d)
+                      assoc @*store :router $ parse-address d dict
+                    _ @*store
+                reset! *store new-store
         |main! $ quote
           defn main! () (render-app!) (listen! dict dispatch! router-mode) (render-router!)
             add-watch *store :changes $ fn (store prev) (render-app!)

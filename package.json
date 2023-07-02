@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "@calcit/procs": "^0.7.0-a7"
+    "@calcit/procs": "^0.7.3"
   },
   "scripts": {
     "test": "cr --emit-js --init-fn:respo-router.test/run-tests --reload-fn:respo-router.test/reload! --once && node test.mjs"
