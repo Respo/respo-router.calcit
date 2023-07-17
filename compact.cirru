@@ -1,6 +1,6 @@
 
 {} (:package |respo-router)
-  :configs $ {} (:init-fn |respo-router.main/main!) (:reload-fn |respo-router.main/reload!) (:version |0.5.5)
+  :configs $ {} (:init-fn |respo-router.main/main!) (:reload-fn |respo-router.main/reload!) (:version |0.6.0)
     :modules $ [] |respo.calcit/compact.cirru |respo-ui.calcit/compact.cirru |memof/compact.cirru |lilac/compact.cirru |calcit-test/
   :entries $ {}
     :test $ {} (:init-fn |respo-router.test/run-tests) (:reload-fn |respo-router.test/reload!)
@@ -25,9 +25,7 @@
                   <> |Dict:
                   =< 16 nil
                   pre ({})
-                    <>
-                      js/JSON.stringify (to-js-data dict) nil 2
-                      , style-codeblock
+                    <> (format-cirru-edn dict) style-codeblock
                 div
                   {} $ :style ui/row
                   <> |Path:
@@ -42,9 +40,7 @@
                   =< 16 nil
                   pre ({})
                     <>
-                      js/JSON.stringify
-                        to-js-data $ :router store
-                        , nil 2
+                      format-cirru-edn $ :router store
                       , style-codeblock
                 div
                   {} $ :style ui/row
@@ -60,30 +56,31 @@
                 :on $ {} (:click on-click)
               <> guide
         |route-404 $ quote
-          defn route-404 (e dispatch!) (dispatch! :router/nav |/missing)
+          defn route-404 (e dispatch!)
+            dispatch! $ :: :router/nav |/missing
         |route-home $ quote
           defn route-home (e dispatch!)
-            dispatch! :router/route $ {}
-              :path $ []
-              :query $ {}
+            dispatch! $ :: :router/route
+              {}
+                :path $ []
+                :query $ {}
         |route-room $ quote
           defn route-room (e dispatch!)
             dispatch! :router/route $ {}
               :path $ []
-                {} (:name "\"team")
-                  :data $ {} ("\"team-id" |t12345)
-                {} (:name "\"room")
-                  :data $ {} ("\"room-id" |r1234)
+                :: :route "\"team" $ {} ("\"team-id" |t12345)
+                :: :route "\"room" $ {} ("\"room-id" |r1234)
               :query $ {} ("\"a" 1) ("\"b" 2)
         |route-search $ quote
-          defn route-search (e dispatch!) (dispatch! :router/nav |/search)
+          defn route-search (e dispatch!)
+            dispatch! $ :: :router/nav |/search
         |route-team $ quote
           defn route-team (e dispatch!)
-            dispatch! :router/route $ {}
-              :path $ []
-                {} (:name "\"team")
-                  :data $ {} (|team-id |t1234)
-              :query $ {}
+            dispatch! $ :: :router/route
+              {}
+                :path $ []
+                  :: :route "\"team" $ {} (|team-id |t1234)
+                :query $ {}
         |style-codeblock $ quote
           def style-codeblock $ {} (:line-height |20px) (:margin 8)
       :ns $ quote
@@ -94,6 +91,11 @@
           respo-ui.core :as ui
           respo-router.format :refer $ router->string strip-sharp
           respo-router.schema :refer $ dict
+    |respo-router.config $ {}
+      :defs $ {}
+        |dev? $ quote
+          def dev? $ = "\"dev" (get-env "\"mode" "\"release")
+      :ns $ quote (ns respo-router.config)
     |respo-router.core $ {}
       :defs $ {}
         |*cached-router $ quote (defatom *cached-router nil)
@@ -106,9 +108,9 @@
               if
                 not $ identical? router @*cached-router
                 do (reset! *cached-router router)
-                  case router-mode
+                  case-default router-mode (js/console.warn "\"Unknown router-mode:" router-mode)
                     :hash $ let
-                        current-hash $ .-hash js/location
+                        current-hash js/location.hash
                         old-router $ parse-address (strip-sharp current-hash) dict
                       ; echo old-router router (not= old-router router) (= old-router router)
                       if (not= old-router router)
@@ -118,14 +120,13 @@
                           ; println "|force set path to:" new-hash
                           reset! *ignored? true
                           ; echo "\"new:" new-hash
-                          aset js/location "\"hash" new-hash
+                          set! js/location.hash new-hash
                           js/setTimeout $ fn () (reset! *ignored? false) (; println "|ignore end")
                     :history $ let
-                        old-address $ str (.-pathname js/location) (.-search js/location)
+                        old-address $ str js/location.pathname js/location.search
                         old-router $ parse-address old-address dict
                         new-address $ router->string-iter | (:path router) (:query router) dict
-                      if (not= old-router router) (.pushState js/history nil nil new-address)
-                    router-mode $ js/console.warn "\"Unknown router-mode:" (str router-mode)
+                      if (not= old-router router) (js/history.pushState nil nil new-address)
       :ns $ quote
         ns respo-router.core $ :require
           [] respo-router.format :refer $ [] router->string router->string-iter strip-sharp
@@ -147,16 +148,18 @@
                 str acc query-part
               let
                   guidepost $ first path
-                  params $ either
-                    get dict $ :name guidepost
-                    []
-                  segments $ -> params
-                    map $ fn (key-path)
-                      get (:data guidepost) key-path
-                  segment-path $ ->
-                    prepend segments $ :name guidepost
-                    join-str |/
-                recur (str acc |/ segment-path) (rest path) query dict
+                tag-match guidepost
+                    :route name data
+                    let
+                        params $ either (get dict name) ([])
+                        segments $ -> params
+                          map $ fn (key-path) (get data key-path)
+                        segment-path $ ->
+                          prepend segments $ nth guidepost 1
+                          join-str |/
+                      recur (str acc |/ segment-path) (rest path) query dict
+                  (:404 pieces)
+                    str acc "\"/" $ .join-str pieces "\"/"
         |slash-trim-left $ quote
           defn slash-trim-left (address)
             if
@@ -214,20 +217,22 @@
           defatom *store $ assoc schema/store :router
             parse-address (strip-sharp js/window.location.hash) dict
         |dispatch! $ quote
-          defn dispatch! (op ? op-data) (println |dispatch! op op-data)
-            if (list? op)
-              recur $ : states op op-data
-              let
-                  new-store $ tag-match op
-                      :states cursor s
-                      update-states @*store cursor s
-                    (:router/route d) (assoc @*store :router d)
-                    (:router/nav d)
-                      assoc @*store :router $ parse-address d dict
-                    _ @*store
-                reset! *store new-store
+          defn dispatch! (op) (js/console.log |dispatch! op)
+            let
+                new-store $ tag-match op
+                    :states cursor s
+                    update-states @*store cursor s
+                  (:router/route d) (assoc @*store :router d)
+                  (:router/nav d)
+                    assoc @*store :router $ parse-address d dict
+                  _ @*store
+              reset! *store new-store
         |main! $ quote
-          defn main! () (render-app!) (listen! dict dispatch! router-mode) (render-router!)
+          defn main! ()
+            if dev? $ load-console-formatter!
+            render-app!
+            listen! dict dispatch! router-mode
+            render-router!
             add-watch *store :changes $ fn (store prev) (render-app!)
             add-watch *store :router-changes $ fn (store prev) (render-router!)
             println "|app started!"
@@ -252,6 +257,7 @@
           respo-router.schema :as schema
           respo-router.core :refer $ render-url!
           respo-router.schema :refer $ dict
+          respo-router.config :refer $ dev?
     |respo-router.parser $ {}
       :defs $ {}
         |extract-address $ quote
@@ -294,13 +300,13 @@
                     <
                       dec $ count paths
                       , len
-                    conj acc $ {} (:name 404) (:data paths)
+                    conj acc $ :: :404 paths
                     recur
-                      conj acc $ {} (:name path-name)
-                        :data $ zipmap params (rest paths)
+                      conj acc $ :: :route path-name
+                        zipmap params $ rest paths
                       slice paths $ inc (count params)
                       , dict
-                conj acc $ {} (:name 404) (:data paths)
+                conj acc $ :: :404 paths
         |parse-query $ quote
           defn parse-query (text)
             if
@@ -350,14 +356,10 @@
                   |b $ []
                 {}
                   :path $ []
-                    {} (:name |a)
-                      :data $ {}
-                    {} (:name |b)
-                      :data $ {}
-                    {} (:name |a)
-                      :data $ {}
-                    {} (:name |a)
-                      :data $ {}
+                    :: :route |a $ {}
+                    :: :route |b $ {}
+                    :: :route |a $ {}
+                    :: :route |a $ {}
                   :query $ {}
             testing "|parse paths with parameters" $ is
               =
@@ -365,8 +367,7 @@
                   |a $ [] |b |c
                 {}
                   :path $ []
-                    {} (:name |a)
-                      :data $ {} (|b |b) (|c |c)
+                    :: :route |a $ {} (|b |b) (|c |c)
                   :query $ {}
         |test-stringify-query $ quote
           deftest test-stringify-query
