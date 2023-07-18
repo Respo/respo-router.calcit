@@ -58,10 +58,8 @@ looks like:
 ```cirru
 {}
   :path $ []
-    {} (:name |team)
-      :data $ {} |team-id "|t12345"
-    {} (:name |room)
-      :data $ |room-id "|r1234"
+    :: :route |team $ {} $ |team-id "|t12345"
+    :: :route |room $ {} $ |room-id "|r1234"
   :query $ {}
     "|a" 1
     "|b" 2
