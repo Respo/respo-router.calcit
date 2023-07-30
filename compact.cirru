@@ -1,6 +1,6 @@
 
 {} (:package |respo-router)
-  :configs $ {} (:init-fn |respo-router.main/main!) (:reload-fn |respo-router.main/reload!) (:version |0.6.0)
+  :configs $ {} (:init-fn |respo-router.main/main!) (:reload-fn |respo-router.main/reload!) (:version |0.7.0)
     :modules $ [] |respo.calcit/compact.cirru |respo-ui.calcit/compact.cirru |memof/compact.cirru |lilac/compact.cirru |calcit-test/
   :entries $ {}
     :test $ {} (:init-fn |respo-router.test/run-tests) (:reload-fn |respo-router.test/reload!)
@@ -19,7 +19,7 @@
                   {} $ :style ui/row
                   <> |Entries:
                   =< 16 nil
-                  div ({}) (render-link |home route-home) (render-link |team route-team) (render-link |room route-room) (render-link |search route-search) (render-link |404 route-404)
+                  div ({}) (render-link |home route-home) (render-link |team route-team) (render-link |room route-room) (render-link |search route-search) (render-link |search route-search-search) (render-link |404 route-404)
                 div
                   {} $ :style ui/row
                   <> |Dict:
@@ -78,6 +78,12 @@
             dispatch! $ :: :router/route
               {}
                 :path $ [] (:: :search)
+                :query $ {}
+        |route-search-search $ quote
+          defn route-search-search (e dispatch!)
+            dispatch! $ :: :router/route
+              {}
+                :path $ [] (:: :search) (:: :search)
                 :query $ {}
         |route-team $ quote
           defn route-team (e dispatch!)
@@ -223,7 +229,8 @@
               :hash $ js/window.addEventListener |hashchange
                 fn (event)
                   let
-                      path-info $ parse-address (strip-sharp js/location.hash) rules
+                      path-info $ w-js-log
+                        parse-address (strip-sharp js/location.hash) rules
                     ; println "|is ignored?" @*ignored?
                     if (not @*ignored?)
                       flipped js/setTimeout 0 $ fn ()
@@ -316,7 +323,7 @@
               5 $ :: r-tag (nth ret 0) (nth ret 1) (nth ret 2) (nth ret 3) (nth ret 4)
         |match-pattern $ quote
           defn match-pattern (acc paths pattern)
-            if (empty? paths) nil $ let
+            if (empty? pattern) acc $ let
                 p0 $ first pattern
               if (string? p0)
                 if
@@ -414,7 +421,7 @@
             testing "|parse paths with parameters" $ is
               =
                 parse-address |/a/b/c $ []
-                  :a $ [] |a |b |c
+                  :: :a $ [] |a |b |c
                 {}
                   :path $ [] (:: :a)
                   :query $ {}
