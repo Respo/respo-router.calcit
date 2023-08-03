@@ -1,7 +1,7 @@
 
 {} (:package |respo-router)
-  :configs $ {} (:init-fn |respo-router.main/main!) (:reload-fn |respo-router.main/reload!) (:version |0.7.0)
-    :modules $ [] |respo.calcit/compact.cirru |respo-ui.calcit/compact.cirru |memof/compact.cirru |lilac/compact.cirru |calcit-test/
+  :configs $ {} (:init-fn |respo-router.main/main!) (:reload-fn |respo-router.main/reload!) (:version |0.7.1)
+    :modules $ [] |respo.calcit/ |respo-ui.calcit/ |memof/ |lilac/ |calcit-test/
   :entries $ {}
     :test $ {} (:init-fn |respo-router.test/run-tests) (:reload-fn |respo-router.test/reload!)
       :modules $ [] |respo.calcit/compact.cirru |respo-ui.calcit/compact.cirru |memof/compact.cirru |lilac/compact.cirru |calcit-test/
@@ -146,22 +146,22 @@
       :defs $ {}
         |fill-pattern $ quote
           defn fill-pattern (acc pattern params)
-            if (empty? pattern) acc $ let
-                p0 $ first pattern
-              if (string? p0)
-                recur (str acc "\"/" p0) (rest pattern) params
-                recur
-                  str acc "\"/" $ first params
-                  rest pattern
-                  rest params
+            list-match pattern
+              () acc
+              (p0 ps)
+                if (string? p0)
+                  recur (str acc "\"/" p0) ps params
+                  recur
+                    str acc "\"/" $ first params
+                    , ps $ rest params
         |pick-rule $ quote
           defn pick-rule (t-tag rules)
-            if (empty? rules) (:: :none)
-              let
-                  r0 $ first rules
-                  t $ nth r0 0
-                if (= t t-tag) (:: :hit r0)
-                  recur t-tag $ rest rules
+            list-match rules
+              () $ :: :none
+              (r0 rs)
+                let
+                    t $ nth r0 0
+                  if (= t t-tag) (:: :hit r0) (recur t-tag rs)
         |router->string $ quote
           defn router->string (router rules)
             router->string-iter | (:path router) (:query router) rules
@@ -323,33 +323,34 @@
               5 $ :: r-tag (nth ret 0) (nth ret 1) (nth ret 2) (nth ret 3) (nth ret 4)
         |match-pattern $ quote
           defn match-pattern (acc paths pattern)
-            if (empty? pattern) acc $ let
-                p0 $ first pattern
-              if (string? p0)
-                if
-                  = (first paths) p0
-                  recur acc (rest paths) (rest pattern)
-                  , nil
-                recur
-                  conj acc $ first paths
-                  rest paths
-                  rest pattern
+            list-match pattern
+              () acc
+              (p0 ps)
+                if (string? p0)
+                  if
+                    = (first paths) p0
+                    recur acc (rest paths) ps
+                    , nil
+                  recur
+                    conj acc $ first paths
+                    rest paths
+                    , ps
         |match-route $ quote
           defn match-route (paths rules)
-            if (empty? rules) (:: :404 paths)
-              let
-                  r0 $ first rules
-                  r-tag $ nth r0 0
-                  pattern $ nth r0 1
-                if
-                  < (count paths) (count pattern)
-                  recur paths $ rest rules
-                  let
-                      ret $ match-pattern ([]) paths pattern
-                    if (nil? ret)
-                      recur paths $ rest rules
-                      :: :hit (list-to-tuple r-tag ret)
-                        slice paths $ count pattern
+            list-match rules
+              () $ :: :404 paths
+              (r0 rs)
+                let
+                    r-tag $ nth r0 0
+                    pattern $ nth r0 1
+                  if
+                    < (count paths) (count pattern)
+                    recur paths rs
+                    let
+                        ret $ match-pattern ([]) paths pattern
+                      if (nil? ret) (recur paths rs)
+                        :: :hit (list-to-tuple r-tag ret)
+                          slice paths (count pattern) (count paths)
         |parse-address $ quote
           defn parse-address (address rules)
             assert (string? address) "|first argument should be a string"
