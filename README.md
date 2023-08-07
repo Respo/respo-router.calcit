@@ -17,10 +17,10 @@ respo-router.core :refer $ render-url!
 
 ```cirru
 ; router rules
-def dict $ {}
-  |room $ [] "|room-id"
-  |team $ [] "|team-id"
-  |search $ []
+def dict $ []
+  :: :room $ [] "|room-id"
+  :: :team $ [] "|team-id"
+  :: :search $ []
 
 ; :hash | :history
 def mode :history
@@ -41,10 +41,10 @@ add-watch *store :changes $ fn ()
 Based on a dict:
 
 ```cirru
-def dict $ {}
-  |team $ [] |team-id
-  |room $ [] |room-id
-  |search $ []
+def dict $ []
+  :: :team $ [] |team-id
+  :: :room $ [] |room-id
+  :: :search $ []
 ```
 
 Router data structure for:
@@ -58,8 +58,8 @@ looks like:
 ```cirru
 {}
   :path $ []
-    :: :route |team $ {} $ |team-id "|t12345"
-    :: :route |room $ {} $ |room-id "|r1234"
+    :: :team "|t12345"
+    :: :room "|r1234"
   :query $ {}
     "|a" 1
     "|b" 2

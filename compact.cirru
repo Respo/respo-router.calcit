@@ -1,7 +1,7 @@
 
 {} (:package |respo-router)
-  :configs $ {} (:init-fn |respo-router.main/main!) (:reload-fn |respo-router.main/reload!) (:version |0.6.0)
-    :modules $ [] |respo.calcit/compact.cirru |respo-ui.calcit/compact.cirru |memof/compact.cirru |lilac/compact.cirru |calcit-test/
+  :configs $ {} (:init-fn |respo-router.main/main!) (:reload-fn |respo-router.main/reload!) (:version |0.7.1)
+    :modules $ [] |respo.calcit/ |respo-ui.calcit/ |memof/ |lilac/ |calcit-test/
   :entries $ {}
     :test $ {} (:init-fn |respo-router.test/run-tests) (:reload-fn |respo-router.test/reload!)
       :modules $ [] |respo.calcit/compact.cirru |respo-ui.calcit/compact.cirru |memof/compact.cirru |lilac/compact.cirru |calcit-test/
@@ -19,20 +19,20 @@
                   {} $ :style ui/row
                   <> |Entries:
                   =< 16 nil
-                  div ({}) (render-link |home route-home) (render-link |team route-team) (render-link |room route-room) (render-link |search route-search) (render-link |404 route-404)
+                  div ({}) (render-link |home route-home) (render-link |team route-team) (render-link |room route-room) (render-link |search route-search) (render-link |search route-search-search) (render-link |404 route-404)
                 div
                   {} $ :style ui/row
                   <> |Dict:
                   =< 16 nil
                   pre ({})
-                    <> (format-cirru-edn dict) style-codeblock
+                    <> (format-cirru-edn router-rules) style-codeblock
                 div
                   {} $ :style ui/row
                   <> |Path:
                   =< 16 nil
-                  pre ({})
+                  ; pre ({})
                     <>
-                      router->string (:router store) dict
+                      router->string (:router store) router-rules
                       , style-codeblock
                 div
                   {} $ :style ui/row
@@ -57,7 +57,11 @@
               <> guide
         |route-404 $ quote
           defn route-404 (e dispatch!)
-            dispatch! $ :: :router/nav |/missing
+            dispatch! $ :: :router/route
+              {}
+                :path $ []
+                  :: :404 $ [] "\"missing"
+                :query $ {}
         |route-home $ quote
           defn route-home (e dispatch!)
             dispatch! $ :: :router/route
@@ -67,19 +71,25 @@
         |route-room $ quote
           defn route-room (e dispatch!)
             dispatch! :router/route $ {}
-              :path $ []
-                :: :route "\"team" $ {} ("\"team-id" |t12345)
-                :: :route "\"room" $ {} ("\"room-id" |r1234)
+              :path $ [] (:: :team |t12345) (:: :room |r1234)
               :query $ {} ("\"a" 1) ("\"b" 2)
         |route-search $ quote
           defn route-search (e dispatch!)
-            dispatch! $ :: :router/nav |/search
+            dispatch! $ :: :router/route
+              {}
+                :path $ [] (:: :search)
+                :query $ {}
+        |route-search-search $ quote
+          defn route-search-search (e dispatch!)
+            dispatch! $ :: :router/route
+              {}
+                :path $ [] (:: :search) (:: :search)
+                :query $ {}
         |route-team $ quote
           defn route-team (e dispatch!)
             dispatch! $ :: :router/route
               {}
-                :path $ []
-                  :: :route "\"team" $ {} (|team-id |t1234)
+                :path $ [] (:: :team |t1234)
                 :query $ {}
         |style-codeblock $ quote
           def style-codeblock $ {} (:line-height |20px) (:margin 8)
@@ -90,7 +100,7 @@
           respo.comp.space :refer $ =<
           respo-ui.core :as ui
           respo-router.format :refer $ router->string strip-sharp
-          respo-router.schema :refer $ dict
+          respo-router.schema :refer $ router-rules
     |respo-router.config $ {}
       :defs $ {}
         |dev? $ quote
@@ -100,9 +110,9 @@
       :defs $ {}
         |*cached-router $ quote (defatom *cached-router nil)
         |render-url! $ quote
-          defn render-url! (router dict router-mode)
-            assert "|first argument should be router data" $ map? dict
-            assert "|second argument should be dictionary" $ map? dict
+          defn render-url! (router rules router-mode)
+            assert "|first argument should be router data" $ map? router
+            assert "|second argument should be dictionary" $ list? rules
             assert "|last argument is router-mode" $ includes? (#{} :history :hash) router-mode
             if (exists? js/location)
               if
@@ -111,12 +121,12 @@
                   case-default router-mode (js/console.warn "\"Unknown router-mode:" router-mode)
                     :hash $ let
                         current-hash js/location.hash
-                        old-router $ parse-address (strip-sharp current-hash) dict
+                        old-router $ parse-address (strip-sharp current-hash) rules
                       ; echo old-router router (not= old-router router) (= old-router router)
                       if (not= old-router router)
                         let
                             new-hash $ str |#
-                              router->string-iter | (:path router) (:query router) dict
+                              router->string-iter | (:path router) (:query router) rules
                           ; println "|force set path to:" new-hash
                           reset! *ignored? true
                           ; echo "\"new:" new-hash
@@ -124,8 +134,8 @@
                           js/setTimeout $ fn () (reset! *ignored? false) (; println "|ignore end")
                     :history $ let
                         old-address $ str js/location.pathname js/location.search
-                        old-router $ parse-address old-address dict
-                        new-address $ router->string-iter | (:path router) (:query router) dict
+                        old-router $ parse-address old-address rules
+                        new-address $ router->string-iter | (:path router) (:query router) rules
                       if (not= old-router router) (js/history.pushState nil nil new-address)
       :ns $ quote
         ns respo-router.core $ :require
@@ -134,11 +144,29 @@
           [] respo-router.parser :refer $ [] parse-address
     |respo-router.format $ {}
       :defs $ {}
+        |fill-pattern $ quote
+          defn fill-pattern (acc pattern params)
+            list-match pattern
+              () acc
+              (p0 ps)
+                if (string? p0)
+                  recur (str acc "\"/" p0) ps params
+                  recur
+                    str acc "\"/" $ first params
+                    , ps $ rest params
+        |pick-rule $ quote
+          defn pick-rule (t-tag rules)
+            list-match rules
+              () $ :: :none
+              (r0 rs)
+                let
+                    t $ nth r0 0
+                  if (= t t-tag) (:: :hit r0) (recur t-tag rs)
         |router->string $ quote
-          defn router->string (router dict)
-            router->string-iter | (:path router) (:query router) dict
+          defn router->string (router rules)
+            router->string-iter | (:path router) (:query router) rules
         |router->string-iter $ quote
-          defn router->string-iter (acc path query dict)
+          defn router->string-iter (acc path query rules)
             if (empty? path)
               let
                   query-str $ stringify-query query
@@ -148,18 +176,18 @@
                 str acc query-part
               let
                   guidepost $ first path
-                tag-match guidepost
-                    :route name data
-                    let
-                        params $ either (get dict name) ([])
-                        segments $ -> params
-                          map $ fn (key-path) (get data key-path)
-                        segment-path $ ->
-                          prepend segments $ nth guidepost 1
-                          join-str |/
-                      recur (str acc |/ segment-path) (rest path) query dict
-                  (:404 pieces)
-                    str acc "\"/" $ .join-str pieces "\"/"
+                  t-tag $ nth guidepost 0
+                  params $ tuple-params guidepost
+                  rule $ pick-rule t-tag rules
+                if (= :404 t-tag)
+                  str acc "\"/" $ .join-str (nth guidepost 1) "\"/"
+                  tag-match rule
+                      :none
+                      raise "\"found no rule"
+                    (:hit r0)
+                      let
+                          piece $ fill-pattern "\"" (nth r0 1) params
+                        recur (str acc piece) (rest path) query rules
         |slash-trim-left $ quote
           defn slash-trim-left (address)
             if
@@ -177,36 +205,42 @@
         |strip-sharp $ quote
           defn strip-sharp (text)
             if (starts-with? text |#) (&str:slice text 1) text
+        |tuple-params $ quote
+          defn tuple-params (guidepost)
+            case-default (count guidepost)
+              raise $ str "\"unknown tuple:" guidepost
+              1 $ []
+              2 $ [] (nth guidepost 1)
+              3 $ [] (nth guidepost 1) (nth guidepost 2)
+              4 $ [] (nth guidepost 1) (nth guidepost 2) (nth guidepost 3)
+              5 $ [] (nth guidepost 1) (nth guidepost 2) (nth guidepost 3) (nth guidepost 4)
       :ns $ quote
         ns respo-router.format $ :require
     |respo-router.listener $ {}
       :defs $ {}
         |*ignored? $ quote (defatom *ignored? false)
         |listen! $ quote
-          defn listen! (dict dispatch! router-mode)
-            assert "|first argument should be a dictionary" $ map? dict
+          defn listen! (rules dispatch! router-mode)
+            assert "|first argument should be a list" $ list? rules
             assert "|second argument shoud be dispatch function" $ fn? dispatch!
             assert (str "|invalid router-demo: " router-mode)
               includes? (#{} :history :hash) router-mode
-            case router-mode
-              :hash $ .addEventListener js/window |hashchange
+            case-default router-mode (js/console.log "\"unknown mode:" router-mode)
+              :hash $ js/window.addEventListener |hashchange
                 fn (event)
                   let
-                      path-info $ parse-address
-                        strip-sharp $ .-hash js/location
-                        , dict
+                      path-info $ w-js-log
+                        parse-address (strip-sharp js/location.hash) rules
                     ; println "|is ignored?" @*ignored?
                     if (not @*ignored?)
-                      js/setTimeout
-                        fn () $ dispatch! (: :router/route path-info)
-                        , 0
-              :history $ .addEventListener js/window |popstate
+                      flipped js/setTimeout 0 $ fn ()
+                        dispatch! $ : :router/route path-info
+              :history $ js/window.addEventListener |popstate
                 fn (event)
                   let
-                      current-address $ str (.-pathname js/location) (.-search js/location)
-                      path-info $ parse-address current-address dict
+                      current-address $ str js/location.pathname js/location.search
+                      path-info $ parse-address current-address rules
                     dispatch! $ : :router/route path-info
-              router-mode nil
       :ns $ quote
         ns respo-router.listener $ :require
           respo-router.parser :refer $ parse-address
@@ -215,7 +249,7 @@
       :defs $ {}
         |*store $ quote
           defatom *store $ assoc schema/store :router
-            parse-address (strip-sharp js/window.location.hash) dict
+            parse-address (strip-sharp js/window.location.hash) router-rules
         |dispatch! $ quote
           defn dispatch! (op) (js/console.log |dispatch! op)
             let
@@ -223,15 +257,15 @@
                     :states cursor s
                     update-states @*store cursor s
                   (:router/route d) (assoc @*store :router d)
-                  (:router/nav d)
-                    assoc @*store :router $ parse-address d dict
+                  (:router/route d)
+                    assoc @*store :router $ parse-address d router-rules
                   _ @*store
               reset! *store new-store
         |main! $ quote
           defn main! ()
             if dev? $ load-console-formatter!
             render-app!
-            listen! dict dispatch! router-mode
+            listen! router-rules dispatch! router-mode
             render-router!
             add-watch *store :changes $ fn (store prev) (render-app!)
             add-watch *store :router-changes $ fn (store prev) (render-router!)
@@ -244,7 +278,7 @@
           defn render-app! () (; println |render-app: @*store)
             render! mount-target (comp-container @*store) dispatch!
         |render-router! $ quote
-          defn render-router! () $ render-url! (:router @*store) dict router-mode
+          defn render-router! () $ render-url! (:router @*store) router-rules router-mode
         |router-mode $ quote (def router-mode :hash)
       :ns $ quote
         ns respo-router.main $ :require
@@ -256,7 +290,7 @@
           respo-router.format :refer $ strip-sharp
           respo-router.schema :as schema
           respo-router.core :refer $ render-url!
-          respo-router.schema :refer $ dict
+          respo-router.schema :refer $ router-rules
           respo-router.config :refer $ dev?
     |respo-router.parser $ {}
       :defs $ {}
@@ -278,35 +312,63 @@
                   fn (piece)
                     not $ &= | (.trim piece)
               [] segments query
+        |list-to-tuple $ quote
+          defn list-to-tuple (r-tag ret)
+            case-default (count ret) (raise "\"too many parameters")
+              0 $ :: r-tag
+              1 $ :: r-tag (nth ret 0)
+              2 $ :: r-tag (nth ret 0) (nth ret 1)
+              3 $ :: r-tag (nth ret 0) (nth ret 1) (nth ret 2)
+              4 $ :: r-tag (nth ret 0) (nth ret 1) (nth ret 2) (nth ret 3)
+              5 $ :: r-tag (nth ret 0) (nth ret 1) (nth ret 2) (nth ret 3) (nth ret 4)
+        |match-pattern $ quote
+          defn match-pattern (acc paths pattern)
+            list-match pattern
+              () acc
+              (p0 ps)
+                if (string? p0)
+                  if
+                    = (first paths) p0
+                    recur acc (rest paths) ps
+                    , nil
+                  recur
+                    conj acc $ first paths
+                    rest paths
+                    , ps
+        |match-route $ quote
+          defn match-route (paths rules)
+            list-match rules
+              () $ :: :404 paths
+              (r0 rs)
+                let
+                    r-tag $ nth r0 0
+                    pattern $ nth r0 1
+                  if
+                    < (count paths) (count pattern)
+                    recur paths rs
+                    let
+                        ret $ match-pattern ([]) paths pattern
+                      if (nil? ret) (recur paths rs)
+                        :: :hit (list-to-tuple r-tag ret)
+                          slice paths (count pattern) (count paths)
         |parse-address $ quote
-          defn parse-address (address dict)
+          defn parse-address (address rules)
             assert (string? address) "|first argument should be a string"
-            assert (map? dict) "|second argument should be dictionary"
+            assert (list? rules) "|second argument should be dictionary"
             let
                 trimed-address $ slash-trim-left address
               let[] (segments query) (extract-address trimed-address)
                 {}
-                  :path $ parse-path ([]) segments dict
+                  :path $ parse-path ([]) segments rules
                   :query query
         |parse-path $ quote
-          defn parse-path (acc paths dict)
+          defn parse-path (acc paths rules)
             if (empty? paths) acc $ let
-                path-name $ first paths
-              if (contains? dict path-name)
-                let
-                    params $ get dict path-name
-                    len $ count params
-                  if
-                    <
-                      dec $ count paths
-                      , len
-                    conj acc $ :: :404 paths
-                    recur
-                      conj acc $ :: :route path-name
-                        zipmap params $ rest paths
-                      slice paths $ inc (count params)
-                      , dict
-                conj acc $ :: :404 paths
+                ret $ match-route paths rules
+              tag-match ret
+                  :hit d remaining
+                  recur (conj acc d) remaining rules
+                (:404 remaining) (:: :404 remaining)
         |parse-query $ quote
           defn parse-query (text)
             if
@@ -320,17 +382,17 @@
           respo-router.format :refer $ slash-trim-left
     |respo-router.schema $ {}
       :defs $ {}
-        |dict $ quote
-          def dict $ {}
-            "\"team" $ [] "\"team-id"
-            "\"room" $ [] "\"room-id"
-            "\"search" $ []
         |guidepost $ quote
           def guidepost $ {} (:name nil) (:data nil)
         |router $ quote
           def router $ {}
             :path $ []
             :query $ {}
+        |router-rules $ quote
+          def router-rules $ []
+            :: :team $ [] "\"team" 'team-id
+            :: :room $ [] "\"room" 'room-id
+            :: :search $ [] "\"search"
         |store $ quote
           def store $ {} (:router router)
             :states $ {}
@@ -345,29 +407,24 @@
           deftest test-parse-address
             testing "|parse empty path" $ is
               =
-                parse-address |/ $ {}
+                parse-address |/ $ []
                 {}
                   :path $ []
                   :query $ {}
             testing "|parse nested paths" $ is
               =
-                parse-address |/a/b/a/a $ {}
-                  |a $ []
-                  |b $ []
+                parse-address |/a/b/a/a $ []
+                  :: :a $ [] "\"a"
+                  :: :b $ [] "\"b"
                 {}
-                  :path $ []
-                    :: :route |a $ {}
-                    :: :route |b $ {}
-                    :: :route |a $ {}
-                    :: :route |a $ {}
+                  :path $ [] (:: :a) (:: :b) (:: :a) (:: :a)
                   :query $ {}
             testing "|parse paths with parameters" $ is
               =
-                parse-address |/a/b/c $ {}
-                  |a $ [] |b |c
+                parse-address |/a/b/c $ []
+                  :: :a $ [] |a |b |c
                 {}
-                  :path $ []
-                    :: :route |a $ {} (|b |b) (|c |c)
+                  :path $ [] (:: :a)
                   :query $ {}
         |test-stringify-query $ quote
           deftest test-stringify-query
