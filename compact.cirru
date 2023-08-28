@@ -1,14 +1,14 @@
 
 {} (:package |respo-router)
-  :configs $ {} (:init-fn |respo-router.main/main!) (:reload-fn |respo-router.main/reload!) (:version |0.8.0-a1)
+  :configs $ {} (:init-fn |respo-router.main/main!) (:reload-fn |respo-router.main/reload!) (:version |0.8.0-a2)
     :modules $ [] |respo.calcit/ |respo-ui.calcit/ |memof/ |lilac/ |calcit-test/
   :entries $ {}
     :test $ {} (:init-fn |respo-router.test/run-tests) (:reload-fn |respo-router.test/reload!)
       :modules $ [] |respo.calcit/compact.cirru |respo-ui.calcit/compact.cirru |memof/compact.cirru |lilac/compact.cirru |calcit-test/
   :files $ {}
-    |respo-router.comp.container $ {}
+    |respo-router.comp.container $ %{} :FileEntry
       :defs $ {}
-        |comp-container $ %{} :CodeEntry
+        |comp-container $ %{} :CodeEntry (:doc |)
           :code $ quote
             defcomp comp-container (store)
               let
@@ -48,8 +48,7 @@
                     <> |GitHub:
                     =< 10 nil
                     a $ {} (:href |https://github.com/Respo/respo-router) (:inner-text |Respo/router) (:target |_blank)
-          :doc |
-        |render-link $ %{} :CodeEntry
+        |render-link $ %{} :CodeEntry (:doc |)
           :code $ quote
             defn render-link (guide on-click)
               a
@@ -58,8 +57,7 @@
                   :href |javascript:;
                   :on $ {} (:click on-click)
                 <> guide
-          :doc |
-        |route-404 $ %{} :CodeEntry
+        |route-404 $ %{} :CodeEntry (:doc |)
           :code $ quote
             defn route-404 (e dispatch!)
               dispatch! $ :: :router/route
@@ -67,51 +65,44 @@
                   :path $ []
                     :: :404 $ [] "\"missing"
                   :query $ {}
-          :doc |
-        |route-home $ %{} :CodeEntry
+        |route-home $ %{} :CodeEntry (:doc |)
           :code $ quote
             defn route-home (e dispatch!)
               dispatch! $ :: :router/route
                 {}
                   :path $ []
                   :query $ {}
-          :doc |
-        |route-room $ %{} :CodeEntry
+        |route-room $ %{} :CodeEntry (:doc |)
           :code $ quote
             defn route-room (e dispatch!)
               dispatch! :router/route $ {}
                 :path $ [] (:: :team |t12345) (:: :room |r1234)
                 :query $ {} ("\"a" 1) ("\"b" 2)
-          :doc |
-        |route-search $ %{} :CodeEntry
+        |route-search $ %{} :CodeEntry (:doc |)
           :code $ quote
             defn route-search (e dispatch!)
               dispatch! $ :: :router/route
                 {}
                   :path $ [] (:: :search)
                   :query $ {}
-          :doc |
-        |route-search-search $ %{} :CodeEntry
+        |route-search-search $ %{} :CodeEntry (:doc |)
           :code $ quote
             defn route-search-search (e dispatch!)
               dispatch! $ :: :router/route
                 {}
                   :path $ [] (:: :search) (:: :search)
                   :query $ {}
-          :doc |
-        |route-team $ %{} :CodeEntry
+        |route-team $ %{} :CodeEntry (:doc |)
           :code $ quote
             defn route-team (e dispatch!)
               dispatch! $ :: :router/route
                 {}
                   :path $ [] (:: :team |t1234)
                   :query $ {}
-          :doc |
-        |style-codeblock $ %{} :CodeEntry
+        |style-codeblock $ %{} :CodeEntry (:doc |)
           :code $ quote
             def style-codeblock $ {} (:line-height |20px) (:margin 8)
-          :doc |
-      :ns $ %{} :CodeEntry
+      :ns $ %{} :CodeEntry (:doc |)
         :code $ quote
           ns respo-router.comp.container $ :require
             respo.util.format :refer $ hsl
@@ -120,22 +111,18 @@
             respo-ui.core :as ui
             respo-router.format :refer $ router->string strip-sharp
             respo-router.schema :refer $ router-rules
-        :doc |
-    |respo-router.config $ {}
+    |respo-router.config $ %{} :FileEntry
       :defs $ {}
-        |dev? $ %{} :CodeEntry
+        |dev? $ %{} :CodeEntry (:doc |)
           :code $ quote
             def dev? $ = "\"dev" (get-env "\"mode" "\"release")
-          :doc |
-      :ns $ %{} :CodeEntry
+      :ns $ %{} :CodeEntry (:doc |)
         :code $ quote (ns respo-router.config)
-        :doc |
-    |respo-router.core $ {}
+    |respo-router.core $ %{} :FileEntry
       :defs $ {}
-        |*cached-router $ %{} :CodeEntry
+        |*cached-router $ %{} :CodeEntry (:doc |)
           :code $ quote (defatom *cached-router nil)
-          :doc |
-        |render-url! $ %{} :CodeEntry
+        |render-url! $ %{} :CodeEntry (:doc |)
           :code $ quote
             defn render-url! (router rules router-mode)
               assert "|first argument should be router data" $ map? router
@@ -164,17 +151,15 @@
                           old-router $ parse-address old-address rules
                           new-address $ router->string-iter | (:path router) (:query router) rules
                         if (not= old-router router) (js/history.pushState nil nil new-address)
-          :doc |
-      :ns $ %{} :CodeEntry
+      :ns $ %{} :CodeEntry (:doc |)
         :code $ quote
           ns respo-router.core $ :require
             [] respo-router.format :refer $ [] router->string router->string-iter strip-sharp
             [] respo-router.listener :refer $ [] *ignored?
             [] respo-router.parser :refer $ [] parse-address
-        :doc |
-    |respo-router.format $ {}
+    |respo-router.format $ %{} :FileEntry
       :defs $ {}
-        |fill-pattern $ %{} :CodeEntry
+        |fill-pattern $ %{} :CodeEntry (:doc |)
           :code $ quote
             defn fill-pattern (acc pattern params)
               list-match pattern
@@ -185,8 +170,7 @@
                     recur
                       str acc "\"/" $ first params
                       , ps $ rest params
-          :doc |
-        |pick-rule $ %{} :CodeEntry
+        |pick-rule $ %{} :CodeEntry (:doc |)
           :code $ quote
             defn pick-rule (t-tag rules)
               list-match rules
@@ -195,13 +179,11 @@
                   let
                       t $ nth r0 0
                     if (= t t-tag) (:: :hit r0) (recur t-tag rs)
-          :doc |
-        |router->string $ %{} :CodeEntry
+        |router->string $ %{} :CodeEntry (:doc |)
           :code $ quote
             defn router->string (router rules)
               router->string-iter | (:path router) (:query router) rules
-          :doc |
-        |router->string-iter $ %{} :CodeEntry
+        |router->string-iter $ %{} :CodeEntry (:doc |)
           :code $ quote
             defn router->string-iter (acc path query rules)
               if (empty? path)
@@ -225,8 +207,7 @@
                         let
                             piece $ fill-pattern "\"" (nth r0 1) params
                           recur (str acc piece) (rest path) query rules
-          :doc |
-        |slash-trim-left $ %{} :CodeEntry
+        |slash-trim-left $ %{} :CodeEntry (:doc |)
           :code $ quote
             defn slash-trim-left (address)
               if
@@ -235,21 +216,18 @@
                   = |/ $ first address
                   &str:slice address 1
                   , address
-          :doc |
-        |stringify-query $ %{} :CodeEntry
+        |stringify-query $ %{} :CodeEntry (:doc |)
           :code $ quote
             defn stringify-query (query)
               if (nil? query) "\"" $ -> query (.to-list)
                 map $ fn (pair)
                   -> pair $ join-str "\"="
                 join-str "\"&"
-          :doc |
-        |strip-sharp $ %{} :CodeEntry
+        |strip-sharp $ %{} :CodeEntry (:doc |)
           :code $ quote
             defn strip-sharp (text)
               if (starts-with? text |#) (&str:slice text 1) text
-          :doc |
-        |tuple-params $ %{} :CodeEntry
+        |tuple-params $ %{} :CodeEntry (:doc |)
           :code $ quote
             defn tuple-params (guidepost)
               case-default (count guidepost)
@@ -259,17 +237,14 @@
                 3 $ [] (nth guidepost 1) (nth guidepost 2)
                 4 $ [] (nth guidepost 1) (nth guidepost 2) (nth guidepost 3)
                 5 $ [] (nth guidepost 1) (nth guidepost 2) (nth guidepost 3) (nth guidepost 4)
-          :doc |
-      :ns $ %{} :CodeEntry
+      :ns $ %{} :CodeEntry (:doc |)
         :code $ quote
           ns respo-router.format $ :require
-        :doc |
-    |respo-router.listener $ {}
+    |respo-router.listener $ %{} :FileEntry
       :defs $ {}
-        |*ignored? $ %{} :CodeEntry
+        |*ignored? $ %{} :CodeEntry (:doc |)
           :code $ quote (defatom *ignored? false)
-          :doc |
-        |listen! $ %{} :CodeEntry
+        |listen! $ %{} :CodeEntry (:doc |)
           :code $ quote
             defn listen! (rules dispatch! router-mode)
               assert "|first argument should be a list" $ list? rules
@@ -292,21 +267,18 @@
                         current-address $ str js/location.pathname js/location.search
                         path-info $ parse-address current-address rules
                       dispatch! $ : :router/route path-info
-          :doc |
-      :ns $ %{} :CodeEntry
+      :ns $ %{} :CodeEntry (:doc |)
         :code $ quote
           ns respo-router.listener $ :require
             respo-router.parser :refer $ parse-address
             respo-router.format :refer $ strip-sharp
-        :doc |
-    |respo-router.main $ {}
+    |respo-router.main $ %{} :FileEntry
       :defs $ {}
-        |*store $ %{} :CodeEntry
+        |*store $ %{} :CodeEntry (:doc |)
           :code $ quote
             defatom *store $ assoc schema/store :router
               parse-address (strip-sharp js/window.location.hash) router-rules
-          :doc |
-        |dispatch! $ %{} :CodeEntry
+        |dispatch! $ %{} :CodeEntry (:doc |)
           :code $ quote
             defn dispatch! (op) (js/console.log |dispatch! op)
               let
@@ -318,8 +290,7 @@
                       assoc @*store :router $ parse-address d router-rules
                     _ @*store
                 reset! *store new-store
-          :doc |
-        |main! $ %{} :CodeEntry
+        |main! $ %{} :CodeEntry (:doc |)
           :code $ quote
             defn main! ()
               if dev? $ load-console-formatter!
@@ -329,28 +300,22 @@
               add-watch *store :changes $ fn (store prev) (render-app!)
               add-watch *store :router-changes $ fn (store prev) (render-router!)
               println "|app started!"
-          :doc |
-        |mount-target $ %{} :CodeEntry
+        |mount-target $ %{} :CodeEntry (:doc |)
           :code $ quote
             def mount-target $ .querySelector js/document |.app
-          :doc |
-        |reload! $ %{} :CodeEntry
+        |reload! $ %{} :CodeEntry (:doc |)
           :code $ quote
             defn reload! () (clear-cache!) (render-app!) (println "|code update.")
-          :doc |
-        |render-app! $ %{} :CodeEntry
+        |render-app! $ %{} :CodeEntry (:doc |)
           :code $ quote
             defn render-app! () (; println |render-app: @*store)
               render! mount-target (comp-container @*store) dispatch!
-          :doc |
-        |render-router! $ %{} :CodeEntry
+        |render-router! $ %{} :CodeEntry (:doc |)
           :code $ quote
             defn render-router! () $ render-url! (:router @*store) router-rules router-mode
-          :doc |
-        |router-mode $ %{} :CodeEntry
+        |router-mode $ %{} :CodeEntry (:doc |)
           :code $ quote (def router-mode :hash)
-          :doc |
-      :ns $ %{} :CodeEntry
+      :ns $ %{} :CodeEntry (:doc |)
         :code $ quote
           ns respo-router.main $ :require
             respo.core :refer $ render! clear-cache!
@@ -363,10 +328,9 @@
             respo-router.core :refer $ render-url!
             respo-router.schema :refer $ router-rules
             respo-router.config :refer $ dev?
-        :doc |
-    |respo-router.parser $ {}
+    |respo-router.parser $ %{} :FileEntry
       :defs $ {}
-        |extract-address $ %{} :CodeEntry
+        |extract-address $ %{} :CodeEntry (:doc |)
           :code $ quote
             defn extract-address (address)
               let
@@ -385,8 +349,7 @@
                     fn (piece)
                       not $ &= | (.trim piece)
                 [] segments query
-          :doc |
-        |list-to-tuple $ %{} :CodeEntry
+        |list-to-tuple $ %{} :CodeEntry (:doc |)
           :code $ quote
             defn list-to-tuple (r-tag ret)
               case-default (count ret) (raise "\"too many parameters")
@@ -396,8 +359,7 @@
                 3 $ :: r-tag (nth ret 0) (nth ret 1) (nth ret 2)
                 4 $ :: r-tag (nth ret 0) (nth ret 1) (nth ret 2) (nth ret 3)
                 5 $ :: r-tag (nth ret 0) (nth ret 1) (nth ret 2) (nth ret 3) (nth ret 4)
-          :doc |
-        |match-pattern $ %{} :CodeEntry
+        |match-pattern $ %{} :CodeEntry (:doc |)
           :code $ quote
             defn match-pattern (acc paths pattern)
               list-match pattern
@@ -412,8 +374,7 @@
                       conj acc $ first paths
                       rest paths
                       , ps
-          :doc |
-        |match-route $ %{} :CodeEntry
+        |match-route $ %{} :CodeEntry (:doc |)
           :code $ quote
             defn match-route (paths rules)
               list-match rules
@@ -430,8 +391,7 @@
                         if (nil? ret) (recur paths rs)
                           :: :hit (list-to-tuple r-tag ret)
                             slice paths (count pattern) (count paths)
-          :doc |
-        |parse-address $ %{} :CodeEntry
+        |parse-address $ %{} :CodeEntry (:doc |)
           :code $ quote
             defn parse-address (address rules)
               assert (string? address) "|first argument should be a string"
@@ -442,8 +402,7 @@
                   {}
                     :path $ parse-path ([]) segments rules
                     :query query
-          :doc |
-        |parse-path $ %{} :CodeEntry
+        |parse-path $ %{} :CodeEntry (:doc |)
           :code $ quote
             defn parse-path (acc paths rules)
               if (empty? paths) acc $ let
@@ -452,8 +411,7 @@
                     :hit d remaining
                     recur (conj acc d) remaining rules
                   (:404 remaining) (:: :404 remaining)
-          :doc |
-        |parse-query $ %{} :CodeEntry
+        |parse-query $ %{} :CodeEntry (:doc |)
           :code $ quote
             defn parse-query (text)
               if
@@ -462,50 +420,41 @@
                 -> (split text |&)
                   map $ fn (piece) (split piece |=)
                   pairs-map
-          :doc |
-      :ns $ %{} :CodeEntry
+      :ns $ %{} :CodeEntry (:doc |)
         :code $ quote
           ns respo-router.parser $ :require
             respo-router.format :refer $ slash-trim-left
-        :doc |
-    |respo-router.schema $ {}
+    |respo-router.schema $ %{} :FileEntry
       :defs $ {}
-        |guidepost $ %{} :CodeEntry
+        |guidepost $ %{} :CodeEntry (:doc |)
           :code $ quote
             def guidepost $ {} (:name nil) (:data nil)
-          :doc |
-        |router $ %{} :CodeEntry
+        |router $ %{} :CodeEntry (:doc |)
           :code $ quote
             def router $ {}
               :path $ []
               :query $ {}
-          :doc |
-        |router-rules $ %{} :CodeEntry
+        |router-rules $ %{} :CodeEntry (:doc |)
           :code $ quote
             def router-rules $ []
               :: :team $ [] "\"team" 'team-id
               :: :room $ [] "\"room" 'room-id
               :: :search $ [] "\"search"
-          :doc |
-        |store $ %{} :CodeEntry
+        |store $ %{} :CodeEntry (:doc |)
           :code $ quote
             def store $ {} (:router router)
               :states $ {}
-          :doc |
-      :ns $ %{} :CodeEntry
+      :ns $ %{} :CodeEntry (:doc |)
         :code $ quote (ns respo-router.schema)
-        :doc |
-    |respo-router.test $ {}
+    |respo-router.test $ %{} :FileEntry
       :defs $ {}
-        |reload! $ %{} :CodeEntry
+        |reload! $ %{} :CodeEntry (:doc |)
           :code $ quote
             defn reload! $
-          :doc |
-        |run-tests $ %{} :CodeEntry
+        |run-tests $ %{} :CodeEntry (:doc |)
           :code $ quote
             defn run-tests () (test-parse-address) (test-stringify-query)
-          :doc |
-        |test-parse-address $ %{} :CodeEntry
+        |test-parse-address $ %{} :CodeEntry (:doc |)
           :code $ quote
             deftest test-parse-address
               testing "|parse empty path" $ is
@@ -529,8 +478,7 @@
                   {}
                     :path $ [] (:: :a)
                     :query $ {}
-          :doc |
-        |test-stringify-query $ %{} :CodeEntry
+        |test-stringify-query $ %{} :CodeEntry (:doc |)
           :code $ quote
             deftest test-stringify-query
               testing "|generate empty query" $ is
@@ -538,11 +486,9 @@
               testing "|generate simple query" $ is
                 = |a=1&b=2 $ format/stringify-query
                   {} (|a 1) (|b 2)
-          :doc |
-      :ns $ %{} :CodeEntry
+      :ns $ %{} :CodeEntry (:doc |)
         :code $ quote
           ns respo-router.test $ :require
             calcit-test.core :refer $ deftest is testing
             respo-router.format :as format
             respo-router.parser :refer $ parse-address
-        :doc |

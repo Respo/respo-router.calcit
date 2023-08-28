@@ -1,14 +1,14 @@
 
 {} (:package |respo-router)
-  :configs $ {} (:init-fn |respo-router.main/main!) (:port 6001) (:reload-fn |respo-router.main/reload!) (:storage-key |calcit.cirru) (:version |0.8.0-a1)
+  :configs $ {} (:init-fn |respo-router.main/main!) (:port 6001) (:reload-fn |respo-router.main/reload!) (:storage-key |calcit.cirru) (:version |0.8.0-a2)
     :modules $ [] |respo.calcit/ |respo-ui.calcit/ |memof/ |lilac/ |calcit-test/
   :entries $ {}
     :test $ {} (:init-fn |respo-router.test/run-tests) (:reload-fn |respo-router.test/reload!)
       :modules $ [] |respo.calcit/compact.cirru |respo-ui.calcit/compact.cirru |memof/compact.cirru |lilac/compact.cirru |calcit-test/
   :files $ {}
-    |respo-router.comp.container $ {}
+    |respo-router.comp.container $ %{} :FileEntry
       :defs $ {}
-        |comp-container $ %{} :CodeEntry
+        |comp-container $ %{} :CodeEntry (:doc |)
           :code $ %{} :Expr (:at 1505410717327) (:by nil)
             :data $ {}
               |T $ %{} :Leaf (:at 1505411502930) (:by |root) (:text |defcomp)
@@ -247,8 +247,7 @@
                                     :data $ {}
                                       |T $ %{} :Leaf (:at 1508897945162) (:by |root) (:text |:target)
                                       |j $ %{} :Leaf (:at 1508897948093) (:by |root) (:text ||_blank)
-          :doc |
-        |render-link $ %{} :CodeEntry
+        |render-link $ %{} :CodeEntry (:doc |)
           :code $ %{} :Expr (:at 1508878454794) (:by |root)
             :data $ {}
               |T $ %{} :Leaf (:at 1508878458683) (:by |root) (:text |defn)
@@ -291,8 +290,7 @@
                     :data $ {}
                       |T $ %{} :Leaf (:at 1508878454794) (:by |root) (:text |<>)
                       |j $ %{} :Leaf (:at 1508878472889) (:by |root) (:text |guide)
-          :doc |
-        |route-404 $ %{} :CodeEntry
+        |route-404 $ %{} :CodeEntry (:doc |)
           :code $ %{} :Expr (:at 1505410717327) (:by nil)
             :data $ {}
               |T $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |defn)
@@ -331,8 +329,7 @@
                               |b $ %{} :Expr (:at 1690706570304) (:by |BJMyLOplX)
                                 :data $ {}
                                   |T $ %{} :Leaf (:at 1690706570631) (:by |BJMyLOplX) (:text |{})
-          :doc |
-        |route-home $ %{} :CodeEntry
+        |route-home $ %{} :CodeEntry (:doc |)
           :code $ %{} :Expr (:at 1505410717327) (:by nil)
             :data $ {}
               |T $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |defn)
@@ -363,8 +360,7 @@
                               |b $ %{} :Expr (:at 1689611307229) (:by |BJMyLOplX)
                                 :data $ {}
                                   |T $ %{} :Leaf (:at 1689611307229) (:by |BJMyLOplX) (:text |{})
-          :doc |
-        |route-room $ %{} :CodeEntry
+        |route-room $ %{} :CodeEntry (:doc |)
           :code $ %{} :Expr (:at 1505410717327) (:by nil)
             :data $ {}
               |T $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |defn)
@@ -410,8 +406,7 @@
                                 :data $ {}
                                   |T $ %{} :Leaf (:at 1528822485878) (:by |BJMyLOplX) (:text "|\"b")
                                   |j $ %{} :Leaf (:at 1508777276663) (:by |root) (:text |2)
-          :doc |
-        |route-search $ %{} :CodeEntry
+        |route-search $ %{} :CodeEntry (:doc |)
           :code $ %{} :Expr (:at 1505410717327) (:by nil)
             :data $ {}
               |T $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |defn)
@@ -446,8 +441,7 @@
                               |b $ %{} :Expr (:at 1690706579534) (:by |BJMyLOplX)
                                 :data $ {}
                                   |T $ %{} :Leaf (:at 1690706579844) (:by |BJMyLOplX) (:text |{})
-          :doc |
-        |route-search-search $ %{} :CodeEntry
+        |route-search-search $ %{} :CodeEntry (:doc |)
           :code $ %{} :Expr (:at 1690708350349) (:by |BJMyLOplX)
             :data $ {}
               |T $ %{} :Leaf (:at 1690708354101) (:by |BJMyLOplX) (:text |defn)
@@ -486,8 +480,7 @@
                               |b $ %{} :Expr (:at 1690708351550) (:by |BJMyLOplX)
                                 :data $ {}
                                   |T $ %{} :Leaf (:at 1690708351550) (:by |BJMyLOplX) (:text |{})
-          :doc |
-        |route-team $ %{} :CodeEntry
+        |route-team $ %{} :CodeEntry (:doc |)
           :code $ %{} :Expr (:at 1505410717327) (:by nil)
             :data $ {}
               |T $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |defn)
@@ -523,8 +516,7 @@
                               |j $ %{} :Expr (:at 1508776910047) (:by |root)
                                 :data $ {}
                                   |T $ %{} :Leaf (:at 1508776910342) (:by |root) (:text |{})
-          :doc |
-        |style-codeblock $ %{} :CodeEntry
+        |style-codeblock $ %{} :CodeEntry (:doc |)
           :code $ %{} :Expr (:at 1508897801588) (:by |root)
             :data $ {}
               |T $ %{} :Leaf (:at 1508897801588) (:by |root) (:text |def)
@@ -540,8 +532,7 @@
                     :data $ {}
                       |T $ %{} :Leaf (:at 1508897801588) (:by |root) (:text |:margin)
                       |j $ %{} :Leaf (:at 1508897801588) (:by |root) (:text |8)
-          :doc |
-      :ns $ %{} :CodeEntry
+      :ns $ %{} :CodeEntry (:doc |)
         :code $ %{} :Expr (:at 1505410717327) (:by nil)
           :data $ {}
             |T $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |ns)
@@ -596,11 +587,9 @@
                     |v $ %{} :Expr (:at 1508879646792) (:by |root)
                       :data $ {}
                         |j $ %{} :Leaf (:at 1690700587766) (:by |BJMyLOplX) (:text |router-rules)
-        :doc |
-    |respo-router.config $ {}
-      :configs $ {}
+    |respo-router.config $ %{} :FileEntry
       :defs $ {}
-        |dev? $ %{} :CodeEntry
+        |dev? $ %{} :CodeEntry (:doc |)
           :code $ %{} :Expr (:at 1689610238538) (:by |BJMyLOplX)
             :data $ {}
               |T $ %{} :Leaf (:at 1689610240624) (:by |BJMyLOplX) (:text |def)
@@ -614,23 +603,20 @@
                       |T $ %{} :Leaf (:at 1689610247093) (:by |BJMyLOplX) (:text |get-env)
                       |b $ %{} :Leaf (:at 1689610248118) (:by |BJMyLOplX) (:text "|\"mode")
                       |h $ %{} :Leaf (:at 1689610249582) (:by |BJMyLOplX) (:text "|\"release")
-          :doc |
-      :ns $ %{} :CodeEntry
+      :ns $ %{} :CodeEntry (:doc |)
         :code $ %{} :Expr (:at 1689610234862) (:by |BJMyLOplX)
           :data $ {}
             |T $ %{} :Leaf (:at 1689610234862) (:by |BJMyLOplX) (:text |ns)
             |b $ %{} :Leaf (:at 1689610234862) (:by |BJMyLOplX) (:text |respo-router.config)
-        :doc |
-    |respo-router.core $ {}
+    |respo-router.core $ %{} :FileEntry
       :defs $ {}
-        |*cached-router $ %{} :CodeEntry
+        |*cached-router $ %{} :CodeEntry (:doc |)
           :code $ %{} :Expr (:at 1505410717327) (:by nil)
             :data $ {}
               |T $ %{} :Leaf (:at 1610620711663) (:by |BJMyLOplX) (:text |defatom)
               |j $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |*cached-router)
               |r $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |nil)
-          :doc |
-        |render-url! $ %{} :CodeEntry
+        |render-url! $ %{} :CodeEntry (:doc |)
           :code $ %{} :Expr (:at 1505410717327) (:by nil)
             :data $ {}
               |T $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |defn)
@@ -870,8 +856,7 @@
                                               |r $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |nil)
                                               |v $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |nil)
                                               |x $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |new-address)
-          :doc |
-      :ns $ %{} :CodeEntry
+      :ns $ %{} :CodeEntry (:doc |)
         :code $ %{} :Expr (:at 1505410717327) (:by nil)
           :data $ {}
             |T $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |ns)
@@ -908,10 +893,9 @@
                       :data $ {}
                         |T $ %{} :Leaf (:at 1511885978753) (:by |root) (:text |[])
                         |j $ %{} :Leaf (:at 1511885982769) (:by |root) (:text |parse-address)
-        :doc |
-    |respo-router.format $ {}
+    |respo-router.format $ %{} :FileEntry
       :defs $ {}
-        |fill-pattern $ %{} :CodeEntry
+        |fill-pattern $ %{} :CodeEntry (:doc |)
           :code $ %{} :Expr (:at 1690702512449) (:by |BJMyLOplX)
             :data $ {}
               |T $ %{} :Leaf (:at 1690702512449) (:by |BJMyLOplX) (:text |defn)
@@ -971,8 +955,7 @@
                                 :data $ {}
                                   |T $ %{} :Leaf (:at 1691080557206) (:by |BJMyLOplX) (:text |rest)
                                   |b $ %{} :Leaf (:at 1691080557206) (:by |BJMyLOplX) (:text |params)
-          :doc |
-        |pick-rule $ %{} :CodeEntry
+        |pick-rule $ %{} :CodeEntry (:doc |)
           :code $ %{} :Expr (:at 1690702320551) (:by |BJMyLOplX)
             :data $ {}
               |T $ %{} :Leaf (:at 1690702320551) (:by |BJMyLOplX) (:text |defn)
@@ -1030,8 +1013,7 @@
                                   |T $ %{} :Leaf (:at 1691080608291) (:by |BJMyLOplX) (:text |recur)
                                   |b $ %{} :Leaf (:at 1691080608291) (:by |BJMyLOplX) (:text |t-tag)
                                   |h $ %{} :Leaf (:at 1691080616191) (:by |BJMyLOplX) (:text |rs)
-          :doc |
-        |router->string $ %{} :CodeEntry
+        |router->string $ %{} :CodeEntry (:doc |)
           :code $ %{} :Expr (:at 1505410717327) (:by nil)
             :data $ {}
               |T $ %{} :Leaf (:at 1610619984853) (:by |BJMyLOplX) (:text |defn)
@@ -1053,8 +1035,7 @@
                       |T $ %{} :Leaf (:at 1508879545103) (:by |root) (:text |:query)
                       |j $ %{} :Leaf (:at 1508879547589) (:by |root) (:text |router)
                   |x $ %{} :Leaf (:at 1690667995109) (:by |BJMyLOplX) (:text |rules)
-          :doc |
-        |router->string-iter $ %{} :CodeEntry
+        |router->string-iter $ %{} :CodeEntry (:doc |)
           :code $ %{} :Expr (:at 1610619970291) (:by |BJMyLOplX)
             :data $ {}
               |T $ %{} :Leaf (:at 1610622839654) (:by |BJMyLOplX) (:text |defn)
@@ -1217,8 +1198,7 @@
                                               |b $ %{} :Leaf (:at 1690702498317) (:by |BJMyLOplX) (:text |path)
                                           |l $ %{} :Leaf (:at 1690702501119) (:by |BJMyLOplX) (:text |query)
                                           |o $ %{} :Leaf (:at 1690702502974) (:by |BJMyLOplX) (:text |rules)
-          :doc |
-        |slash-trim-left $ %{} :CodeEntry
+        |slash-trim-left $ %{} :CodeEntry (:doc |)
           :code $ %{} :Expr (:at 1505410717327) (:by nil)
             :data $ {}
               |T $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |defn)
@@ -1255,8 +1235,7 @@
                           |j $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |address)
                           |r $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |1)
                       |v $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |address)
-          :doc |
-        |stringify-query $ %{} :CodeEntry
+        |stringify-query $ %{} :CodeEntry (:doc |)
           :code $ %{} :Expr (:at 1505410717327) (:by nil)
             :data $ {}
               |T $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |defn)
@@ -1300,8 +1279,7 @@
                         :data $ {}
                           |T $ %{} :Leaf (:at 1610619854552) (:by |BJMyLOplX) (:text |join-str)
                           |j $ %{} :Leaf (:at 1528821853259) (:by |BJMyLOplX) (:text "|\"&")
-          :doc |
-        |strip-sharp $ %{} :CodeEntry
+        |strip-sharp $ %{} :CodeEntry (:doc |)
           :code $ %{} :Expr (:at 1505410717327) (:by nil)
             :data $ {}
               |T $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |defn)
@@ -1323,8 +1301,7 @@
                       |j $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |text)
                       |r $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |1)
                   |v $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |text)
-          :doc |
-        |tuple-params $ %{} :CodeEntry
+        |tuple-params $ %{} :CodeEntry (:doc |)
           :code $ %{} :Expr (:at 1690702175201) (:by |BJMyLOplX)
             :data $ {}
               |T $ %{} :Leaf (:at 1690702175201) (:by |BJMyLOplX) (:text |defn)
@@ -1427,8 +1404,7 @@
                               |T $ %{} :Leaf (:at 1690702228633) (:by |BJMyLOplX) (:text |nth)
                               |b $ %{} :Leaf (:at 1690702230925) (:by |BJMyLOplX) (:text |guidepost)
                               |h $ %{} :Leaf (:at 1690702254088) (:by |BJMyLOplX) (:text |4)
-          :doc |
-      :ns $ %{} :CodeEntry
+      :ns $ %{} :CodeEntry (:doc |)
         :code $ %{} :Expr (:at 1505410717327) (:by nil)
           :data $ {}
             |T $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |ns)
@@ -1436,17 +1412,15 @@
             |r $ %{} :Expr (:at 1505410717327) (:by nil)
               :data $ {}
                 |T $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |:require)
-        :doc |
-    |respo-router.listener $ {}
+    |respo-router.listener $ %{} :FileEntry
       :defs $ {}
-        |*ignored? $ %{} :CodeEntry
+        |*ignored? $ %{} :CodeEntry (:doc |)
           :code $ %{} :Expr (:at 1505410717327) (:by nil)
             :data $ {}
               |T $ %{} :Leaf (:at 1610620673772) (:by |BJMyLOplX) (:text |defatom)
               |j $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |*ignored?)
               |r $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |false)
-          :doc |
-        |listen! $ %{} :CodeEntry
+        |listen! $ %{} :CodeEntry (:doc |)
           :code $ %{} :Expr (:at 1505410717327) (:by nil)
             :data $ {}
               |T $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |defn)
@@ -1603,8 +1577,7 @@
                                           |D $ %{} :Leaf (:at 1687971085082) (:by |BJMyLOplX) (:text |:)
                                           |T $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |:router/route)
                                           |b $ %{} :Leaf (:at 1687971087286) (:by |BJMyLOplX) (:text |path-info)
-          :doc |
-      :ns $ %{} :CodeEntry
+      :ns $ %{} :CodeEntry (:doc |)
         :code $ %{} :Expr (:at 1505410717327) (:by nil)
           :data $ {}
             |T $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |ns)
@@ -1626,10 +1599,9 @@
                     |v $ %{} :Expr (:at 1511886227808) (:by |root)
                       :data $ {}
                         |j $ %{} :Leaf (:at 1511886233352) (:by |root) (:text |strip-sharp)
-        :doc |
-    |respo-router.main $ {}
+    |respo-router.main $ %{} :FileEntry
       :defs $ {}
-        |*store $ %{} :CodeEntry
+        |*store $ %{} :CodeEntry (:doc |)
           :code $ %{} :Expr (:at 1505410717327) (:by nil)
             :data $ {}
               |T $ %{} :Leaf (:at 1610620683318) (:by |BJMyLOplX) (:text |defatom)
@@ -1647,8 +1619,7 @@
                           |D $ %{} :Leaf (:at 1508878974335) (:by |root) (:text |strip-sharp)
                           |T $ %{} :Leaf (:at 1508878858206) (:by |root) (:text |js/window.location.hash)
                       |r $ %{} :Leaf (:at 1690700696942) (:by |BJMyLOplX) (:text |router-rules)
-          :doc |
-        |dispatch! $ %{} :CodeEntry
+        |dispatch! $ %{} :CodeEntry (:doc |)
           :code $ %{} :Expr (:at 1505410717327) (:by nil)
             :data $ {}
               |T $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |defn)
@@ -1723,8 +1694,7 @@
                       |T $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |reset!)
                       |j $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |*store)
                       |r $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |new-store)
-          :doc |
-        |main! $ %{} :CodeEntry
+        |main! $ %{} :CodeEntry (:doc |)
           :code $ %{} :Expr (:at 1505410717327) (:by nil)
             :data $ {}
               |T $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |defn)
@@ -1784,8 +1754,7 @@
                 :data $ {}
                   |T $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |println)
                   |j $ %{} :Leaf (:at 1505410717327) (:by |root) (:text "||app started!")
-          :doc |
-        |mount-target $ %{} :CodeEntry
+        |mount-target $ %{} :CodeEntry (:doc |)
           :code $ %{} :Expr (:at 1508777357721) (:by |root)
             :data $ {}
               |T $ %{} :Leaf (:at 1508777358970) (:by |root) (:text |def)
@@ -1795,8 +1764,7 @@
                   |T $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |.querySelector)
                   |j $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |js/document)
                   |r $ %{} :Leaf (:at 1508775487354) (:by |root) (:text ||.app)
-          :doc |
-        |reload! $ %{} :CodeEntry
+        |reload! $ %{} :CodeEntry (:doc |)
           :code $ %{} :Expr (:at 1505410717327) (:by nil)
             :data $ {}
               |T $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |defn)
@@ -1813,8 +1781,7 @@
                 :data $ {}
                   |T $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |println)
                   |j $ %{} :Leaf (:at 1505410717327) (:by |root) (:text "||code update.")
-          :doc |
-        |render-app! $ %{} :CodeEntry
+        |render-app! $ %{} :CodeEntry (:doc |)
           :code $ %{} :Expr (:at 1505410717327) (:by nil)
             :data $ {}
               |T $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |defn)
@@ -1836,8 +1803,7 @@
                       |T $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |comp-container)
                       |j $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |@*store)
                   |v $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |dispatch!)
-          :doc |
-        |render-router! $ %{} :CodeEntry
+        |render-router! $ %{} :CodeEntry (:doc |)
           :code $ %{} :Expr (:at 1505410717327) (:by nil)
             :data $ {}
               |T $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |defn)
@@ -1853,15 +1819,13 @@
                       |j $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |@*store)
                   |r $ %{} :Leaf (:at 1690700559575) (:by |BJMyLOplX) (:text |router-rules)
                   |v $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |router-mode)
-          :doc |
-        |router-mode $ %{} :CodeEntry
+        |router-mode $ %{} :CodeEntry (:doc |)
           :code $ %{} :Expr (:at 1505410717327) (:by nil)
             :data $ {}
               |T $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |def)
               |j $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |router-mode)
               |r $ %{} :Leaf (:at 1508878708166) (:by |root) (:text |:hash)
-          :doc |
-      :ns $ %{} :CodeEntry
+      :ns $ %{} :CodeEntry (:doc |)
         :code $ %{} :Expr (:at 1505410717327) (:by nil)
           :data $ {}
             |T $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |ns)
@@ -1938,10 +1902,9 @@
                     |h $ %{} :Expr (:at 1689610267333) (:by |BJMyLOplX)
                       :data $ {}
                         |T $ %{} :Leaf (:at 1689610269561) (:by |BJMyLOplX) (:text |dev?)
-        :doc |
-    |respo-router.parser $ {}
+    |respo-router.parser $ %{} :FileEntry
       :defs $ {}
-        |extract-address $ %{} :CodeEntry
+        |extract-address $ %{} :CodeEntry (:doc |)
           :code $ %{} :Expr (:at 1505410717327) (:by nil)
             :data $ {}
               |T $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |defn)
@@ -2055,8 +2018,7 @@
                       |T $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |[])
                       |j $ %{} :Leaf (:at 1508775837752) (:by |root) (:text |segments)
                       |r $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |query)
-          :doc |
-        |list-to-tuple $ %{} :CodeEntry
+        |list-to-tuple $ %{} :CodeEntry (:doc |)
           :code $ %{} :Expr (:at 1690667419542) (:by |BJMyLOplX)
             :data $ {}
               |T $ %{} :Leaf (:at 1690667419542) (:by |BJMyLOplX) (:text |defn)
@@ -2193,8 +2155,7 @@
                               |T $ %{} :Leaf (:at 1690667421053) (:by |BJMyLOplX) (:text |nth)
                               |b $ %{} :Leaf (:at 1690667421053) (:by |BJMyLOplX) (:text |ret)
                               |h $ %{} :Leaf (:at 1690667421053) (:by |BJMyLOplX) (:text |4)
-          :doc |
-        |match-pattern $ %{} :CodeEntry
+        |match-pattern $ %{} :CodeEntry (:doc |)
           :code $ %{} :Expr (:at 1690667029668) (:by |BJMyLOplX)
             :data $ {}
               |T $ %{} :Leaf (:at 1690667029668) (:by |BJMyLOplX) (:text |defn)
@@ -2263,8 +2224,7 @@
                                   |T $ %{} :Leaf (:at 1691080653857) (:by |BJMyLOplX) (:text |rest)
                                   |b $ %{} :Leaf (:at 1691080653857) (:by |BJMyLOplX) (:text |paths)
                               |l $ %{} :Leaf (:at 1691080661091) (:by |BJMyLOplX) (:text |ps)
-          :doc |
-        |match-route $ %{} :CodeEntry
+        |match-route $ %{} :CodeEntry (:doc |)
           :code $ %{} :Expr (:at 1690666823291) (:by |BJMyLOplX)
             :data $ {}
               |T $ %{} :Leaf (:at 1690666823291) (:by |BJMyLOplX) (:text |defn)
@@ -2381,8 +2341,7 @@
                                                 :data $ {}
                                                   |T $ %{} :Leaf (:at 1691080756482) (:by |BJMyLOplX) (:text |count)
                                                   |b $ %{} :Leaf (:at 1691080756482) (:by |BJMyLOplX) (:text |paths)
-          :doc |
-        |parse-address $ %{} :CodeEntry
+        |parse-address $ %{} :CodeEntry (:doc |)
           :code $ %{} :Expr (:at 1505410717327) (:by nil)
             :data $ {}
               |T $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |defn)
@@ -2448,8 +2407,7 @@
                             :data $ {}
                               |T $ %{} :Leaf (:at 1508775700292) (:by |root) (:text |:query)
                               |j $ %{} :Leaf (:at 1508775701832) (:by |root) (:text |query)
-          :doc |
-        |parse-path $ %{} :CodeEntry
+        |parse-path $ %{} :CodeEntry (:doc |)
           :code $ %{} :Expr (:at 1505410717327) (:by nil)
             :data $ {}
               |T $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |defn)
@@ -2512,8 +2470,7 @@
                                   |T $ %{} :Leaf (:at 1690667708666) (:by |BJMyLOplX) (:text |::)
                                   |b $ %{} :Leaf (:at 1690667710905) (:by |BJMyLOplX) (:text |:404)
                                   |h $ %{} :Leaf (:at 1690667712783) (:by |BJMyLOplX) (:text |remaining)
-          :doc |
-        |parse-query $ %{} :CodeEntry
+        |parse-query $ %{} :CodeEntry (:doc |)
           :code $ %{} :Expr (:at 1505410717327) (:by nil)
             :data $ {}
               |T $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |defn)
@@ -2560,8 +2517,7 @@
                       |v $ %{} :Expr (:at 1610620106726) (:by |BJMyLOplX)
                         :data $ {}
                           |T $ %{} :Leaf (:at 1610620108107) (:by |BJMyLOplX) (:text |pairs-map)
-          :doc |
-      :ns $ %{} :CodeEntry
+      :ns $ %{} :CodeEntry (:doc |)
         :code $ %{} :Expr (:at 1511885932031) (:by |root)
           :data $ {}
             |T $ %{} :Leaf (:at 1511885936026) (:by |root) (:text |ns)
@@ -2576,10 +2532,9 @@
                     |v $ %{} :Expr (:at 1511886093406) (:by |root)
                       :data $ {}
                         |j $ %{} :Leaf (:at 1627236161745) (:by |BJMyLOplX) (:text |slash-trim-left)
-        :doc |
-    |respo-router.schema $ {}
+    |respo-router.schema $ %{} :FileEntry
       :defs $ {}
-        |guidepost $ %{} :CodeEntry
+        |guidepost $ %{} :CodeEntry (:doc |)
           :code $ %{} :Expr (:at 1508775763752) (:by |root)
             :data $ {}
               |T $ %{} :Leaf (:at 1508775765733) (:by |root) (:text |def)
@@ -2595,8 +2550,7 @@
                     :data $ {}
                       |T $ %{} :Leaf (:at 1508775770781) (:by |root) (:text |:data)
                       |j $ %{} :Leaf (:at 1508775771376) (:by |root) (:text |nil)
-          :doc |
-        |router $ %{} :CodeEntry
+        |router $ %{} :CodeEntry (:doc |)
           :code $ %{} :Expr (:at 1505410717327) (:by nil)
             :data $ {}
               |T $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |def)
@@ -2616,8 +2570,7 @@
                       |j $ %{} :Expr (:at 1508775536268) (:by |root)
                         :data $ {}
                           |T $ %{} :Leaf (:at 1508775536557) (:by |root) (:text |{})
-          :doc |
-        |router-rules $ %{} :CodeEntry
+        |router-rules $ %{} :CodeEntry (:doc |)
           :code $ %{} :Expr (:at 1505410717327) (:by nil)
             :data $ {}
               |T $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |def)
@@ -2651,8 +2604,7 @@
                         :data $ {}
                           |T $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |[])
                           |b $ %{} :Leaf (:at 1690666558514) (:by |BJMyLOplX) (:text "|\"search")
-          :doc |
-        |store $ %{} :CodeEntry
+        |store $ %{} :CodeEntry (:doc |)
           :code $ %{} :Expr (:at 1505410717327) (:by nil)
             :data $ {}
               |T $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |def)
@@ -2670,24 +2622,21 @@
                       |j $ %{} :Expr (:at 1505411984065) (:by |root)
                         :data $ {}
                           |T $ %{} :Leaf (:at 1505411984420) (:by |root) (:text |{})
-          :doc |
-      :ns $ %{} :CodeEntry
+      :ns $ %{} :CodeEntry (:doc |)
         :code $ %{} :Expr (:at 1505410717327) (:by nil)
           :data $ {}
             |T $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |ns)
             |j $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |respo-router.schema)
-        :doc |
-    |respo-router.test $ {}
+    |respo-router.test $ %{} :FileEntry
       :defs $ {}
-        |reload! $ %{} :CodeEntry
+        |reload! $ %{} :CodeEntry (:doc |)
           :code $ %{} :Expr (:at 1614695099322) (:by |BJMyLOplX)
             :data $ {}
               |T $ %{} :Leaf (:at 1614695099322) (:by |BJMyLOplX) (:text |defn)
               |j $ %{} :Leaf (:at 1614695099322) (:by |BJMyLOplX) (:text |reload!)
               |r $ %{} :Expr (:at 1614695099322) (:by |BJMyLOplX)
                 :data $ {}
-          :doc |
-        |run-tests $ %{} :CodeEntry
+        |run-tests $ %{} :CodeEntry (:doc |)
           :code $ %{} :Expr (:at 1614694885204) (:by |BJMyLOplX)
             :data $ {}
               |T $ %{} :Leaf (:at 1614694885204) (:by |BJMyLOplX) (:text |defn)
@@ -2700,8 +2649,7 @@
               |x $ %{} :Expr (:at 1614694897976) (:by |BJMyLOplX)
                 :data $ {}
                   |T $ %{} :Leaf (:at 1614694900637) (:by |BJMyLOplX) (:text |test-stringify-query)
-          :doc |
-        |test-parse-address $ %{} :CodeEntry
+        |test-parse-address $ %{} :CodeEntry (:doc |)
           :code $ %{} :Expr (:at 1511884338580) (:by |root)
             :data $ {}
               |T $ %{} :Leaf (:at 1511884355290) (:by |root) (:text |deftest)
@@ -2848,8 +2796,7 @@
                                   |j $ %{} :Expr (:at 1511884524685) (:by |root)
                                     :data $ {}
                                       |T $ %{} :Leaf (:at 1511884525140) (:by |root) (:text |{})
-          :doc |
-        |test-stringify-query $ %{} :CodeEntry
+        |test-stringify-query $ %{} :CodeEntry (:doc |)
           :code $ %{} :Expr (:at 1508900573879) (:by |root)
             :data $ {}
               |T $ %{} :Leaf (:at 1508900577196) (:by |root) (:text |deftest)
@@ -2896,8 +2843,7 @@
                                     :data $ {}
                                       |T $ %{} :Leaf (:at 1508900621503) (:by |root) (:text ||b)
                                       |j $ %{} :Leaf (:at 1508900621844) (:by |root) (:text |2)
-          :doc |
-      :ns $ %{} :CodeEntry
+      :ns $ %{} :CodeEntry (:doc |)
         :code $ %{} :Expr (:at 1508900556541) (:by |root)
           :data $ {}
             |T $ %{} :Leaf (:at 1508900556541) (:by |root) (:text |ns)
@@ -2926,12 +2872,11 @@
                     |v $ %{} :Expr (:at 1511884386561) (:by |root)
                       :data $ {}
                         |j $ %{} :Leaf (:at 1511884389766) (:by |root) (:text |parse-address)
-        :doc |
   :ir $ {} (:package |respo-router)
     :files $ {}
       |respo-router.comp.container $ {}
         :defs $ {}
-          |comp-container $ %{} :CodeEntry
+          |comp-container $ %{} :CodeEntry (:doc |)
             :code $ %{} :Expr (:at 1505410717327) (:by nil)
               :data $ {}
                 |T $ %{} :Leaf (:at 1505411502930) (:by |root) (:text |defcomp)
@@ -3170,8 +3115,7 @@
                                       :data $ {}
                                         |T $ %{} :Leaf (:at 1508897945162) (:by |root) (:text |:target)
                                         |j $ %{} :Leaf (:at 1508897948093) (:by |root) (:text ||_blank)
-            :doc |
-          |render-link $ %{} :CodeEntry
+          |render-link $ %{} :CodeEntry (:doc |)
             :code $ %{} :Expr (:at 1508878454794) (:by |root)
               :data $ {}
                 |T $ %{} :Leaf (:at 1508878458683) (:by |root) (:text |defn)
@@ -3214,8 +3158,7 @@
                       :data $ {}
                         |T $ %{} :Leaf (:at 1508878454794) (:by |root) (:text |<>)
                         |j $ %{} :Leaf (:at 1508878472889) (:by |root) (:text |guide)
-            :doc |
-          |route-404 $ %{} :CodeEntry
+          |route-404 $ %{} :CodeEntry (:doc |)
             :code $ %{} :Expr (:at 1505410717327) (:by nil)
               :data $ {}
                 |T $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |defn)
@@ -3254,8 +3197,7 @@
                                 |b $ %{} :Expr (:at 1690706570304) (:by |BJMyLOplX)
                                   :data $ {}
                                     |T $ %{} :Leaf (:at 1690706570631) (:by |BJMyLOplX) (:text |{})
-            :doc |
-          |route-home $ %{} :CodeEntry
+          |route-home $ %{} :CodeEntry (:doc |)
             :code $ %{} :Expr (:at 1505410717327) (:by nil)
               :data $ {}
                 |T $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |defn)
@@ -3286,8 +3228,7 @@
                                 |b $ %{} :Expr (:at 1689611307229) (:by |BJMyLOplX)
                                   :data $ {}
                                     |T $ %{} :Leaf (:at 1689611307229) (:by |BJMyLOplX) (:text |{})
-            :doc |
-          |route-room $ %{} :CodeEntry
+          |route-room $ %{} :CodeEntry (:doc |)
             :code $ %{} :Expr (:at 1505410717327) (:by nil)
               :data $ {}
                 |T $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |defn)
@@ -3333,8 +3274,7 @@
                                   :data $ {}
                                     |T $ %{} :Leaf (:at 1528822485878) (:by |BJMyLOplX) (:text "|\"b")
                                     |j $ %{} :Leaf (:at 1508777276663) (:by |root) (:text |2)
-            :doc |
-          |route-search $ %{} :CodeEntry
+          |route-search $ %{} :CodeEntry (:doc |)
             :code $ %{} :Expr (:at 1505410717327) (:by nil)
               :data $ {}
                 |T $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |defn)
@@ -3369,8 +3309,7 @@
                                 |b $ %{} :Expr (:at 1690706579534) (:by |BJMyLOplX)
                                   :data $ {}
                                     |T $ %{} :Leaf (:at 1690706579844) (:by |BJMyLOplX) (:text |{})
-            :doc |
-          |route-search-search $ %{} :CodeEntry
+          |route-search-search $ %{} :CodeEntry (:doc |)
             :code $ %{} :Expr (:at 1690708350349) (:by |BJMyLOplX)
               :data $ {}
                 |T $ %{} :Leaf (:at 1690708354101) (:by |BJMyLOplX) (:text |defn)
@@ -3409,8 +3348,7 @@
                                 |b $ %{} :Expr (:at 1690708351550) (:by |BJMyLOplX)
                                   :data $ {}
                                     |T $ %{} :Leaf (:at 1690708351550) (:by |BJMyLOplX) (:text |{})
-            :doc |
-          |route-team $ %{} :CodeEntry
+          |route-team $ %{} :CodeEntry (:doc |)
             :code $ %{} :Expr (:at 1505410717327) (:by nil)
               :data $ {}
                 |T $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |defn)
@@ -3446,8 +3384,7 @@
                                 |j $ %{} :Expr (:at 1508776910047) (:by |root)
                                   :data $ {}
                                     |T $ %{} :Leaf (:at 1508776910342) (:by |root) (:text |{})
-            :doc |
-          |style-codeblock $ %{} :CodeEntry
+          |style-codeblock $ %{} :CodeEntry (:doc |)
             :code $ %{} :Expr (:at 1508897801588) (:by |root)
               :data $ {}
                 |T $ %{} :Leaf (:at 1508897801588) (:by |root) (:text |def)
@@ -3463,8 +3400,7 @@
                       :data $ {}
                         |T $ %{} :Leaf (:at 1508897801588) (:by |root) (:text |:margin)
                         |j $ %{} :Leaf (:at 1508897801588) (:by |root) (:text |8)
-            :doc |
-        :ns $ %{} :CodeEntry
+        :ns $ %{} :CodeEntry (:doc |)
           :code $ %{} :Expr (:at 1505410717327) (:by nil)
             :data $ {}
               |T $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |ns)
@@ -3519,11 +3455,10 @@
                       |v $ %{} :Expr (:at 1508879646792) (:by |root)
                         :data $ {}
                           |j $ %{} :Leaf (:at 1690700587766) (:by |BJMyLOplX) (:text |router-rules)
-          :doc |
       |respo-router.config $ {}
         :configs $ {}
         :defs $ {}
-          |dev? $ %{} :CodeEntry
+          |dev? $ %{} :CodeEntry (:doc |)
             :code $ %{} :Expr (:at 1689610238538) (:by |BJMyLOplX)
               :data $ {}
                 |T $ %{} :Leaf (:at 1689610240624) (:by |BJMyLOplX) (:text |def)
@@ -3537,23 +3472,20 @@
                         |T $ %{} :Leaf (:at 1689610247093) (:by |BJMyLOplX) (:text |get-env)
                         |b $ %{} :Leaf (:at 1689610248118) (:by |BJMyLOplX) (:text "|\"mode")
                         |h $ %{} :Leaf (:at 1689610249582) (:by |BJMyLOplX) (:text "|\"release")
-            :doc |
-        :ns $ %{} :CodeEntry
+        :ns $ %{} :CodeEntry (:doc |)
           :code $ %{} :Expr (:at 1689610234862) (:by |BJMyLOplX)
             :data $ {}
               |T $ %{} :Leaf (:at 1689610234862) (:by |BJMyLOplX) (:text |ns)
               |b $ %{} :Leaf (:at 1689610234862) (:by |BJMyLOplX) (:text |respo-router.config)
-          :doc |
       |respo-router.core $ {}
         :defs $ {}
-          |*cached-router $ %{} :CodeEntry
+          |*cached-router $ %{} :CodeEntry (:doc |)
             :code $ %{} :Expr (:at 1505410717327) (:by nil)
               :data $ {}
                 |T $ %{} :Leaf (:at 1610620711663) (:by |BJMyLOplX) (:text |defatom)
                 |j $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |*cached-router)
                 |r $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |nil)
-            :doc |
-          |render-url! $ %{} :CodeEntry
+          |render-url! $ %{} :CodeEntry (:doc |)
             :code $ %{} :Expr (:at 1505410717327) (:by nil)
               :data $ {}
                 |T $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |defn)
@@ -3793,8 +3725,7 @@
                                                 |r $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |nil)
                                                 |v $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |nil)
                                                 |x $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |new-address)
-            :doc |
-        :ns $ %{} :CodeEntry
+        :ns $ %{} :CodeEntry (:doc |)
           :code $ %{} :Expr (:at 1505410717327) (:by nil)
             :data $ {}
               |T $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |ns)
@@ -3831,10 +3762,9 @@
                         :data $ {}
                           |T $ %{} :Leaf (:at 1511885978753) (:by |root) (:text |[])
                           |j $ %{} :Leaf (:at 1511885982769) (:by |root) (:text |parse-address)
-          :doc |
       |respo-router.format $ {}
         :defs $ {}
-          |fill-pattern $ %{} :CodeEntry
+          |fill-pattern $ %{} :CodeEntry (:doc |)
             :code $ %{} :Expr (:at 1690702512449) (:by |BJMyLOplX)
               :data $ {}
                 |T $ %{} :Leaf (:at 1690702512449) (:by |BJMyLOplX) (:text |defn)
@@ -3894,8 +3824,7 @@
                                   :data $ {}
                                     |T $ %{} :Leaf (:at 1691080557206) (:by |BJMyLOplX) (:text |rest)
                                     |b $ %{} :Leaf (:at 1691080557206) (:by |BJMyLOplX) (:text |params)
-            :doc |
-          |pick-rule $ %{} :CodeEntry
+          |pick-rule $ %{} :CodeEntry (:doc |)
             :code $ %{} :Expr (:at 1690702320551) (:by |BJMyLOplX)
               :data $ {}
                 |T $ %{} :Leaf (:at 1690702320551) (:by |BJMyLOplX) (:text |defn)
@@ -3953,8 +3882,7 @@
                                     |T $ %{} :Leaf (:at 1691080608291) (:by |BJMyLOplX) (:text |recur)
                                     |b $ %{} :Leaf (:at 1691080608291) (:by |BJMyLOplX) (:text |t-tag)
                                     |h $ %{} :Leaf (:at 1691080616191) (:by |BJMyLOplX) (:text |rs)
-            :doc |
-          |router->string $ %{} :CodeEntry
+          |router->string $ %{} :CodeEntry (:doc |)
             :code $ %{} :Expr (:at 1505410717327) (:by nil)
               :data $ {}
                 |T $ %{} :Leaf (:at 1610619984853) (:by |BJMyLOplX) (:text |defn)
@@ -3976,8 +3904,7 @@
                         |T $ %{} :Leaf (:at 1508879545103) (:by |root) (:text |:query)
                         |j $ %{} :Leaf (:at 1508879547589) (:by |root) (:text |router)
                     |x $ %{} :Leaf (:at 1690667995109) (:by |BJMyLOplX) (:text |rules)
-            :doc |
-          |router->string-iter $ %{} :CodeEntry
+          |router->string-iter $ %{} :CodeEntry (:doc |)
             :code $ %{} :Expr (:at 1610619970291) (:by |BJMyLOplX)
               :data $ {}
                 |T $ %{} :Leaf (:at 1610622839654) (:by |BJMyLOplX) (:text |defn)
@@ -4140,8 +4067,7 @@
                                                 |b $ %{} :Leaf (:at 1690702498317) (:by |BJMyLOplX) (:text |path)
                                             |l $ %{} :Leaf (:at 1690702501119) (:by |BJMyLOplX) (:text |query)
                                             |o $ %{} :Leaf (:at 1690702502974) (:by |BJMyLOplX) (:text |rules)
-            :doc |
-          |slash-trim-left $ %{} :CodeEntry
+          |slash-trim-left $ %{} :CodeEntry (:doc |)
             :code $ %{} :Expr (:at 1505410717327) (:by nil)
               :data $ {}
                 |T $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |defn)
@@ -4178,8 +4104,7 @@
                             |j $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |address)
                             |r $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |1)
                         |v $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |address)
-            :doc |
-          |stringify-query $ %{} :CodeEntry
+          |stringify-query $ %{} :CodeEntry (:doc |)
             :code $ %{} :Expr (:at 1505410717327) (:by nil)
               :data $ {}
                 |T $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |defn)
@@ -4223,8 +4148,7 @@
                           :data $ {}
                             |T $ %{} :Leaf (:at 1610619854552) (:by |BJMyLOplX) (:text |join-str)
                             |j $ %{} :Leaf (:at 1528821853259) (:by |BJMyLOplX) (:text "|\"&")
-            :doc |
-          |strip-sharp $ %{} :CodeEntry
+          |strip-sharp $ %{} :CodeEntry (:doc |)
             :code $ %{} :Expr (:at 1505410717327) (:by nil)
               :data $ {}
                 |T $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |defn)
@@ -4246,8 +4170,7 @@
                         |j $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |text)
                         |r $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |1)
                     |v $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |text)
-            :doc |
-          |tuple-params $ %{} :CodeEntry
+          |tuple-params $ %{} :CodeEntry (:doc |)
             :code $ %{} :Expr (:at 1690702175201) (:by |BJMyLOplX)
               :data $ {}
                 |T $ %{} :Leaf (:at 1690702175201) (:by |BJMyLOplX) (:text |defn)
@@ -4350,8 +4273,7 @@
                                 |T $ %{} :Leaf (:at 1690702228633) (:by |BJMyLOplX) (:text |nth)
                                 |b $ %{} :Leaf (:at 1690702230925) (:by |BJMyLOplX) (:text |guidepost)
                                 |h $ %{} :Leaf (:at 1690702254088) (:by |BJMyLOplX) (:text |4)
-            :doc |
-        :ns $ %{} :CodeEntry
+        :ns $ %{} :CodeEntry (:doc |)
           :code $ %{} :Expr (:at 1505410717327) (:by nil)
             :data $ {}
               |T $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |ns)
@@ -4359,17 +4281,15 @@
               |r $ %{} :Expr (:at 1505410717327) (:by nil)
                 :data $ {}
                   |T $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |:require)
-          :doc |
       |respo-router.listener $ {}
         :defs $ {}
-          |*ignored? $ %{} :CodeEntry
+          |*ignored? $ %{} :CodeEntry (:doc |)
             :code $ %{} :Expr (:at 1505410717327) (:by nil)
               :data $ {}
                 |T $ %{} :Leaf (:at 1610620673772) (:by |BJMyLOplX) (:text |defatom)
                 |j $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |*ignored?)
                 |r $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |false)
-            :doc |
-          |listen! $ %{} :CodeEntry
+          |listen! $ %{} :CodeEntry (:doc |)
             :code $ %{} :Expr (:at 1505410717327) (:by nil)
               :data $ {}
                 |T $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |defn)
@@ -4526,8 +4446,7 @@
                                             |D $ %{} :Leaf (:at 1687971085082) (:by |BJMyLOplX) (:text |:)
                                             |T $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |:router/route)
                                             |b $ %{} :Leaf (:at 1687971087286) (:by |BJMyLOplX) (:text |path-info)
-            :doc |
-        :ns $ %{} :CodeEntry
+        :ns $ %{} :CodeEntry (:doc |)
           :code $ %{} :Expr (:at 1505410717327) (:by nil)
             :data $ {}
               |T $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |ns)
@@ -4549,10 +4468,9 @@
                       |v $ %{} :Expr (:at 1511886227808) (:by |root)
                         :data $ {}
                           |j $ %{} :Leaf (:at 1511886233352) (:by |root) (:text |strip-sharp)
-          :doc |
       |respo-router.main $ {}
         :defs $ {}
-          |*store $ %{} :CodeEntry
+          |*store $ %{} :CodeEntry (:doc |)
             :code $ %{} :Expr (:at 1505410717327) (:by nil)
               :data $ {}
                 |T $ %{} :Leaf (:at 1610620683318) (:by |BJMyLOplX) (:text |defatom)
@@ -4570,8 +4488,7 @@
                             |D $ %{} :Leaf (:at 1508878974335) (:by |root) (:text |strip-sharp)
                             |T $ %{} :Leaf (:at 1508878858206) (:by |root) (:text |js/window.location.hash)
                         |r $ %{} :Leaf (:at 1690700696942) (:by |BJMyLOplX) (:text |router-rules)
-            :doc |
-          |dispatch! $ %{} :CodeEntry
+          |dispatch! $ %{} :CodeEntry (:doc |)
             :code $ %{} :Expr (:at 1505410717327) (:by nil)
               :data $ {}
                 |T $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |defn)
@@ -4646,8 +4563,7 @@
                         |T $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |reset!)
                         |j $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |*store)
                         |r $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |new-store)
-            :doc |
-          |main! $ %{} :CodeEntry
+          |main! $ %{} :CodeEntry (:doc |)
             :code $ %{} :Expr (:at 1505410717327) (:by nil)
               :data $ {}
                 |T $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |defn)
@@ -4707,8 +4623,7 @@
                   :data $ {}
                     |T $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |println)
                     |j $ %{} :Leaf (:at 1505410717327) (:by |root) (:text "||app started!")
-            :doc |
-          |mount-target $ %{} :CodeEntry
+          |mount-target $ %{} :CodeEntry (:doc |)
             :code $ %{} :Expr (:at 1508777357721) (:by |root)
               :data $ {}
                 |T $ %{} :Leaf (:at 1508777358970) (:by |root) (:text |def)
@@ -4718,8 +4633,7 @@
                     |T $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |.querySelector)
                     |j $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |js/document)
                     |r $ %{} :Leaf (:at 1508775487354) (:by |root) (:text ||.app)
-            :doc |
-          |reload! $ %{} :CodeEntry
+          |reload! $ %{} :CodeEntry (:doc |)
             :code $ %{} :Expr (:at 1505410717327) (:by nil)
               :data $ {}
                 |T $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |defn)
@@ -4736,8 +4650,7 @@
                   :data $ {}
                     |T $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |println)
                     |j $ %{} :Leaf (:at 1505410717327) (:by |root) (:text "||code update.")
-            :doc |
-          |render-app! $ %{} :CodeEntry
+          |render-app! $ %{} :CodeEntry (:doc |)
             :code $ %{} :Expr (:at 1505410717327) (:by nil)
               :data $ {}
                 |T $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |defn)
@@ -4759,8 +4672,7 @@
                         |T $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |comp-container)
                         |j $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |@*store)
                     |v $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |dispatch!)
-            :doc |
-          |render-router! $ %{} :CodeEntry
+          |render-router! $ %{} :CodeEntry (:doc |)
             :code $ %{} :Expr (:at 1505410717327) (:by nil)
               :data $ {}
                 |T $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |defn)
@@ -4776,15 +4688,13 @@
                         |j $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |@*store)
                     |r $ %{} :Leaf (:at 1690700559575) (:by |BJMyLOplX) (:text |router-rules)
                     |v $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |router-mode)
-            :doc |
-          |router-mode $ %{} :CodeEntry
+          |router-mode $ %{} :CodeEntry (:doc |)
             :code $ %{} :Expr (:at 1505410717327) (:by nil)
               :data $ {}
                 |T $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |def)
                 |j $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |router-mode)
                 |r $ %{} :Leaf (:at 1508878708166) (:by |root) (:text |:hash)
-            :doc |
-        :ns $ %{} :CodeEntry
+        :ns $ %{} :CodeEntry (:doc |)
           :code $ %{} :Expr (:at 1505410717327) (:by nil)
             :data $ {}
               |T $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |ns)
@@ -4861,10 +4771,9 @@
                       |h $ %{} :Expr (:at 1689610267333) (:by |BJMyLOplX)
                         :data $ {}
                           |T $ %{} :Leaf (:at 1689610269561) (:by |BJMyLOplX) (:text |dev?)
-          :doc |
       |respo-router.parser $ {}
         :defs $ {}
-          |extract-address $ %{} :CodeEntry
+          |extract-address $ %{} :CodeEntry (:doc |)
             :code $ %{} :Expr (:at 1505410717327) (:by nil)
               :data $ {}
                 |T $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |defn)
@@ -4978,8 +4887,7 @@
                         |T $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |[])
                         |j $ %{} :Leaf (:at 1508775837752) (:by |root) (:text |segments)
                         |r $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |query)
-            :doc |
-          |list-to-tuple $ %{} :CodeEntry
+          |list-to-tuple $ %{} :CodeEntry (:doc |)
             :code $ %{} :Expr (:at 1690667419542) (:by |BJMyLOplX)
               :data $ {}
                 |T $ %{} :Leaf (:at 1690667419542) (:by |BJMyLOplX) (:text |defn)
@@ -5116,8 +5024,7 @@
                                 |T $ %{} :Leaf (:at 1690667421053) (:by |BJMyLOplX) (:text |nth)
                                 |b $ %{} :Leaf (:at 1690667421053) (:by |BJMyLOplX) (:text |ret)
                                 |h $ %{} :Leaf (:at 1690667421053) (:by |BJMyLOplX) (:text |4)
-            :doc |
-          |match-pattern $ %{} :CodeEntry
+          |match-pattern $ %{} :CodeEntry (:doc |)
             :code $ %{} :Expr (:at 1690667029668) (:by |BJMyLOplX)
               :data $ {}
                 |T $ %{} :Leaf (:at 1690667029668) (:by |BJMyLOplX) (:text |defn)
@@ -5186,8 +5093,7 @@
                                     |T $ %{} :Leaf (:at 1691080653857) (:by |BJMyLOplX) (:text |rest)
                                     |b $ %{} :Leaf (:at 1691080653857) (:by |BJMyLOplX) (:text |paths)
                                 |l $ %{} :Leaf (:at 1691080661091) (:by |BJMyLOplX) (:text |ps)
-            :doc |
-          |match-route $ %{} :CodeEntry
+          |match-route $ %{} :CodeEntry (:doc |)
             :code $ %{} :Expr (:at 1690666823291) (:by |BJMyLOplX)
               :data $ {}
                 |T $ %{} :Leaf (:at 1690666823291) (:by |BJMyLOplX) (:text |defn)
@@ -5304,8 +5210,7 @@
                                                   :data $ {}
                                                     |T $ %{} :Leaf (:at 1691080756482) (:by |BJMyLOplX) (:text |count)
                                                     |b $ %{} :Leaf (:at 1691080756482) (:by |BJMyLOplX) (:text |paths)
-            :doc |
-          |parse-address $ %{} :CodeEntry
+          |parse-address $ %{} :CodeEntry (:doc |)
             :code $ %{} :Expr (:at 1505410717327) (:by nil)
               :data $ {}
                 |T $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |defn)
@@ -5371,8 +5276,7 @@
                               :data $ {}
                                 |T $ %{} :Leaf (:at 1508775700292) (:by |root) (:text |:query)
                                 |j $ %{} :Leaf (:at 1508775701832) (:by |root) (:text |query)
-            :doc |
-          |parse-path $ %{} :CodeEntry
+          |parse-path $ %{} :CodeEntry (:doc |)
             :code $ %{} :Expr (:at 1505410717327) (:by nil)
               :data $ {}
                 |T $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |defn)
@@ -5435,8 +5339,7 @@
                                     |T $ %{} :Leaf (:at 1690667708666) (:by |BJMyLOplX) (:text |::)
                                     |b $ %{} :Leaf (:at 1690667710905) (:by |BJMyLOplX) (:text |:404)
                                     |h $ %{} :Leaf (:at 1690667712783) (:by |BJMyLOplX) (:text |remaining)
-            :doc |
-          |parse-query $ %{} :CodeEntry
+          |parse-query $ %{} :CodeEntry (:doc |)
             :code $ %{} :Expr (:at 1505410717327) (:by nil)
               :data $ {}
                 |T $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |defn)
@@ -5483,8 +5386,7 @@
                         |v $ %{} :Expr (:at 1610620106726) (:by |BJMyLOplX)
                           :data $ {}
                             |T $ %{} :Leaf (:at 1610620108107) (:by |BJMyLOplX) (:text |pairs-map)
-            :doc |
-        :ns $ %{} :CodeEntry
+        :ns $ %{} :CodeEntry (:doc |)
           :code $ %{} :Expr (:at 1511885932031) (:by |root)
             :data $ {}
               |T $ %{} :Leaf (:at 1511885936026) (:by |root) (:text |ns)
@@ -5499,10 +5401,9 @@
                       |v $ %{} :Expr (:at 1511886093406) (:by |root)
                         :data $ {}
                           |j $ %{} :Leaf (:at 1627236161745) (:by |BJMyLOplX) (:text |slash-trim-left)
-          :doc |
       |respo-router.schema $ {}
         :defs $ {}
-          |guidepost $ %{} :CodeEntry
+          |guidepost $ %{} :CodeEntry (:doc |)
             :code $ %{} :Expr (:at 1508775763752) (:by |root)
               :data $ {}
                 |T $ %{} :Leaf (:at 1508775765733) (:by |root) (:text |def)
@@ -5518,8 +5419,7 @@
                       :data $ {}
                         |T $ %{} :Leaf (:at 1508775770781) (:by |root) (:text |:data)
                         |j $ %{} :Leaf (:at 1508775771376) (:by |root) (:text |nil)
-            :doc |
-          |router $ %{} :CodeEntry
+          |router $ %{} :CodeEntry (:doc |)
             :code $ %{} :Expr (:at 1505410717327) (:by nil)
               :data $ {}
                 |T $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |def)
@@ -5539,8 +5439,7 @@
                         |j $ %{} :Expr (:at 1508775536268) (:by |root)
                           :data $ {}
                             |T $ %{} :Leaf (:at 1508775536557) (:by |root) (:text |{})
-            :doc |
-          |router-rules $ %{} :CodeEntry
+          |router-rules $ %{} :CodeEntry (:doc |)
             :code $ %{} :Expr (:at 1505410717327) (:by nil)
               :data $ {}
                 |T $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |def)
@@ -5574,8 +5473,7 @@
                           :data $ {}
                             |T $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |[])
                             |b $ %{} :Leaf (:at 1690666558514) (:by |BJMyLOplX) (:text "|\"search")
-            :doc |
-          |store $ %{} :CodeEntry
+          |store $ %{} :CodeEntry (:doc |)
             :code $ %{} :Expr (:at 1505410717327) (:by nil)
               :data $ {}
                 |T $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |def)
@@ -5593,24 +5491,21 @@
                         |j $ %{} :Expr (:at 1505411984065) (:by |root)
                           :data $ {}
                             |T $ %{} :Leaf (:at 1505411984420) (:by |root) (:text |{})
-            :doc |
-        :ns $ %{} :CodeEntry
+        :ns $ %{} :CodeEntry (:doc |)
           :code $ %{} :Expr (:at 1505410717327) (:by nil)
             :data $ {}
               |T $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |ns)
               |j $ %{} :Leaf (:at 1505410717327) (:by |root) (:text |respo-router.schema)
-          :doc |
       |respo-router.test $ {}
         :defs $ {}
-          |reload! $ %{} :CodeEntry
+          |reload! $ %{} :CodeEntry (:doc |)
             :code $ %{} :Expr (:at 1614695099322) (:by |BJMyLOplX)
               :data $ {}
                 |T $ %{} :Leaf (:at 1614695099322) (:by |BJMyLOplX) (:text |defn)
                 |j $ %{} :Leaf (:at 1614695099322) (:by |BJMyLOplX) (:text |reload!)
                 |r $ %{} :Expr (:at 1614695099322) (:by |BJMyLOplX)
                   :data $ {}
-            :doc |
-          |run-tests $ %{} :CodeEntry
+          |run-tests $ %{} :CodeEntry (:doc |)
             :code $ %{} :Expr (:at 1614694885204) (:by |BJMyLOplX)
               :data $ {}
                 |T $ %{} :Leaf (:at 1614694885204) (:by |BJMyLOplX) (:text |defn)
@@ -5623,8 +5518,7 @@
                 |x $ %{} :Expr (:at 1614694897976) (:by |BJMyLOplX)
                   :data $ {}
                     |T $ %{} :Leaf (:at 1614694900637) (:by |BJMyLOplX) (:text |test-stringify-query)
-            :doc |
-          |test-parse-address $ %{} :CodeEntry
+          |test-parse-address $ %{} :CodeEntry (:doc |)
             :code $ %{} :Expr (:at 1511884338580) (:by |root)
               :data $ {}
                 |T $ %{} :Leaf (:at 1511884355290) (:by |root) (:text |deftest)
@@ -5771,8 +5665,7 @@
                                     |j $ %{} :Expr (:at 1511884524685) (:by |root)
                                       :data $ {}
                                         |T $ %{} :Leaf (:at 1511884525140) (:by |root) (:text |{})
-            :doc |
-          |test-stringify-query $ %{} :CodeEntry
+          |test-stringify-query $ %{} :CodeEntry (:doc |)
             :code $ %{} :Expr (:at 1508900573879) (:by |root)
               :data $ {}
                 |T $ %{} :Leaf (:at 1508900577196) (:by |root) (:text |deftest)
@@ -5819,8 +5712,7 @@
                                       :data $ {}
                                         |T $ %{} :Leaf (:at 1508900621503) (:by |root) (:text ||b)
                                         |j $ %{} :Leaf (:at 1508900621844) (:by |root) (:text |2)
-            :doc |
-        :ns $ %{} :CodeEntry
+        :ns $ %{} :CodeEntry (:doc |)
           :code $ %{} :Expr (:at 1508900556541) (:by |root)
             :data $ {}
               |T $ %{} :Leaf (:at 1508900556541) (:by |root) (:text |ns)
@@ -5849,7 +5741,6 @@
                       |v $ %{} :Expr (:at 1511884386561) (:by |root)
                         :data $ {}
                           |j $ %{} :Leaf (:at 1511884389766) (:by |root) (:text |parse-address)
-          :doc |
   :users $ {}
     |BJMyLOplX $ {} (:avatar nil) (:id |BJMyLOplX) (:name |chen) (:nickname |chen) (:password |d41d8cd98f00b204e9800998ecf8427e) (:theme :star-trail)
     |root $ {} (:avatar nil) (:id |root) (:name |root) (:nickname |root) (:password |) (:theme :star-trail)
