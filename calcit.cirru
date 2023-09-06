@@ -1,6 +1,6 @@
 
 {} (:package |respo-router)
-  :configs $ {} (:init-fn |respo-router.main/main!) (:port 6001) (:reload-fn |respo-router.main/reload!) (:storage-key |calcit.cirru) (:version |0.8.0-a2)
+  :configs $ {} (:init-fn |respo-router.main/main!) (:port 6001) (:reload-fn |respo-router.main/reload!) (:storage-key |calcit.cirru) (:version |0.8.0)
     :modules $ [] |respo.calcit/ |respo-ui.calcit/ |memof/ |lilac/ |calcit-test/
   :entries $ {}
     :test $ {} (:init-fn |respo-router.test/run-tests) (:reload-fn |respo-router.test/reload!)
@@ -2465,11 +2465,15 @@
                                 :data $ {}
                                   |T $ %{} :Leaf (:at 1690667701335) (:by |BJMyLOplX) (:text |:404)
                                   |b $ %{} :Leaf (:at 1690667704182) (:by |BJMyLOplX) (:text |remaining)
-                              |b $ %{} :Expr (:at 1690667708240) (:by |BJMyLOplX)
+                              |b $ %{} :Expr (:at 1694023650673) (:by |BJMyLOplX)
                                 :data $ {}
-                                  |T $ %{} :Leaf (:at 1690667708666) (:by |BJMyLOplX) (:text |::)
-                                  |b $ %{} :Leaf (:at 1690667710905) (:by |BJMyLOplX) (:text |:404)
-                                  |h $ %{} :Leaf (:at 1690667712783) (:by |BJMyLOplX) (:text |remaining)
+                                  |D $ %{} :Leaf (:at 1694023651746) (:by |BJMyLOplX) (:text |conj)
+                                  |L $ %{} :Leaf (:at 1694023652324) (:by |BJMyLOplX) (:text |acc)
+                                  |T $ %{} :Expr (:at 1690667708240) (:by |BJMyLOplX)
+                                    :data $ {}
+                                      |T $ %{} :Leaf (:at 1690667708666) (:by |BJMyLOplX) (:text |::)
+                                      |b $ %{} :Leaf (:at 1690667710905) (:by |BJMyLOplX) (:text |:404)
+                                      |h $ %{} :Leaf (:at 1690667712783) (:by |BJMyLOplX) (:text |remaining)
         |parse-query $ %{} :CodeEntry (:doc |)
           :code $ %{} :Expr (:at 1505410717327) (:by nil)
             :data $ {}
@@ -2790,6 +2794,56 @@
                                         :data $ {}
                                           |T $ %{} :Leaf (:at 1689612657613) (:by |BJMyLOplX) (:text |::)
                                           |h $ %{} :Leaf (:at 1690666453972) (:by |BJMyLOplX) (:text |:a)
+                              |r $ %{} :Expr (:at 1511884521540) (:by |root)
+                                :data $ {}
+                                  |T $ %{} :Leaf (:at 1511884524284) (:by |root) (:text |:query)
+                                  |j $ %{} :Expr (:at 1511884524685) (:by |root)
+                                    :data $ {}
+                                      |T $ %{} :Leaf (:at 1511884525140) (:by |root) (:text |{})
+              |y $ %{} :Expr (:at 1511884338580) (:by |root)
+                :data $ {}
+                  |T $ %{} :Leaf (:at 1511884358315) (:by |root) (:text |testing)
+                  |b $ %{} :Leaf (:at 1694023736602) (:by |BJMyLOplX) (:text "||parse 404")
+                  |j $ %{} :Expr (:at 1511884503993) (:by |root)
+                    :data $ {}
+                      |D $ %{} :Leaf (:at 1511884504940) (:by |root) (:text |is)
+                      |T $ %{} :Expr (:at 1511884360173) (:by |root)
+                        :data $ {}
+                          |T $ %{} :Leaf (:at 1511884360682) (:by |root) (:text |=)
+                          |b $ %{} :Expr (:at 1511884367563) (:by |root)
+                            :data $ {}
+                              |T $ %{} :Leaf (:at 1511884371645) (:by |root) (:text |parse-address)
+                              |j $ %{} :Leaf (:at 1694023740713) (:by |BJMyLOplX) (:text ||/ddd)
+                              |r $ %{} :Expr (:at 1511884374587) (:by |root)
+                                :data $ {}
+                                  |T $ %{} :Leaf (:at 1690666441580) (:by |BJMyLOplX) (:text |[])
+                                  |j $ %{} :Expr (:at 1511884794053) (:by |root)
+                                    :data $ {}
+                                      |D $ %{} :Leaf (:at 1690708100065) (:by |BJMyLOplX) (:text |::)
+                                      |T $ %{} :Leaf (:at 1690666443923) (:by |BJMyLOplX) (:text |:a)
+                                      |j $ %{} :Expr (:at 1511884795710) (:by |root)
+                                        :data $ {}
+                                          |T $ %{} :Leaf (:at 1511884796171) (:by |root) (:text |[])
+                                          |f $ %{} :Leaf (:at 1690666449869) (:by |BJMyLOplX) (:text ||a)
+                                          |r $ %{} :Leaf (:at 1511884801952) (:by |root) (:text ||b)
+                                          |v $ %{} :Leaf (:at 1511884826385) (:by |root) (:text ||c)
+                          |j $ %{} :Expr (:at 1511884517363) (:by |root)
+                            :data $ {}
+                              |T $ %{} :Leaf (:at 1511884518435) (:by |root) (:text |{})
+                              |j $ %{} :Expr (:at 1511884518805) (:by |root)
+                                :data $ {}
+                                  |T $ %{} :Leaf (:at 1511884519564) (:by |root) (:text |:path)
+                                  |j $ %{} :Expr (:at 1511884520239) (:by |root)
+                                    :data $ {}
+                                      |T $ %{} :Leaf (:at 1511884520444) (:by |root) (:text |[])
+                                      |b $ %{} :Expr (:at 1689612656895) (:by |BJMyLOplX)
+                                        :data $ {}
+                                          |T $ %{} :Leaf (:at 1689612657613) (:by |BJMyLOplX) (:text |::)
+                                          |h $ %{} :Leaf (:at 1694023744471) (:by |BJMyLOplX) (:text |:404)
+                                          |l $ %{} :Expr (:at 1694023757358) (:by |BJMyLOplX)
+                                            :data $ {}
+                                              |T $ %{} :Leaf (:at 1694023757461) (:by |BJMyLOplX) (:text |[])
+                                              |b $ %{} :Leaf (:at 1694023758373) (:by |BJMyLOplX) (:text "|\"ddd")
                               |r $ %{} :Expr (:at 1511884521540) (:by |root)
                                 :data $ {}
                                   |T $ %{} :Leaf (:at 1511884524284) (:by |root) (:text |:query)
