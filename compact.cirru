@@ -1,6 +1,6 @@
 
 {} (:package |respo-router)
-  :configs $ {} (:init-fn |respo-router.main/main!) (:reload-fn |respo-router.main/reload!) (:version |0.8.0-a2)
+  :configs $ {} (:init-fn |respo-router.main/main!) (:reload-fn |respo-router.main/reload!) (:version |0.8.0)
     :modules $ [] |respo.calcit/ |respo-ui.calcit/ |memof/ |lilac/ |calcit-test/
   :entries $ {}
     :test $ {} (:init-fn |respo-router.test/run-tests) (:reload-fn |respo-router.test/reload!)
@@ -410,7 +410,8 @@
                 tag-match ret
                     :hit d remaining
                     recur (conj acc d) remaining rules
-                  (:404 remaining) (:: :404 remaining)
+                  (:404 remaining)
+                    conj acc $ :: :404 remaining
         |parse-query $ %{} :CodeEntry (:doc |)
           :code $ quote
             defn parse-query (text)
@@ -477,6 +478,14 @@
                     :: :a $ [] |a |b |c
                   {}
                     :path $ [] (:: :a)
+                    :query $ {}
+              testing "|parse 404" $ is
+                =
+                  parse-address |/ddd $ []
+                    :: :a $ [] |a |b |c
+                  {}
+                    :path $ []
+                      :: :404 $ [] "\"ddd"
                     :query $ {}
         |test-stringify-query $ %{} :CodeEntry (:doc |)
           :code $ quote
