@@ -1,6 +1,6 @@
 
 {} (:package |respo-router)
-  :configs $ {} (:init-fn |respo-router.main/main!) (:reload-fn |respo-router.main/reload!) (:version |0.8.0)
+  :configs $ {} (:init-fn |respo-router.main/main!) (:reload-fn |respo-router.main/reload!) (:version |0.8.1)
     :modules $ [] |respo.calcit/ |respo-ui.calcit/ |memof/ |lilac/ |calcit-test/
   :entries $ {}
     :test $ {} (:init-fn |respo-router.test/run-tests) (:reload-fn |respo-router.test/reload!)
@@ -14,40 +14,40 @@
               let
                   states $ :states store
                 div
-                  {} $ :style
-                    merge ui/global $ {} (:padding 16)
+                  {}
+                    :class-name $ str-spaced css/preset css/global css/column css/gap8
+                    :style $ {} (:padding 16)
                   div
-                    {} $ :style ui/row
+                    {} $ :class-name (str-spaced css/row-middle css/gap8)
+                    img $ {} (:src "\"https://cos-sh.tiye.me/cos-up/bb4c2755050318e864b56f59145d726e-SubstractRespo.png" ) (:width 64) (:height 64)
+                    div
+                      {} $ :class-name css/row-middle
+                      <> |GitHub:
+                      =< 10 nil
+                      a $ {} (:href |https://github.com/Respo/respo-router) (:inner-text |Respo/router) (:target |_blank)
+                  =< nil 12
+                  div
+                    {} $ :class-name css/row
                     <> |Entries:
                     =< 16 nil
                     div ({}) (render-link |home route-home) (render-link |team route-team) (render-link |room route-room) (render-link |search route-search) (render-link |search route-search-search) (render-link |404 route-404)
                   div
-                    {} $ :style ui/row
+                    {} $ :class-name css/row
                     <> |Dict:
                     =< 16 nil
-                    pre ({})
-                      <> (format-cirru-edn router-rules) style-codeblock
+                    comp-snippet $ format-cirru-edn router-rules
                   div
-                    {} $ :style ui/row
+                    {} $ :class-name css/row
                     <> |Path:
                     =< 16 nil
-                    ; pre ({})
-                      <>
-                        router->string (:router store) router-rules
-                        , style-codeblock
+                    comp-snippet
+                      router->string (:router store) router-rules
+                      {} $ :class-name style-codearea
                   div
-                    {} $ :style ui/row
+                    {} $ :class-name css/row
                     <> |Data:
                     =< 16 nil
-                    pre ({})
-                      <>
-                        format-cirru-edn $ :router store
-                        , style-codeblock
-                  div
-                    {} $ :style ui/row
-                    <> |GitHub:
-                    =< 10 nil
-                    a $ {} (:href |https://github.com/Respo/respo-router) (:inner-text |Respo/router) (:target |_blank)
+                    comp-snippet $ format-cirru-edn (:router store)
         |render-link $ %{} :CodeEntry (:doc |)
           :code $ quote
             defn render-link (guide on-click)
@@ -99,18 +99,22 @@
                 {}
                   :path $ [] (:: :team |t1234)
                   :query $ {}
-        |style-codeblock $ %{} :CodeEntry (:doc |)
+        |style-codearea $ %{} :CodeEntry (:doc |)
           :code $ quote
-            def style-codeblock $ {} (:line-height |20px) (:margin 8)
+            defstyle style-codearea $ {}
+              "\"&" $ {} (:padding-right 80)
       :ns $ %{} :CodeEntry (:doc |)
         :code $ quote
           ns respo-router.comp.container $ :require
             respo.util.format :refer $ hsl
-            respo.core :refer $ defcomp div span cursor-> pre a <>
+            respo.css :refer $ defstyle
+            respo.core :refer $ defcomp div span cursor-> pre a <> img
             respo.comp.space :refer $ =<
             respo-ui.core :as ui
+            respo-ui.css :as css
             respo-router.format :refer $ router->string strip-sharp
             respo-router.schema :refer $ router-rules
+            respo-ui.comp :refer $ comp-snippet
     |respo-router.config $ %{} :FileEntry
       :defs $ {}
         |dev? $ %{} :CodeEntry (:doc |)
@@ -251,12 +255,11 @@
               assert "|second argument shoud be dispatch function" $ fn? dispatch!
               assert (str "|invalid router-demo: " router-mode)
                 includes? (#{} :history :hash) router-mode
-              case-default router-mode (js/console.log "\"unknown mode:" router-mode)
+              case-default router-mode (js/console.warn "\"unknown mode:" router-mode)
                 :hash $ js/window.addEventListener |hashchange
                   fn (event)
                     let
-                        path-info $ w-js-log
-                          parse-address (strip-sharp js/location.hash) rules
+                        path-info $ parse-address (strip-sharp js/location.hash) rules
                       ; println "|is ignored?" @*ignored?
                       if (not @*ignored?)
                         flipped js/setTimeout 0 $ fn ()
@@ -292,20 +295,22 @@
                 reset! *store new-store
         |main! $ %{} :CodeEntry (:doc |)
           :code $ quote
-            defn main! ()
-              if dev? $ load-console-formatter!
-              render-app!
-              listen! router-rules dispatch! router-mode
-              render-router!
+            defn main! () (load-console-formatter!) (render-app!) (listen! router-rules dispatch! router-mode) (render-router!)
               add-watch *store :changes $ fn (store prev) (render-app!)
               add-watch *store :router-changes $ fn (store prev) (render-router!)
               println "|app started!"
         |mount-target $ %{} :CodeEntry (:doc |)
           :code $ quote
-            def mount-target $ .querySelector js/document |.app
+            def mount-target $ js/document.querySelector |.app
         |reload! $ %{} :CodeEntry (:doc |)
           :code $ quote
-            defn reload! () (clear-cache!) (render-app!) (println "|code update.")
+            defn reload! () $ if (nil? build-errors)
+              do (clear-cache!) (remove-watch *store :changes) (remove-watch *store :router-changes)
+                add-watch *store :changes $ fn (store prev) (render-app!)
+                add-watch *store :router-changes $ fn (store prev) (render-router!)
+                render-app!
+                hud! "\"ok~" "\"Ok"
+              hud! "\"error" build-errors
         |render-app! $ %{} :CodeEntry (:doc |)
           :code $ quote
             defn render-app! () (; println |render-app: @*store)
@@ -319,6 +324,7 @@
         :code $ quote
           ns respo-router.main $ :require
             respo.core :refer $ render! clear-cache!
+            respo-ui.css :as css
             respo.cursor :refer $ update-states
             respo-router.comp.container :refer $ comp-container
             respo-router.listener :refer $ listen!
@@ -328,6 +334,8 @@
             respo-router.core :refer $ render-url!
             respo-router.schema :refer $ router-rules
             respo-router.config :refer $ dev?
+            "\"bottom-tip" :default hud!
+            "\"./calcit.build-errors" :default build-errors
     |respo-router.parser $ %{} :FileEntry
       :defs $ {}
         |extract-address $ %{} :CodeEntry (:doc |)

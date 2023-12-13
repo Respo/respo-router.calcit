@@ -1,12 +1,14 @@
 {
-  "version": "0.8.0",
+  "version": "0.8.1",
   "dependencies": {
-    "@calcit/procs": "^0.8.0"
+    "@calcit/procs": "^0.8.14",
+    "bottom-tip": "^0.1.5",
+    "copy-text-to-clipboard": "^3.2.0"
   },
   "scripts": {
     "test": "cr --emit-js --init-fn=respo-router.test/run-tests --reload-fn=respo-router.test/reload! --once && node test.mjs"
   },
   "devDependencies": {
-    "vite": "^4.4.9"
+    "vite": "^5.0.7"
   }
 }
