@@ -28,8 +28,7 @@ jobs:
     - name: "compiles to js"
       run: >
         caps --ci && yarn install --immutable
-        && cr calcit.cirru --entry test js
-        && node test.mjs
+        && cr calcit.cirru test --require-match --summary-only --format json
         && cr calcit.cirru js
         && yarn vite build --base=./
 
