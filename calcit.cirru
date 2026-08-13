@@ -141,7 +141,7 @@
           :code $ quote
             def dev? $ = |dev (get-env |mode |release)
           :examples $ []
-          :schema $ :: 'Dynamic
+          :schema $ :: 'Bool
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote (ns respo-router.config)
     |respo-router.core $ %{} 'FileEntry
@@ -204,7 +204,9 @@
                       str acc |/ $ first params
                       , ps $ rest params
           :examples $ []
-          :schema $ :: 'Dynamic
+          :schema $ :: 'Fn
+            {} (:return 'String)
+              :args $ [] 'String (:: 'List 'String) (:: 'List 'String)
         |pick-rule $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn pick-rule (t-tag rules)
