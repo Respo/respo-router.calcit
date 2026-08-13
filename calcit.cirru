@@ -206,7 +206,7 @@
           :examples $ []
           :schema $ :: 'Fn
             {} (:return 'String)
-              :args $ [] 'String (:: 'List 'String) (:: 'List 'String)
+              :args $ [] 'String 'List (:: 'List 'String)
         |pick-rule $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn pick-rule (t-tag rules)

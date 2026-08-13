@@ -13,8 +13,20 @@ const actual = {
 };
 
 const failures = [];
-for (const [key, limit] of Object.entries({ ...baseline.checkTypes, ...baseline.weakTypes })) {
-  if (actual[key] > limit) failures.push(`${key}: ${actual[key]} > ${limit}`);
+const limits = { ...baseline.checkTypes, ...baseline.weakTypes };
+for (const key of Object.keys(limits)) {
+  const limit = limits[key];
+  const value = actual[key];
+  if (typeof limit !== "number" || !Number.isFinite(limit)) {
+    failures.push(`${key}: baseline must be a finite number`);
+  } else if (typeof value !== "number" || !Number.isFinite(value)) {
+    failures.push(`${key}: report value is missing or not numeric`);
+  } else if (value > limit) {
+    failures.push(`${key}: ${value} > ${limit}`);
+  }
+}
+for (const key of Object.keys(actual)) {
+  if (!(key in limits)) failures.push(`${key}: missing baseline metric`);
 }
 if (failures.length) {
   console.error("Calcit upgrade baseline exceeded:");
