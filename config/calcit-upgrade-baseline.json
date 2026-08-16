@@ -1,0 +1,11 @@
+{
+  "checkTypes": {
+    "levels.none": 29,
+    "levels.partial": 7
+  },
+  "weakTypes": {
+    "hits": 40,
+    "schema-dynamic": 40,
+    "code-dynamic": 0
+  }
+}
