@@ -1,36 +1,40 @@
 import fs from "node:fs";
 
-const baseline = JSON.parse(fs.readFileSync("config/calcit-upgrade-baseline.json", "utf8"));
-const checkTypes = JSON.parse(fs.readFileSync(".calcit/check-types.json", "utf8")).data.summary;
-const weakTypes = JSON.parse(fs.readFileSync(".calcit/weak-types.json", "utf8")).data.summary;
-
+const read = (name) => {
+  const path = `.calcit/${name}.json`
+  let parsed
+  try { parsed = JSON.parse(fs.readFileSync(path, "utf8")) }
+  catch (error) { throw new Error(`Unable to read ${path}: ${error.message}`) }
+  if (!parsed?.data?.summary) throw new Error(`Missing data.summary in ${path}`)
+  return parsed.data.summary
+}
+const types = read("check-types");
+const weak = read("weak-types");
+const deprecated = read("deprecated");
 const actual = {
-  "levels.none": checkTypes.levels.none,
-  "levels.partial": checkTypes.levels.partial,
-  hits: weakTypes.hits,
-  "schema-dynamic": weakTypes.kinds["schema-dynamic"],
-  "code-dynamic": weakTypes.kinds["code-dynamic"],
+  typeNone: types.levels.none,
+  typeNotFull: types.levels.none + types.levels.partial,
+  schemaDynamic: weak.kinds["schema-dynamic"] ?? 0,
+  codeDynamic: weak.kinds["code-dynamic"] ?? 0,
+  codeNil: weak.kinds["code-nil"] ?? 0,
+  unresolved: weak.intents.unresolved ?? 0,
+  declaredOptional: weak.intents["declared-optional"] ?? 0,
+  deprecatedCalls: deprecated.calls,
 };
-
+const baseline = JSON.parse(fs.readFileSync("config/calcit-upgrade-baseline.json", "utf8"));
 const failures = [];
-const limits = { ...baseline.checkTypes, ...baseline.weakTypes };
-for (const key of Object.keys(limits)) {
-  const limit = limits[key];
-  const value = actual[key];
-  if (typeof limit !== "number" || !Number.isFinite(limit)) {
-    failures.push(`${key}: baseline must be a finite number`);
-  } else if (typeof value !== "number" || !Number.isFinite(value)) {
-    failures.push(`${key}: report value is missing or not numeric`);
-  } else if (value > limit) {
-    failures.push(`${key}: ${value} > ${limit}`);
-  }
-}
 for (const key of Object.keys(actual)) {
-  if (!(key in limits)) failures.push(`${key}: missing baseline metric`);
+  const value = actual[key];
+  const limit = baseline[key];
+  if (!(key in baseline)) failures.push(`${key}: missing baseline metric`);
+  else if (!Number.isFinite(value)) failures.push(`${key}: report value is missing or not numeric`);
+  else if (!Number.isFinite(limit)) failures.push(`${key}: baseline must be a finite number`);
+  else if (value > limit) failures.push(`${key}: ${value} > ${limit}`);
 }
+for (const key of Object.keys(baseline)) if (!(key in actual)) failures.push(`${key}: unknown baseline metric`);
 if (failures.length) {
   console.error("Calcit upgrade baseline exceeded:");
-  for (const failure of failures) console.error(`- ${failure}`);
+  failures.forEach((failure) => console.error(`- ${failure}`));
   process.exit(1);
 }
 console.log("Calcit upgrade baseline passed", actual);
