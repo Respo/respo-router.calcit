@@ -1,10 +1,12 @@
 
-{} (:about "|Machine-generated snapshot. Do not edit directly — changes will be overwritten. Use `cr query` to inspect and `cr edit`/`cr tree` to modify. Run `cr docs agents --full` first. Manual edits must follow format and schema conventions, then run `cr edit format`.") (:package |respo-router) (:version |0.8.4)
+{} (:about "|Machine-generated snapshot. Do not edit directly — changes will be overwritten. Use `cr query` to inspect and `cr edit`/`cr tree` to modify. Run `cr docs agents --full` first. Manual edits must follow format and schema conventions, then run `cr edit format`.") (:package |respo-router)
   :entries $ {}
     :default $ {} (:description |) (:init-fn 'respo-router.main/main!) (:mode :native) (:reload-fn 'respo-router.main/reload!)
-      :modules $ [] |respo.calcit/ |respo-ui.calcit/
+      :feature-policy $ {}
+      :modules $ [] |respo.calcit/ |respo-ui.calcit/ |js-ffi/
       :type-slots $ {}
     :test $ {} (:description "|Legacy entry; use cr test for tests") (:init-fn 'respo-router.main/main!) (:mode :native) (:reload-fn 'respo-router.main/reload!)
+      :feature-policy $ {}
       :modules $ [] |respo.calcit/ |respo-ui.calcit/
       :type-slots $ {}
   :files $ {}
@@ -139,7 +141,8 @@
       :defs $ {}
         |dev? $ %{} 'CodeEntry (:doc |)
           :code $ quote
-            def dev? $ = |dev (get-env |mode |release)
+            def dev? $ = |dev
+              option:unwrap-or (get-env |mode) |release
           :examples $ []
           :schema $ :: 'Bool
       :ns $ %{} 'NsEntry (:doc |)
