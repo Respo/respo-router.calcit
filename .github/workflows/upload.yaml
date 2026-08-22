@@ -35,8 +35,8 @@ jobs:
         && mkdir -p .calcit
         && calcit calcit.cirru analyze check-types --summary-only --format json > .calcit/check-types.json
         && calcit calcit.cirru analyze weak-types --only schema-dynamic,code-dynamic --intent unresolved --summary-only --format json > .calcit/weak-types.json
+        && calcit calcit.cirru analyze deprecated --summary-only --format json > .calcit/deprecated.json
         && node scripts/check-calcit-upgrade-baseline.mjs
-        && calcit calcit.cirru analyze deprecated --summary-only --format json
         && calcit calcit.cirru test --require-match --summary-only --format json
         && calcit calcit.cirru js
         && yarn vite build --base=./
