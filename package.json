@@ -1,14 +1,14 @@
 {
   "version": "0.8.3",
   "dependencies": {
-    "@calcit/procs": "^0.13.19",
+    "@calcit/procs": "^0.13.29",
     "bottom-tip": "^0.1.5",
     "cirru-color": "^0.2.4",
     "copy-text-to-clipboard": "^3.2.0",
     "dayjs": "^1.11.21"
   },
   "scripts": {
-    "test": "cr calcit.cirru test --require-match --summary-only --format json"
+    "test": "calcit calcit.cirru test --require-match --summary-only --format json"
   },
   "devDependencies": {
     "vite": "^8.1.3"

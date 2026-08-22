@@ -1,11 +1,10 @@
 {
-  "checkTypes": {
-    "levels.none": 29,
-    "levels.partial": 7
-  },
-  "weakTypes": {
-    "hits": 40,
-    "schema-dynamic": 40,
-    "code-dynamic": 0
-  }
+  "typeNone": 29,
+  "typeNotFull": 36,
+  "schemaDynamic": 40,
+  "codeDynamic": 0,
+  "codeNil": 16,
+  "unresolved": 56,
+  "declaredOptional": 0,
+  "deprecatedCalls": 0
 }
