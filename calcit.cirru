@@ -3,59 +3,64 @@
   :entries $ {}
     :default $ {} (:description |) (:init-fn 'respo-router.main/main!) (:mode :native) (:reload-fn 'respo-router.main/reload!)
       :feature-policy $ {}
-      :modules $ [] |respo.calcit/ |respo-ui.calcit/ |js-ffi/
+      :modules $ [] |respo.calcit/ |js-ffi/
       :type-slots $ {}
     :test $ {} (:description "|Legacy entry; use calcit test for tests") (:init-fn 'respo-router.main/main!) (:mode :native) (:reload-fn 'respo-router.main/reload!)
       :feature-policy $ {}
-      :modules $ [] |respo.calcit/ |respo-ui.calcit/
+      :modules $ [] |respo.calcit/
       :type-slots $ {}
   :files $ {}
-    |respo-router.comp.container $ %{} 'FileEntry
+    'respo-router.comp.container $ %{} 'FileEntry
       :defs $ {}
-        |comp-container $ %{} 'CodeEntry (:doc |)
+        'comp-code-block $ %{} 'CodeEntry (:doc |)
+          :code $ quote
+            defcomp comp-code-block (content)
+              pre $ {} (:inner-text content) (:class-name style-code-block)
+          :examples $ []
+          :schema $ :: 'Fn
+            {} (:return 'respo.schema/Component)
+              :args $ [] 'String
+        'comp-container $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defcomp comp-container (store)
               let
                   states $ respo-router.schema/read-field store :states
                 div
-                  {}
-                    :class-name $ str-spaced css/preset css/global css/column css/gap8
+                  {} (:class-name style-root)
                     :style $ {} (:padding 16)
                   div
-                    {} $ :class-name (str-spaced css/row-middle css/gap8)
+                    {} $ :class-name style-row-middle
                     img $ {} (:src |https://cos-sh.tiye.me/cos-up/bb4c2755050318e864b56f59145d726e-SubstractRespo.png)
                       :style $ {} (:width 64) (:height 64)
                     div
-                      {} $ :class-name css/row-middle
+                      {} $ :class-name style-row-middle
                       <> |GitHub:
                       =< 10 nil
                       a $ {} (:href |https://github.com/Respo/respo-router) (:inner-text |Respo/router) (:target |_blank)
                   =< nil 12
                   div
-                    {} $ :class-name css/row
+                    {} $ :class-name style-row
                     <> |Entries:
                     =< 16 nil
                     div ({}) (render-link |home route-home) (render-link |team route-team) (render-link |room route-room) (render-link |search route-search) (render-link |search route-search-search) (render-link |404 route-404)
                   div
-                    {} $ :class-name css/row
+                    {} $ :class-name style-row
                     <> |Dict:
                     =< 16 nil
-                    comp-snippet $ format-cirru-edn router-rules
+                    comp-code-block $ format-cirru-edn router-rules
                   div
-                    {} $ :class-name css/row
+                    {} $ :class-name style-row
                     <> |Path:
                     =< 16 nil
-                    comp-snippet
-                      router->string (respo-router.schema/read-field store :router) router-rules
-                      {} $ :class-name style-codearea
+                    comp-code-block $ router->string (respo-router.schema/read-field store :router) router-rules
                   div
-                    {} $ :class-name css/row
+                    {} $ :class-name style-row
                     <> |Data:
                     =< 16 nil
-                    comp-snippet $ format-cirru-edn (respo-router.schema/read-field store :router)
+                    comp-code-block $ format-cirru-edn (respo-router.schema/read-field store :router)
           :examples $ []
           :schema $ :: 'Dynamic
-        |render-link $ %{} 'CodeEntry (:doc |)
+        'render-link $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn render-link (guide on-click)
               a
@@ -66,7 +71,7 @@
                 <> guide
           :examples $ []
           :schema $ :: 'Dynamic
-        |route-404 $ %{} 'CodeEntry (:doc |)
+        'route-404 $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn route-404 (e dispatch!)
               dispatch! $ :: :router/route
@@ -76,7 +81,7 @@
                   :query $ {}
           :examples $ []
           :schema $ :: 'Dynamic
-        |route-home $ %{} 'CodeEntry (:doc |)
+        'route-home $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn route-home (e dispatch!)
               dispatch! $ :: :router/route
@@ -85,7 +90,7 @@
                   :query $ {}
           :examples $ []
           :schema $ :: 'Dynamic
-        |route-room $ %{} 'CodeEntry (:doc |)
+        'route-room $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn route-room (e dispatch!)
               dispatch! :router/route $ {}
@@ -93,7 +98,7 @@
                 :query $ {} (|a 1) (|b 2)
           :examples $ []
           :schema $ :: 'Dynamic
-        |route-search $ %{} 'CodeEntry (:doc |)
+        'route-search $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn route-search (e dispatch!)
               dispatch! $ :: :router/route
@@ -102,7 +107,7 @@
                   :query $ {}
           :examples $ []
           :schema $ :: 'Dynamic
-        |route-search-search $ %{} 'CodeEntry (:doc |)
+        'route-search-search $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn route-search-search (e dispatch!)
               dispatch! $ :: :router/route
@@ -111,7 +116,7 @@
                   :query $ {}
           :examples $ []
           :schema $ :: 'Dynamic
-        |route-team $ %{} 'CodeEntry (:doc |)
+        'route-team $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn route-team (e dispatch!)
               dispatch! $ :: :router/route
@@ -120,12 +125,36 @@
                   :query $ {}
           :examples $ []
           :schema $ :: 'Dynamic
-        |style-codearea $ %{} 'CodeEntry (:doc |)
+        'style-code-block $ %{} 'CodeEntry (:doc |)
+          :code $ quote
+            defstyle style-code-block $ {}
+              |& $ {} (:margin 0) (:padding "|8px 12px") (:white-space :pre-wrap) (:font-family :monospace) (:background-color |#f6f7f8) (:border-radius 4)
+          :examples $ []
+          :schema $ :: 'String
+        'style-codearea $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defstyle style-codearea $ {}
               |& $ {} (:padding-right 80)
           :examples $ []
           :schema $ :: 'Dynamic
+        'style-root $ %{} 'CodeEntry (:doc |)
+          :code $ quote
+            defstyle style-root $ {}
+              |& $ {} (:display :flex) (:flex-direction :column) (:gap 8) (:box-sizing :border-box)
+          :examples $ []
+          :schema $ :: 'String
+        'style-row $ %{} 'CodeEntry (:doc |)
+          :code $ quote
+            defstyle style-row $ {}
+              |& $ {} (:display :flex) (:align-items :flex-start) (:gap 8)
+          :examples $ []
+          :schema $ :: 'String
+        'style-row-middle $ %{} 'CodeEntry (:doc |)
+          :code $ quote
+            defstyle style-row-middle $ {}
+              |& $ {} (:display :flex) (:align-items :center) (:gap 8)
+          :examples $ []
+          :schema $ :: 'String
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote
           ns respo-router.comp.container $ :require
@@ -133,13 +162,11 @@
             respo.css :refer $ defstyle
             respo.core :refer $ defcomp div span cursor-> pre a <> img
             respo.comp.space :refer $ =<
-            respo-ui.css :as css
             respo-router.format :refer $ router->string strip-sharp
             respo-router.schema :refer $ router-rules
-            respo-ui.comp :refer $ comp-snippet
-    |respo-router.config $ %{} 'FileEntry
+    'respo-router.config $ %{} 'FileEntry
       :defs $ {}
-        |dev? $ %{} 'CodeEntry (:doc |)
+        'dev? $ %{} 'CodeEntry (:doc |)
           :code $ quote
             def dev? $ = |dev
               option:unwrap-or (get-env |mode) |release
@@ -147,13 +174,13 @@
           :schema $ :: 'Bool
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote (ns respo-router.config)
-    |respo-router.core $ %{} 'FileEntry
+    'respo-router.core $ %{} 'FileEntry
       :defs $ {}
-        |*cached-router $ %{} 'CodeEntry (:doc |)
+        '*cached-router $ %{} 'CodeEntry (:doc |)
           :code $ quote (defatom *cached-router nil)
           :examples $ []
           :schema $ :: 'Dynamic
-        |render-url! $ %{} 'CodeEntry (:doc |)
+        'render-url! $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn render-url! (router rules router-mode)
               assert "|first argument should be router data" $ map? router
@@ -193,9 +220,9 @@
             respo-router.format :refer $ router->string router->string-iter strip-sharp
             respo-router.listener :refer $ *ignored?
             respo-router.parser :refer $ parse-address
-    |respo-router.format $ %{} 'FileEntry
+    'respo-router.format $ %{} 'FileEntry
       :defs $ {}
-        |fill-pattern $ %{} 'CodeEntry (:doc |)
+        'fill-pattern $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn fill-pattern (acc pattern params)
               list-match pattern
@@ -210,7 +237,7 @@
           :schema $ :: 'Fn
             {} (:return 'String)
               :args $ [] 'String 'List (:: 'List 'String)
-        |pick-rule $ %{} 'CodeEntry (:doc |)
+        'pick-rule $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn pick-rule (t-tag rules)
               list-match rules
@@ -221,13 +248,13 @@
                     if (= t t-tag) (:: :hit r0) (recur t-tag rs)
           :examples $ []
           :schema $ :: 'Dynamic
-        |router->string $ %{} 'CodeEntry (:doc |)
+        'router->string $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn router->string (router rules)
               router->string-iter | (respo-router.schema/read-field router :path) (respo-router.schema/read-field router :query) rules
           :examples $ []
           :schema $ :: 'Dynamic
-        |router->string-iter $ %{} 'CodeEntry (:doc |)
+        'router->string-iter $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn router->string-iter (acc path query rules)
               if (empty? path)
@@ -244,7 +271,7 @@
                     rule $ pick-rule t-tag rules
                   if (= :404 t-tag)
                     str acc |/ $ .join-str (nth guidepost 1) |/
-                    tag-match rule
+                    match rule
                       (:none) (raise "|found no rule")
                       (:hit r0)
                         let
@@ -252,7 +279,7 @@
                           recur (str acc piece) (rest path) query rules
           :examples $ []
           :schema $ :: 'Dynamic
-        |slash-trim-left $ %{} 'CodeEntry (:doc |)
+        'slash-trim-left $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn slash-trim-left (address)
               if
@@ -263,7 +290,7 @@
                   , address
           :examples $ []
           :schema $ :: 'Dynamic
-        |stringify-query $ %{} 'CodeEntry (:doc |)
+        'stringify-query $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn stringify-query (query)
               if (nil? query) | $ -> query (.to-list)
@@ -282,13 +309,13 @@
                 is $ contains? (#{} |a=1&b=2 |b=2&a=1)
                   stringify-query $ {} (|a 1) (|b 2)
               :tags $ #{} :router :unit
-        |strip-sharp $ %{} 'CodeEntry (:doc |)
+        'strip-sharp $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn strip-sharp (text)
               if (starts-with? text |#) (&str:slice text 1) text
           :examples $ []
           :schema $ :: 'Dynamic
-        |tuple-params $ %{} 'CodeEntry (:doc |)
+        'tuple-params $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn tuple-params (guidepost)
               case-default (count guidepost)
@@ -304,13 +331,13 @@
         :code $ quote
           ns respo-router.format $ :require
             calcit.test :refer $ is is=
-    |respo-router.listener $ %{} 'FileEntry
+    'respo-router.listener $ %{} 'FileEntry
       :defs $ {}
-        |*ignored? $ %{} 'CodeEntry (:doc |)
+        '*ignored? $ %{} 'CodeEntry (:doc |)
           :code $ quote (defatom *ignored? false)
           :examples $ []
           :schema $ :: 'Dynamic
-        |listen! $ %{} 'CodeEntry (:doc |)
+        'listen! $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn listen! (rules dispatch! router-mode)
               assert "|first argument should be a list" $ list? rules
@@ -339,19 +366,19 @@
           ns respo-router.listener $ :require
             respo-router.parser :refer $ parse-address
             respo-router.format :refer $ strip-sharp
-    |respo-router.main $ %{} 'FileEntry
+    'respo-router.main $ %{} 'FileEntry
       :defs $ {}
-        |*store $ %{} 'CodeEntry (:doc |)
+        '*store $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defatom *store $ assoc schema/store :router
               parse-address (strip-sharp js/window.location.hash) router-rules
           :examples $ []
           :schema $ :: 'Dynamic
-        |dispatch! $ %{} 'CodeEntry (:doc |)
+        'dispatch! $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn dispatch! (op) (js/console.log |dispatch! op)
               let
-                  new-store $ tag-match op
+                  new-store $ match op
                     (:states cursor s) (update-states @*store cursor s)
                     (:router/route d) (assoc @*store :router d)
                     (:router/route d)
@@ -360,7 +387,7 @@
                 reset! *store new-store
           :examples $ []
           :schema $ :: 'Dynamic
-        |main! $ %{} 'CodeEntry (:doc |)
+        'main! $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn main! () (load-console-formatter!) (render-app!) (listen! router-rules dispatch! router-mode) (render-router!)
               add-watch *store :changes $ fn (store prev) (render-app!)
@@ -371,12 +398,12 @@
             {} (:return 'Dynamic)
               :args $ []
               :features $ #{} :js-ffi
-        |mount-target $ %{} 'CodeEntry (:doc |)
+        'mount-target $ %{} 'CodeEntry (:doc |)
           :code $ quote
             def mount-target $ js/document.querySelector |.app
           :examples $ []
           :schema $ :: 'Dynamic
-        |reload! $ %{} 'CodeEntry (:doc |)
+        'reload! $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn reload! () $ if (nil? build-errors)
               do (clear-cache!) (remove-watch *store :changes) (remove-watch *store :router-changes)
@@ -387,18 +414,18 @@
               hud! |error build-errors
           :examples $ []
           :schema $ :: 'Dynamic
-        |render-app! $ %{} 'CodeEntry (:doc |)
+        'render-app! $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn render-app! () (; println |render-app: @*store)
               render! mount-target (comp-container @*store) dispatch!
           :examples $ []
           :schema $ :: 'Dynamic
-        |render-router! $ %{} 'CodeEntry (:doc |)
+        'render-router! $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn render-router! () $ render-url! (respo-router.schema/read-field @*store :router) router-rules router-mode
           :examples $ []
           :schema $ :: 'Dynamic
-        |router-mode $ %{} 'CodeEntry (:doc |)
+        'router-mode $ %{} 'CodeEntry (:doc |)
           :code $ quote (def router-mode :hash)
           :examples $ []
           :schema $ :: 'Dynamic
@@ -406,7 +433,6 @@
         :code $ quote
           ns respo-router.main $ :require
             respo.core :refer $ render! clear-cache!
-            respo-ui.css :as css
             respo.cursor :refer $ update-states
             respo-router.comp.container :refer $ comp-container
             respo-router.listener :refer $ listen!
@@ -418,9 +444,9 @@
             respo-router.config :refer $ dev?
             |bottom-tip :default hud!
             |./calcit.build-errors :default build-errors
-    |respo-router.parser $ %{} 'FileEntry
+    'respo-router.parser $ %{} 'FileEntry
       :defs $ {}
-        |extract-address $ %{} 'CodeEntry (:doc |)
+        'extract-address $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn extract-address (address)
               let
@@ -441,7 +467,7 @@
                 [] segments query
           :examples $ []
           :schema $ :: 'Dynamic
-        |list-to-tuple $ %{} 'CodeEntry (:doc |)
+        'list-to-tuple $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn list-to-tuple (r-tag ret)
               case-default (count ret) (raise "|too many parameters")
@@ -453,7 +479,7 @@
                 5 $ :: r-tag (nth ret 0) (nth ret 1) (nth ret 2) (nth ret 3) (nth ret 4)
           :examples $ []
           :schema $ :: 'Dynamic
-        |match-pattern $ %{} 'CodeEntry (:doc |)
+        'match-pattern $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn match-pattern (acc paths pattern)
               list-match pattern
@@ -472,7 +498,7 @@
                       , ps
           :examples $ []
           :schema $ :: 'Dynamic
-        |match-route $ %{} 'CodeEntry (:doc |)
+        'match-route $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn match-route (paths rules)
               list-match rules
@@ -491,7 +517,7 @@
                             slice paths (count pattern) (count paths)
           :examples $ []
           :schema $ :: 'Dynamic
-        |parse-address $ %{} 'CodeEntry (:doc |)
+        'parse-address $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn parse-address (address rules)
               assert (string? address) "|first argument should be a string"
@@ -542,19 +568,19 @@
                   parse-address |/ddd $ []
                     :: :a $ [] |a |b |c
               :tags $ #{} :router :unit
-        |parse-path $ %{} 'CodeEntry (:doc |)
+        'parse-path $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn parse-path (acc paths rules)
               if (empty? paths) acc $ let
                   ret $ match-route paths rules
-                tag-match ret
+                match ret
                   (:hit d remaining)
                     recur (conj acc d) remaining rules
                   (:404 remaining)
                     conj acc $ :: :404 remaining
           :examples $ []
           :schema $ :: 'Dynamic
-        |parse-query $ %{} 'CodeEntry (:doc |)
+        'parse-query $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn parse-query (text)
               if
@@ -570,14 +596,14 @@
           ns respo-router.parser $ :require
             respo-router.format :refer $ slash-trim-left
             calcit.test :refer $ is=
-    |respo-router.schema $ %{} 'FileEntry
+    'respo-router.schema $ %{} 'FileEntry
       :defs $ {}
-        |guidepost $ %{} 'CodeEntry (:doc |)
+        'guidepost $ %{} 'CodeEntry (:doc |)
           :code $ quote
             def guidepost $ {} (:name nil) (:data nil)
           :examples $ []
           :schema $ :: 'Dynamic
-        |read-field $ %{} 'CodeEntry (:doc |)
+        'read-field $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn read-field (value field)
               if (struct? value) (&struct:get value field) (&map:get value field)
@@ -585,14 +611,14 @@
           :schema $ :: 'Fn
             {} (:return 'Dynamic)
               :args $ [] 'Dynamic 'Tag
-        |router $ %{} 'CodeEntry (:doc |)
+        'router $ %{} 'CodeEntry (:doc |)
           :code $ quote
             def router $ {}
               :path $ []
               :query $ {}
           :examples $ []
           :schema $ :: 'Dynamic
-        |router-rules $ %{} 'CodeEntry (:doc |)
+        'router-rules $ %{} 'CodeEntry (:doc |)
           :code $ quote
             def router-rules $ []
               :: :team $ [] |team 'team-id
@@ -600,7 +626,7 @@
               :: :search $ [] |search
           :examples $ []
           :schema $ :: 'Dynamic
-        |store $ %{} 'CodeEntry (:doc |)
+        'store $ %{} 'CodeEntry (:doc |)
           :code $ quote
             def store $ {} (:router router)
               :states $ {}
