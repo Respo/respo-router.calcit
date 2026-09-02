@@ -266,16 +266,20 @@
                   str acc query-part
                 let
                     guidepost $ first path
-                    t-tag $ nth guidepost 0
+                    t-tag $ option:unwrap (nth guidepost 0)
                     params $ tuple-params guidepost
                     rule $ pick-rule t-tag rules
                   if (= :404 t-tag)
-                    str acc |/ $ .join-str (nth guidepost 1) |/
+                    str acc |/ $ .join-str
+                      option:unwrap $ nth guidepost 1
+                      , |/
                     match rule
                       (:none) (raise "|found no rule")
                       (:hit r0)
                         let
-                            piece $ fill-pattern | (nth r0 1) params
+                            piece $ fill-pattern |
+                              option:unwrap $ nth r0 1
+                              , params
                           recur (str acc piece) (rest path) query rules
           :examples $ []
           :schema $ :: 'Dynamic
