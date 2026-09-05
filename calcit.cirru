@@ -231,7 +231,7 @@
                   if (string? p0)
                     recur (str acc |/ p0) ps params
                     recur
-                      str acc |/ $ first params
+                      str acc |/ $ option:unwrap (first params)
                       , ps $ rest params
           :examples $ []
           :schema $ :: 'Fn
@@ -244,16 +244,42 @@
                 () $ :: :none
                 (r0 rs)
                   let
-                      t $ nth r0 0
+                      t $ option:unwrap (nth r0 0)
                     if (= t t-tag) (:: :hit r0) (recur t-tag rs)
           :examples $ []
           :schema $ :: 'Dynamic
+          :tests $ []
+            %{} 'TestEntry (:name |finds-tagged-rule)
+              :code $ quote
+                is=
+                  :: :hit $ :: :team ([] |team 'team-id)
+                  pick-rule :team $ []
+                    :: :team $ [] |team 'team-id
+              :tags $ #{} :regression :router
         'router->string $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn router->string (router rules)
               router->string-iter | (respo-router.schema/read-field router :path) (respo-router.schema/read-field router :query) rules
           :examples $ []
           :schema $ :: 'Dynamic
+          :tests $ []
+            %{} 'TestEntry (:name |formats-tagged-route)
+              :code $ quote
+                is= |/team/t1234 $ router->string
+                  {}
+                    :path $ [] (:: :team |t1234)
+                    :query $ {}
+                  [] $ :: :team ([] |team 'team-id)
+              :tags $ #{} :regression :router
+            %{} 'TestEntry (:name |formats-404-route)
+              :code $ quote
+                is= |/missing/path $ router->string
+                  {}
+                    :path $ []
+                      :: :404 $ [] |missing |path
+                    :query $ {}
+                  []
+              :tags $ #{} :regression :router
         'router->string-iter $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn router->string-iter (acc path query rules)
@@ -265,7 +291,7 @@
                       , | (str |? query-str)
                   str acc query-part
                 let
-                    guidepost $ first path
+                    guidepost $ option:unwrap (first path)
                     t-tag $ option:unwrap (nth guidepost 0)
                     params $ tuple-params guidepost
                     rule $ pick-rule t-tag rules
@@ -293,7 +319,9 @@
                   &str:slice address 1
                   , address
           :examples $ []
-          :schema $ :: 'Dynamic
+          :schema $ :: 'Fn
+            {} (:return 'String)
+              :args $ [] 'String
         'stringify-query $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn stringify-query (query)
@@ -302,7 +330,9 @@
                   -> pair $ join-str |=
                 join-str |&
           :examples $ []
-          :schema $ :: 'Dynamic
+          :schema $ :: 'Fn
+            {} (:return 'String)
+              :args $ [] 'Dynamic
           :tests $ []
             %{} 'TestEntry (:name |stringifies-empty-query)
               :code $ quote
@@ -325,12 +355,28 @@
               case-default (count guidepost)
                 raise $ str "|unknown tuple:" guidepost
                 1 $ []
-                2 $ [] (nth guidepost 1)
-                3 $ [] (nth guidepost 1) (nth guidepost 2)
-                4 $ [] (nth guidepost 1) (nth guidepost 2) (nth guidepost 3)
-                5 $ [] (nth guidepost 1) (nth guidepost 2) (nth guidepost 3) (nth guidepost 4)
+                2 $ []
+                  option:unwrap $ nth guidepost 1
+                3 $ []
+                  option:unwrap $ nth guidepost 1
+                  option:unwrap $ nth guidepost 2
+                4 $ []
+                  option:unwrap $ nth guidepost 1
+                  option:unwrap $ nth guidepost 2
+                  option:unwrap $ nth guidepost 3
+                5 $ []
+                  option:unwrap $ nth guidepost 1
+                  option:unwrap $ nth guidepost 2
+                  option:unwrap $ nth guidepost 3
+                  option:unwrap $ nth guidepost 4
           :examples $ []
           :schema $ :: 'Dynamic
+          :tests $ []
+            %{} 'TestEntry (:name |unwraps-guidepost-parameters)
+              :code $ quote
+                is= ([] |t1234)
+                  tuple-params $ :: :team |t1234
+              :tags $ #{} :regression :router
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote
           ns respo-router.format $ :require
@@ -455,7 +501,7 @@
             defn extract-address (address)
               let
                   text-path $ if (includes? address |?)
-                    first $ split address |?
+                    option:unwrap $ first (split address |?)
                     , address
                   query $ if (includes? address |?)
                     let
@@ -463,24 +509,41 @@
                       if
                         = (count segments) 1
                         {}
-                        parse-query $ last segments
+                        parse-query $ option:unwrap (last segments)
                     {}
                   segments $ filter (split text-path |/)
                     fn (piece)
                       not $ &= | (.trim piece)
                 [] segments query
           :examples $ []
-          :schema $ :: 'Dynamic
+          :schema $ :: 'Fn
+            {} (:return 'List)
+              :args $ [] 'String
         'list-to-tuple $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn list-to-tuple (r-tag ret)
               case-default (count ret) (raise "|too many parameters")
                 0 $ :: r-tag
-                1 $ :: r-tag (nth ret 0)
-                2 $ :: r-tag (nth ret 0) (nth ret 1)
-                3 $ :: r-tag (nth ret 0) (nth ret 1) (nth ret 2)
-                4 $ :: r-tag (nth ret 0) (nth ret 1) (nth ret 2) (nth ret 3)
-                5 $ :: r-tag (nth ret 0) (nth ret 1) (nth ret 2) (nth ret 3) (nth ret 4)
+                1 $ :: r-tag
+                  option:unwrap $ nth ret 0
+                2 $ :: r-tag
+                  option:unwrap $ nth ret 0
+                  option:unwrap $ nth ret 1
+                3 $ :: r-tag
+                  option:unwrap $ nth ret 0
+                  option:unwrap $ nth ret 1
+                  option:unwrap $ nth ret 2
+                4 $ :: r-tag
+                  option:unwrap $ nth ret 0
+                  option:unwrap $ nth ret 1
+                  option:unwrap $ nth ret 2
+                  option:unwrap $ nth ret 3
+                5 $ :: r-tag
+                  option:unwrap $ nth ret 0
+                  option:unwrap $ nth ret 1
+                  option:unwrap $ nth ret 2
+                  option:unwrap $ nth ret 3
+                  option:unwrap $ nth ret 4
           :examples $ []
           :schema $ :: 'Dynamic
         'match-pattern $ %{} 'CodeEntry (:doc |)
@@ -491,9 +554,7 @@
                 (p0 ps)
                   if (string? p0)
                     if
-                      =
-                        option:unwrap-or (first paths) nil
-                        , p0
+                      = (first paths) (%some p0)
                       recur acc (rest paths) ps
                       , nil
                     recur
@@ -594,7 +655,10 @@
                   map $ fn (piece) (split piece |=)
                   pairs-map
           :examples $ []
-          :schema $ :: 'Dynamic
+          :schema $ :: 'Fn
+            {}
+              :args $ [] 'String
+              :return $ :: 'Map 'String 'String
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote
           ns respo-router.parser $ :require
