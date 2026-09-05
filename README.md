@@ -101,12 +101,12 @@ yarn vite build --base=./
 ```
 
 The supported toolchain is Calcit `0.13.77`, `@calcit/procs` `0.13.77`,
-and Respo `0.16.91`. The dynamic-method ceiling documents three intentional
+and Respo `0.16.93`. The dynamic-method ceiling documents three intentional
 compatibility boundaries in the legacy router/rule representation; new dynamic
 dispatch is rejected by CI.
 
 支持的工具链版本为 Calcit `0.13.77`、`@calcit/procs` `0.13.77` 与
-Respo `0.16.91`。动态方法上限记录了旧路由/规则表示中的 3 个有意保留的兼容
+Respo `0.16.93`。动态方法上限记录了旧路由/规则表示中的 3 个有意保留的兼容
 边界；CI 会拒绝新增的动态调用。
 
 The deployment workflow pins the `tiye.me` ED25519 host key and verifies its
