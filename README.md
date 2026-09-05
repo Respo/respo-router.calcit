@@ -91,12 +91,31 @@ Validate released dependencies and both project entries with:
 
 ```bash
 caps --strict --ci
-calcit --check-only
-calcit --entry test --check-only
-calcit test
-calcit js
+caps verify --toolchain
+calcit --check-only calcit.cirru
+calcit --check-only --entry test calcit.cirru
+calcit calcit.cirru analyze dynamic-methods --max 3
+calcit calcit.cirru test --require-match --summary-only --format json
+calcit calcit.cirru js
 yarn vite build --base=./
 ```
+
+The supported toolchain is Calcit `0.13.77`, `@calcit/procs` `0.13.77`,
+and Respo `0.16.91`. The dynamic-method ceiling documents three intentional
+compatibility boundaries in the legacy router/rule representation; new dynamic
+dispatch is rejected by CI.
+
+支持的工具链版本为 Calcit `0.13.77`、`@calcit/procs` `0.13.77` 与
+Respo `0.16.91`。动态方法上限记录了旧路由/规则表示中的 3 个有意保留的兼容
+边界；CI 会拒绝新增的动态调用。
+
+The deployment workflow pins the `tiye.me` ED25519 host key and verifies its
+fingerprint before using strict SSH host-key checking. Rotate both the key line
+and expected fingerprint together after an independently verified server-key
+rotation.
+
+部署流程固定 `tiye.me` 的 ED25519 主机键，并在严格 SSH 主机键校验前验证其
+指纹。服务器主机键经独立渠道确认轮换后，必须同时更新键记录与预期指纹。
 
 ### License
 
