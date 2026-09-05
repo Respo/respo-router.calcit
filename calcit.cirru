@@ -492,7 +492,7 @@
                   if (string? p0)
                     if
                       =
-                        option:unwrap-or (first paths) nil
+                        option:unwrap-or (first paths) |
                         , p0
                       recur acc (rest paths) ps
                       , nil
