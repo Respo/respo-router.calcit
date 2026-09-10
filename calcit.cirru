@@ -59,7 +59,9 @@
                     =< 16 nil
                     comp-code-block $ format-cirru-edn (respo-router.schema/read-field store :router)
           :examples $ []
-          :schema $ :: 'Dynamic
+          :schema $ :: 'Fn
+            {} (:return 'respo.schema/Component)
+              :args $ [] (:: 'Map 'Tag 'Dynamic)
         'render-link $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn render-link (guide on-click)
@@ -70,7 +72,9 @@
                   :on $ {} (:click on-click)
                 <> guide
           :examples $ []
-          :schema $ :: 'Dynamic
+          :schema $ :: 'Fn
+            {} (:return 'respo.schema/Element)
+              :args $ [] 'String 'Dynamic
         'route-404 $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn route-404 (e dispatch!)
@@ -80,7 +84,9 @@
                     :: :404 $ [] |missing
                   :query $ {}
           :examples $ []
-          :schema $ :: 'Dynamic
+          :schema $ :: 'Fn
+            {} (:return 'Unit)
+              :args $ [] 'Dynamic 'Dynamic
         'route-home $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn route-home (e dispatch!)
@@ -89,7 +95,9 @@
                   :path $ []
                   :query $ {}
           :examples $ []
-          :schema $ :: 'Dynamic
+          :schema $ :: 'Fn
+            {} (:return 'Unit)
+              :args $ [] 'Dynamic 'Dynamic
         'route-room $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn route-room (e dispatch!)
@@ -97,7 +105,9 @@
                 :path $ [] (:: :team |t12345) (:: :room |r1234)
                 :query $ {} (|a 1) (|b 2)
           :examples $ []
-          :schema $ :: 'Dynamic
+          :schema $ :: 'Fn
+            {} (:return 'Unit)
+              :args $ [] 'Dynamic 'Dynamic
         'route-search $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn route-search (e dispatch!)
@@ -106,7 +116,9 @@
                   :path $ [] (:: :search)
                   :query $ {}
           :examples $ []
-          :schema $ :: 'Dynamic
+          :schema $ :: 'Fn
+            {} (:return 'Unit)
+              :args $ [] 'Dynamic 'Dynamic
         'route-search-search $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn route-search-search (e dispatch!)
@@ -115,7 +127,9 @@
                   :path $ [] (:: :search) (:: :search)
                   :query $ {}
           :examples $ []
-          :schema $ :: 'Dynamic
+          :schema $ :: 'Fn
+            {} (:return 'Unit)
+              :args $ [] 'Dynamic 'Dynamic
         'route-team $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn route-team (e dispatch!)
@@ -124,7 +138,9 @@
                   :path $ [] (:: :team |t1234)
                   :query $ {}
           :examples $ []
-          :schema $ :: 'Dynamic
+          :schema $ :: 'Fn
+            {} (:return 'Unit)
+              :args $ [] 'Dynamic 'Dynamic
         'style-code-block $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defstyle style-code-block $ {}
@@ -177,9 +193,11 @@
     'respo-router.core $ %{} 'FileEntry
       :defs $ {}
         '*cached-router $ %{} 'CodeEntry (:doc |)
-          :code $ quote (defatom *cached-router nil)
+          :code $ quote
+            defatom *cached-router $ %none
           :examples $ []
-          :schema $ :: 'Dynamic
+          :schema $ :: 'Ref
+            :: 'Option $ :: 'Map 'Tag 'Dynamic
         'render-url! $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn render-url! (router rules router-mode)
@@ -188,11 +206,15 @@
               assert "|last argument is router-mode" $ includes? (#{} :history :hash) router-mode
               if (exists? js/location)
                 if
-                  not $ identical? router @*cached-router
-                  do (reset! *cached-router router)
+                  match
+                    assert-type @*cached-router $ :: 'Option (:: 'Map 'Tag 'Dynamic)
+                    (:none) true
+                    (:some previous) (not= router previous)
+                  do
+                    reset! *cached-router $ %some router
                     case-default router-mode (js/console.warn "|Unknown router-mode:" router-mode)
                       :hash $ let
-                          current-hash js/location.hash
+                          current-hash $ unsafe-coerce js/location.hash 'String
                           old-router $ parse-address (strip-sharp current-hash) rules
                         ; echo old-router router (not= old-router router) (= old-router router)
                         if (not= old-router router)
@@ -212,7 +234,7 @@
           :examples $ []
           :schema $ :: 'Fn
             {} (:return 'Dynamic)
-              :args $ [] 'Dynamic 'Dynamic 'Dynamic
+              :args $ [] (:: 'Map 'Tag 'Dynamic) (:: 'List 'Dynamic) 'Tag
               :features $ #{} :js-ffi
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote
@@ -231,12 +253,12 @@
                   if (string? p0)
                     recur (str acc |/ p0) ps params
                     recur
-                      str acc |/ $ option:unwrap (first params)
+                      str acc |/ $ respo-router.schema/read-item params 0
                       , ps $ rest params
           :examples $ []
           :schema $ :: 'Fn
             {} (:return 'String)
-              :args $ [] 'String 'List (:: 'List 'String)
+              :args $ [] 'String (:: 'List 'Dynamic) (:: 'List 'String)
         'pick-rule $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn pick-rule (t-tag rules)
@@ -244,14 +266,16 @@
                 () $ :: :none
                 (r0 rs)
                   let
-                      t $ option:unwrap (nth r0 0)
+                      t $ assert-type (respo-router.schema/read-item r0 0) 'Tag
                     if (= t t-tag) (:: :hit r0) (recur t-tag rs)
           :examples $ []
-          :schema $ :: 'Dynamic
+          :schema $ :: 'Fn
+            {} (:return 'Dynamic)
+              :args $ [] 'Tag (:: 'List 'Dynamic)
           :tests $ []
             %{} 'TestEntry (:name |finds-tagged-rule)
               :code $ quote
-                is=
+                assert |Expected-equal-values: $ &=
                   :: :hit $ :: :team ([] |team 'team-id)
                   pick-rule :team $ []
                     :: :team $ [] |team 'team-id
@@ -261,24 +285,28 @@
             defn router->string (router rules)
               router->string-iter | (respo-router.schema/read-field router :path) (respo-router.schema/read-field router :query) rules
           :examples $ []
-          :schema $ :: 'Dynamic
+          :schema $ :: 'Fn
+            {} (:return 'String)
+              :args $ [] (:: 'Map 'Tag 'Dynamic) (:: 'List 'Dynamic)
           :tests $ []
             %{} 'TestEntry (:name |formats-tagged-route)
               :code $ quote
-                is= |/team/t1234 $ router->string
-                  {}
-                    :path $ [] (:: :team |t1234)
-                    :query $ {}
-                  [] $ :: :team ([] |team 'team-id)
+                assert |Expected-equal-values: $ &= |/team/t1234
+                  router->string
+                    {}
+                      :path $ [] (:: :team |t1234)
+                      :query $ {}
+                    [] $ :: :team ([] |team 'team-id)
               :tags $ #{} :regression :router
             %{} 'TestEntry (:name |formats-404-route)
               :code $ quote
-                is= |/missing/path $ router->string
-                  {}
-                    :path $ []
-                      :: :404 $ [] |missing |path
-                    :query $ {}
-                  []
+                assert |Expected-equal-values: $ &= |/missing/path
+                  router->string
+                    {}
+                      :path $ []
+                        :: :404 $ [] |missing |path
+                      :query $ {}
+                    []
               :tags $ #{} :regression :router
         'router->string-iter $ %{} 'CodeEntry (:doc |)
           :code $ quote
@@ -287,37 +315,31 @@
                 let
                     query-str $ stringify-query query
                     query-part $ if
-                      &= | $ .trim query-str
+                      &= | $ trim query-str
                       , | (str |? query-str)
                   str acc query-part
                 let
-                    guidepost $ option:unwrap (first path)
-                    t-tag $ option:unwrap (nth guidepost 0)
-                    params $ tuple-params guidepost
-                    rule $ pick-rule t-tag rules
+                    guidepost $ respo-router.schema/read-item path 0
+                    t-tag $ assert-type (respo-router.schema/read-item guidepost 0) 'Tag
                   if (= :404 t-tag)
-                    str acc |/ $ .join-str
-                      option:unwrap $ nth guidepost 1
-                      , |/
-                    match rule
-                      (:none) (raise "|found no rule")
-                      (:hit r0)
-                        let
-                            piece $ fill-pattern |
-                              option:unwrap $ nth r0 1
-                              , params
-                          recur (str acc piece) (rest path) query rules
+                    str acc |/ $ join-str (respo-router.schema/read-item guidepost 1) |/
+                    let
+                        params $ tuple-params (assert-type guidepost 'Enum)
+                        rule $ pick-rule t-tag rules
+                      match rule
+                        (:none) (raise "|found no rule")
+                        (:hit r0)
+                          let
+                              piece $ fill-pattern | (respo-router.schema/read-item r0 1) params
+                            recur (str acc piece) (rest path) query rules
           :examples $ []
-          :schema $ :: 'Dynamic
+          :schema $ :: 'Fn
+            {} (:return 'String)
+              :args $ [] 'String (:: 'List 'Dynamic) (:: 'Map 'String 'Dynamic) (:: 'List 'Dynamic)
         'slash-trim-left $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn slash-trim-left (address)
-              if
-                &= | $ .trim address
-                , | $ if
-                  = |/ $ option:unwrap-or (first address) |
-                  &str:slice address 1
-                  , address
+              if (blank? address) | $ if (starts-with? address |/) (&str:slice address 1) address
           :examples $ []
           :schema $ :: 'Fn
             {} (:return 'String)
@@ -325,18 +347,19 @@
         'stringify-query $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn stringify-query (query)
-              if (nil? query) | $ -> query (.to-list)
+              if (nil? query) | $ -> query (&map:to-list)
                 map $ fn (pair)
                   -> pair $ join-str |=
                 join-str |&
           :examples $ []
           :schema $ :: 'Fn
             {} (:return 'String)
-              :args $ [] 'Dynamic
+              :args $ [] (:: 'Map 'String 'Dynamic)
           :tests $ []
             %{} 'TestEntry (:name |stringifies-empty-query)
               :code $ quote
-                is= | $ stringify-query ({})
+                assert |Expected-equal-values: $ &= |
+                  stringify-query $ {}
               :tags $ #{} :router :unit
             %{} 'TestEntry (:name |stringifies-simple-query)
               :code $ quote
@@ -348,45 +371,50 @@
             defn strip-sharp (text)
               if (starts-with? text |#) (&str:slice text 1) text
           :examples $ []
-          :schema $ :: 'Dynamic
+          :schema $ :: 'Fn
+            {} (:return 'String)
+              :args $ [] 'String
         'tuple-params $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn tuple-params (guidepost)
-              case-default (count guidepost)
+              case-default (&enum:count guidepost)
                 raise $ str "|unknown tuple:" guidepost
                 1 $ []
                 2 $ []
-                  option:unwrap $ nth guidepost 1
+                  assert-type (respo-router.schema/read-item guidepost 1) 'String
                 3 $ []
-                  option:unwrap $ nth guidepost 1
-                  option:unwrap $ nth guidepost 2
+                  assert-type (respo-router.schema/read-item guidepost 1) 'String
+                  assert-type (respo-router.schema/read-item guidepost 2) 'String
                 4 $ []
-                  option:unwrap $ nth guidepost 1
-                  option:unwrap $ nth guidepost 2
-                  option:unwrap $ nth guidepost 3
+                  assert-type (respo-router.schema/read-item guidepost 1) 'String
+                  assert-type (respo-router.schema/read-item guidepost 2) 'String
+                  assert-type (respo-router.schema/read-item guidepost 3) 'String
                 5 $ []
-                  option:unwrap $ nth guidepost 1
-                  option:unwrap $ nth guidepost 2
-                  option:unwrap $ nth guidepost 3
-                  option:unwrap $ nth guidepost 4
+                  assert-type (respo-router.schema/read-item guidepost 1) 'String
+                  assert-type (respo-router.schema/read-item guidepost 2) 'String
+                  assert-type (respo-router.schema/read-item guidepost 3) 'String
+                  assert-type (respo-router.schema/read-item guidepost 4) 'String
           :examples $ []
-          :schema $ :: 'Dynamic
+          :schema $ :: 'Fn
+            {}
+              :args $ [] 'Enum
+              :return $ :: 'List 'String
           :tests $ []
             %{} 'TestEntry (:name |unwraps-guidepost-parameters)
               :code $ quote
-                is= ([] |t1234)
+                assert |Expected-equal-values: $ &= ([] |t1234)
                   tuple-params $ :: :team |t1234
               :tags $ #{} :regression :router
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote
           ns respo-router.format $ :require
-            calcit.test :refer $ is is=
+            calcit.test :refer $ is
     'respo-router.listener $ %{} 'FileEntry
       :defs $ {}
         '*ignored? $ %{} 'CodeEntry (:doc |)
           :code $ quote (defatom *ignored? false)
           :examples $ []
-          :schema $ :: 'Dynamic
+          :schema $ :: 'Ref 'Bool
         'listen! $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn listen! (rules dispatch! router-mode)
@@ -398,7 +426,9 @@
                 :hash $ js/window.addEventListener |hashchange
                   fn (event)
                     let
-                        path-info $ parse-address (strip-sharp js/location.hash) rules
+                        path-info $ parse-address
+                          strip-sharp $ unsafe-coerce js/location.hash 'String
+                          , rules
                       ; println "|is ignored?" @*ignored?
                       if (not @*ignored?)
                         flipped js/setTimeout 0 $ fn ()
@@ -409,8 +439,12 @@
                         current-address $ str js/location.pathname js/location.search
                         path-info $ parse-address current-address rules
                       dispatch! $ : :router/route path-info
+              , &unit
           :examples $ []
-          :schema $ :: 'Dynamic
+          :schema $ :: 'Fn
+            {} (:return 'Unit)
+              :args $ [] (:: 'List 'Dynamic) 'Dynamic 'Tag
+              :features $ #{} :js-ffi
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote
           ns respo-router.listener $ :require
@@ -420,23 +454,36 @@
       :defs $ {}
         '*store $ %{} 'CodeEntry (:doc |)
           :code $ quote
-            defatom *store $ assoc schema/store :router
-              parse-address (strip-sharp js/window.location.hash) router-rules
+            defatom *store $ initial-store
           :examples $ []
-          :schema $ :: 'Dynamic
+          :schema $ :: 'Ref (:: 'Map 'Tag 'Dynamic)
         'dispatch! $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn dispatch! (op) (js/console.log |dispatch! op)
               let
                   new-store $ match op
-                    (:states cursor s) (update-states @*store cursor s)
-                    (:router/route d) (assoc @*store :router d)
+                    (:states cursor s)
+                      assert-type (update-states @*store cursor s) (:: 'Map 'Tag 'Dynamic)
                     (:router/route d)
-                      assoc @*store :router $ parse-address d router-rules
+                      &map:assoc @*store :router $ assert-type d (:: 'Map 'Tag 'Dynamic)
                     _ @*store
                 reset! *store new-store
           :examples $ []
-          :schema $ :: 'Dynamic
+          :schema $ :: 'Fn
+            {} (:return 'Unit)
+              :args $ [] 'Dynamic
+              :features $ #{} :js-ffi
+        'initial-store $ %{} 'CodeEntry (:doc |)
+          :code $ quote
+            defn initial-store () $ let
+                current-hash $ unsafe-coerce js/window.location.hash 'String
+              assoc schema/store :router $ parse-address (strip-sharp current-hash) router-rules
+          :examples $ []
+          :schema $ :: 'Fn
+            {}
+              :args $ []
+              :features $ #{} :js-ffi
+              :return $ :: 'Map 'Tag 'Dynamic
         'main! $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn main! () (load-console-formatter!) (render-app!) (listen! router-rules dispatch! router-mode) (render-router!)
@@ -445,14 +492,18 @@
               println "|app started!"
           :examples $ []
           :schema $ :: 'Fn
-            {} (:return 'Dynamic)
+            {} (:return 'Unit)
               :args $ []
               :features $ #{} :js-ffi
         'mount-target $ %{} 'CodeEntry (:doc |)
           :code $ quote
-            def mount-target $ js/document.querySelector |.app
+            defn mount-target () $ js/document.querySelector |.app
           :examples $ []
-          :schema $ :: 'Dynamic
+          :schema $ :: 'Fn
+            {}
+              :args $ []
+              :features $ #{} :js-ffi
+              :return $ :: 'JsNullish 'JsObject
         'reload! $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn reload! () $ if (nil? build-errors)
@@ -463,18 +514,24 @@
                 hud! |ok~ |Ok
               hud! |error build-errors
           :examples $ []
-          :schema $ :: 'Dynamic
+          :schema $ :: 'Fn
+            {} (:return 'Unit)
+              :args $ []
         'render-app! $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn render-app! () (; println |render-app: @*store)
-              render! mount-target (comp-container @*store) dispatch!
+              render! (mount-target) (comp-container @*store) dispatch!
           :examples $ []
-          :schema $ :: 'Dynamic
+          :schema $ :: 'Fn
+            {} (:return 'Unit)
+              :args $ []
         'render-router! $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn render-router! () $ render-url! (respo-router.schema/read-field @*store :router) router-rules router-mode
           :examples $ []
-          :schema $ :: 'Dynamic
+          :schema $ :: 'Fn
+            {} (:return 'Dynamic)
+              :args $ []
         'router-mode $ %{} 'CodeEntry (:doc |)
           :code $ quote (def router-mode :hash)
           :examples $ []
@@ -501,7 +558,7 @@
             defn extract-address (address)
               let
                   text-path $ if (includes? address |?)
-                    option:unwrap $ first (split address |?)
+                    &list:nth (split address |?) 0
                     , address
                   query $ if (includes? address |?)
                     let
@@ -509,60 +566,54 @@
                       if
                         = (count segments) 1
                         {}
-                        parse-query $ option:unwrap (last segments)
+                        parse-query $ &list:nth segments
+                          dec $ count segments
                     {}
                   segments $ filter (split text-path |/)
                     fn (piece)
-                      not $ &= | (.trim piece)
+                      not $ &= | (trim piece)
                 [] segments query
           :examples $ []
           :schema $ :: 'Fn
-            {} (:return 'List)
+            {}
               :args $ [] 'String
+              :return $ :: 'List 'Dynamic
         'list-to-tuple $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn list-to-tuple (r-tag ret)
               case-default (count ret) (raise "|too many parameters")
                 0 $ :: r-tag
-                1 $ :: r-tag
-                  option:unwrap $ nth ret 0
-                2 $ :: r-tag
-                  option:unwrap $ nth ret 0
-                  option:unwrap $ nth ret 1
-                3 $ :: r-tag
-                  option:unwrap $ nth ret 0
-                  option:unwrap $ nth ret 1
-                  option:unwrap $ nth ret 2
-                4 $ :: r-tag
-                  option:unwrap $ nth ret 0
-                  option:unwrap $ nth ret 1
-                  option:unwrap $ nth ret 2
-                  option:unwrap $ nth ret 3
-                5 $ :: r-tag
-                  option:unwrap $ nth ret 0
-                  option:unwrap $ nth ret 1
-                  option:unwrap $ nth ret 2
-                  option:unwrap $ nth ret 3
-                  option:unwrap $ nth ret 4
+                1 $ :: r-tag (&list:nth ret 0)
+                2 $ :: r-tag (&list:nth ret 0) (&list:nth ret 1)
+                3 $ :: r-tag (&list:nth ret 0) (&list:nth ret 1) (&list:nth ret 2)
+                4 $ :: r-tag (&list:nth ret 0) (&list:nth ret 1) (&list:nth ret 2) (&list:nth ret 3)
+                5 $ :: r-tag (&list:nth ret 0) (&list:nth ret 1) (&list:nth ret 2) (&list:nth ret 3) (&list:nth ret 4)
           :examples $ []
-          :schema $ :: 'Dynamic
+          :schema $ :: 'Fn
+            {} (:return 'Dynamic)
+              :args $ [] 'Tag (:: 'List 'String)
         'match-pattern $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn match-pattern (acc paths pattern)
               list-match pattern
-                () acc
+                () $ %some acc
                 (p0 ps)
                   if (string? p0)
                     if
-                      = (first paths) (%some p0)
+                      and
+                        not $ empty? paths
+                        = (&list:nth paths 0) p0
                       recur acc (rest paths) ps
-                      , nil
+                      %none
                     recur
-                      conj acc $ option:unwrap-or (first paths) nil
+                      conj acc $ &list:nth paths 0
                       rest paths
                       , ps
           :examples $ []
-          :schema $ :: 'Dynamic
+          :schema $ :: 'Fn
+            {}
+              :args $ [] (:: 'List 'String) (:: 'List 'String) (:: 'List 'Dynamic)
+              :return $ :: 'Option (:: 'List 'String)
         'match-route $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn match-route (paths rules)
@@ -570,18 +621,22 @@
                 () $ :: :404 paths
                 (r0 rs)
                   let
-                      r-tag $ option:unwrap-or (nth r0 0) nil
-                      pattern $ option:unwrap-or (nth r0 1) nil
+                      r-tag $ assert-type (respo-router.schema/read-item r0 0) 'Tag
+                      pattern $ assert-type (respo-router.schema/read-item r0 1) (:: 'List 'Dynamic)
                     if
                       < (count paths) (count pattern)
                       recur paths rs
                       let
                           ret $ match-pattern ([]) paths pattern
-                        if (nil? ret) (recur paths rs)
-                          :: :hit (list-to-tuple r-tag ret)
-                            slice paths (count pattern) (count paths)
+                        match ret
+                          (:none) (recur paths rs)
+                          (:some params)
+                            :: :hit (list-to-tuple r-tag params)
+                              slice paths (count pattern) (count paths)
           :examples $ []
-          :schema $ :: 'Dynamic
+          :schema $ :: 'Fn
+            {} (:return 'Dynamic)
+              :args $ [] (:: 'List 'String) (:: 'List 'Dynamic)
         'parse-address $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn parse-address (address rules)
@@ -594,11 +649,14 @@
                     :path $ parse-path ([]) segments rules
                     :query query
           :examples $ []
-          :schema $ :: 'Dynamic
+          :schema $ :: 'Fn
+            {}
+              :args $ [] 'String (:: 'List 'Dynamic)
+              :return $ :: 'Map 'Tag 'Dynamic
           :tests $ []
             %{} 'TestEntry (:name |parses-empty-path)
               :code $ quote
-                is=
+                assert |Expected-equal-values: $ &=
                   {}
                     :path $ []
                     :query $ {}
@@ -606,7 +664,7 @@
               :tags $ #{} :router :unit
             %{} 'TestEntry (:name |parses-nested-path)
               :code $ quote
-                is=
+                assert |Expected-equal-values: $ &=
                   {}
                     :path $ [] (:: :a) (:: :b) (:: :a) (:: :a)
                     :query $ {}
@@ -616,7 +674,7 @@
               :tags $ #{} :router :unit
             %{} 'TestEntry (:name |parses-path-parameters)
               :code $ quote
-                is=
+                assert |Expected-equal-values: $ &=
                   {}
                     :path $ [] (:: :a)
                     :query $ {}
@@ -625,7 +683,7 @@
               :tags $ #{} :router :unit
             %{} 'TestEntry (:name |parses-404-path)
               :code $ quote
-                is=
+                assert |Expected-equal-values: $ &=
                   {}
                     :path $ []
                       :: :404 $ [] |ddd
@@ -640,16 +698,19 @@
                   ret $ match-route paths rules
                 match ret
                   (:hit d remaining)
-                    recur (conj acc d) remaining rules
+                    recur (append acc d) remaining rules
                   (:404 remaining)
-                    conj acc $ :: :404 remaining
+                    append acc $ :: :404 remaining
           :examples $ []
-          :schema $ :: 'Dynamic
+          :schema $ :: 'Fn
+            {}
+              :args $ [] (:: 'List 'Dynamic) (:: 'List 'String) (:: 'List 'Dynamic)
+              :return $ :: 'List 'Dynamic
         'parse-query $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn parse-query (text)
               if
-                &= | $ .trim text
+                &= | $ trim text
                 {}
                 -> (split text |&)
                   map $ fn (piece) (split piece |=)
@@ -663,7 +724,6 @@
         :code $ quote
           ns respo-router.parser $ :require
             respo-router.format :refer $ slash-trim-left
-            calcit.test :refer $ is=
     'respo-router.schema $ %{} 'FileEntry
       :defs $ {}
         'guidepost $ %{} 'CodeEntry (:doc |)
@@ -674,11 +734,23 @@
         'read-field $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn read-field (value field)
-              if (struct? value) (&struct:get value field) (&map:get value field)
+              either (&map:get value field)
+                raise $ str "|[respo-router/read-field] missing field: " field
           :examples $ []
           :schema $ :: 'Fn
             {} (:return 'Dynamic)
-              :args $ [] 'Dynamic 'Tag
+              :args $ [] (:: 'Map 'Tag 'Dynamic) 'Tag
+        'read-item $ %{} 'CodeEntry (:doc |)
+          :code $ quote
+            defn read-item (values index)
+              match (nth values index)
+                (:some item) item
+                (:none)
+                  raise $ str-spaced |Missing |item |at |index index |in: values
+          :examples $ []
+          :schema $ :: 'Fn
+            {} (:return 'Dynamic)
+              :args $ [] 'Dynamic 'Number
         'router $ %{} 'CodeEntry (:doc |)
           :code $ quote
             def router $ {}
@@ -693,7 +765,7 @@
               :: :room $ [] |room 'room-id
               :: :search $ [] |search
           :examples $ []
-          :schema $ :: 'Dynamic
+          :schema $ :: 'List 'Enum
         'store $ %{} 'CodeEntry (:doc |)
           :code $ quote
             def store $ {} (:router router)
