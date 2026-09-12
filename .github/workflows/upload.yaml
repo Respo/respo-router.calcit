@@ -14,12 +14,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Check out repository
-      uses: actions/checkout@v5.1.0
+      uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
       with:
         persist-credentials: false
 
     - name: Set up Node.js
-      uses: actions/setup-node@v5.0.0
+      uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
       with:
         node-version: 24
         package-manager-cache: false
@@ -30,10 +30,10 @@ jobs:
         corepack prepare yarn@4.12.0 --activate
         yarn --version
 
-    - name: Set up Calcit 0.14.7 and Caps
-      uses: calcit-lang/setup-calcit@v1.4.0
+    - name: Set up Calcit 0.14.8 and Caps
+      uses: calcit-lang/setup-calcit@704b3f5cd6f9ce3bd1e0c926dbdd1d181adb8180 # v1.4.0
       with:
-        version: 0.14.7
+        version: 0.14.8
         tools: calcit,caps
 
     - name: Resolve immutable dependencies
