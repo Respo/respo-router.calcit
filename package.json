@@ -1,7 +1,7 @@
 {
   "version": "0.8.14",
   "dependencies": {
-    "@calcit/procs": "0.14.7",
+    "@calcit/procs": "0.14.8",
     "bottom-tip": "^0.1.5",
     "cirru-color": "^0.2.4",
     "copy-text-to-clipboard": "^3.2.0",
