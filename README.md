@@ -94,20 +94,20 @@ caps --strict --ci
 caps verify --toolchain
 calcit --check-only calcit.cirru
 calcit --check-only --entry test calcit.cirru
-calcit calcit.cirru analyze dynamic-methods --max 0
+calcit calcit.cirru analyze dynamic-methods --format json | jq -e '.data.summary.findings == 0'
 calcit calcit.cirru test --require-match --summary-only --format json
 calcit calcit.cirru js
 yarn vite build --base=./
 ```
 
-The supported toolchain is Calcit `0.18.1`, `@calcit/procs` `0.18.1`,
-and Respo `0.16.112`. Both entries pass the default strict diagnostics without
+The supported toolchain is Calcit `0.19.1`, `@calcit/procs` `0.19.1`,
+and Respo `0.16.113`. Both entries pass the default strict diagnostics without
 `--compat-types`, and CI rejects all unresolved dynamic method dispatch. The
 remaining open router/rule and framework boundaries are explicit `Dynamic`
 schema slots guarded by the checked-in quality baseline.
 
-支持的工具链版本为 Calcit `0.18.1`、`@calcit/procs` `0.18.1` 与
-Respo `0.16.112`。两个 entry 均在不启用 `--compat-types` 的默认严格诊断下通过，
+支持的工具链版本为 Calcit `0.19.1`、`@calcit/procs` `0.19.1` 与
+Respo `0.16.113`。两个 entry 均在不启用 `--compat-types` 的默认严格诊断下通过，
 CI 对未解析动态方法调用实行零容忍；仍开放的路由/规则及框架边界以显式
 `Dynamic` schema slot 存在，并由仓库内质量基线约束。
 
