@@ -166,7 +166,7 @@
     'respo-router.core $ %{} 'FileEntry
       :defs $ {}
         '*cached-router $ %{} 'CodeEntry (:doc |)
-          :code $ quote $ defatom *cached-router (%none)
+          :code $ quote $ defatom *cached-router (Option :none)
           :examples $ []
           :schema $ :: 'Ref $ :: 'Option (:: 'Map 'Tag 'Dynamic)
         'render-url! $ %{} 'CodeEntry (:doc |)
@@ -181,7 +181,7 @@
                   (:none) true
                   (:some previous) (not= router previous)
                 do
-                  reset! *cached-router $ %some router
+                  reset! *cached-router $ Option :some router
                   case-default router-mode (js/console.warn "|Unknown router-mode:" router-mode)
                     :hash $ let
                         current-hash $ unsafe-coerce js/location.hash 'String
@@ -536,7 +536,7 @@
         'match-pattern $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn match-pattern (acc paths pattern)
             list-match pattern
-              () $ %some acc
+              () $ Option :some acc
               (p0 ps)
                 if (string? p0)
                   if
@@ -544,7 +544,7 @@
                       not $ empty? paths
                       = (&list:nth paths 0) p0
                     recur acc (rest paths) ps
-                    %none
+                    Option :none
                   recur
                     conj acc $ &list:nth paths 0
                     rest paths
