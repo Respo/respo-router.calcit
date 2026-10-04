@@ -100,14 +100,14 @@ calcit calcit.cirru js
 yarn vite build --base=./
 ```
 
-The supported toolchain is Calcit `0.19.1`, `@calcit/procs` `0.19.1`,
-and Respo `0.16.113`. Both entries pass the default strict diagnostics without
+The supported toolchain is Calcit `0.27.0`, `@calcit/procs` `0.27.0`,
+and Respo `0.16.114-alpha.5`. Both entries pass the default strict diagnostics without
 `--compat-types`, and CI rejects all unresolved dynamic method dispatch. The
 remaining open router/rule and framework boundaries are explicit `Dynamic`
 schema slots guarded by the checked-in quality baseline.
 
-支持的工具链版本为 Calcit `0.19.1`、`@calcit/procs` `0.19.1` 与
-Respo `0.16.113`。两个 entry 均在不启用 `--compat-types` 的默认严格诊断下通过，
+支持的工具链版本为 Calcit `0.27.0`、`@calcit/procs` `0.27.0` 与
+Respo `0.16.114-alpha.5`。两个 entry 均在不启用 `--compat-types` 的默认严格诊断下通过，
 CI 对未解析动态方法调用实行零容忍；仍开放的路由/规则及框架边界以显式
 `Dynamic` schema slot 存在，并由仓库内质量基线约束。
 
@@ -118,6 +118,14 @@ rotation.
 
 部署流程固定 `tiye.me` 的 ED25519 主机键，并在严格 SSH 主机键校验前验证其
 指纹。服务器主机键经独立渠道确认轮换后，必须同时更新键记录与预期指纹。
+
+COS Action 固定到正式 1.2.0 的发布提交，配置 `public-base-url` 启用内置
+逐文件公网 checksum 校验，沿用默认 `verify-*` 参数，不额外维护验证脚本。
+同仓库 PR 前缀为 `Respo/respo-router.calcit/pr/<PR>/<run-id>/<attempt>/`，
+每个 PR 独立排队，与生产队列分开。生产 COS 前缀、SSH 与服务器部署路径不变，
+不取消正在上传的任务；Fork PR 仅构建，不使用部署 secrets。
+本次只交付 COS/CDN 配置，保留现有依赖与全部质量门禁，未升级或新增 alpha。
+Calcit 0.28 的严格类型迁移仍在独立候选中，不能据本次构建认定升级完成。
 
 ### License
 
