@@ -32,7 +32,7 @@ listen! dict dispatch! mode
 parse-address path dict
 
 ; render url
-add-watch *store :changes $ fn ()
+add-watch! *store :changes $ fn (current previous)
   render-url! (:router @*store) dict mode
 ```
 
@@ -87,7 +87,17 @@ respo-ui` release cycle.
 样式，使业务项目可以自由选择 UI 层，同时避免
 `respo-ui -> respo-router -> respo-ui` 的发布循环。
 
-Validate released dependencies and both project entries with:
+当前预发布工具链为 Calcit / `@calcit/procs` `0.29.0-alpha.6`，依赖
+Respo `0.16.114-alpha.7`；版本以 `deps.cirru` 和 `package.json` 为准。
+两个 entry 都声明 browser target，使用默认严格检查。
+
+路由仍使用上述 Map 与匿名 Enum 格式。解析器生成的路径段均为 String；
+消费开放匹配结果或 `:404` payload 时，`respo-router.schema/path-segments`
+检查 List 容器与每一个 String 元素，再返回 `List<String>`。错误容器或元素会抛错，
+不插入默认路径，也不把类型断言当作数据校验。query 值保持原有 `str` 显示规则；
+内部 query 拼接先检查 List，单元素列表也返回 String。
+
+执行发布依赖、两个入口和原测试的验证：
 
 ```bash
 caps --strict --ci
@@ -96,20 +106,22 @@ calcit --check-only calcit.cirru
 calcit --check-only --entry test calcit.cirru
 calcit calcit.cirru analyze dynamic-methods --format json | jq -e '.data.summary.findings == 0'
 calcit calcit.cirru test --require-match --summary-only --format json
+yarn test:js
 calcit calcit.cirru js
 yarn vite build --base=./
 ```
 
-The supported toolchain is Calcit `0.27.0`, `@calcit/procs` `0.27.0`,
-and Respo `0.16.114-alpha.5`. Both entries pass the default strict diagnostics without
-`--compat-types`, and CI rejects all unresolved dynamic method dispatch. The
-remaining open router/rule and framework boundaries are explicit `Dynamic`
-schema slots guarded by the checked-in quality baseline.
+`yarn test:js` 从现有 CLI 发现全部 definition `:tests`，在隔离 Snapshot 中回放
+同一份 AST 与断言，不维护第二份 JS 语义用例；原 Snapshot 不会被改写。
+CI 同时核对公开命名空间、原质量基线及零未解析动态方法。
 
-支持的工具链版本为 Calcit `0.27.0`、`@calcit/procs` `0.27.0` 与
-Respo `0.16.114-alpha.5`。两个 entry 均在不启用 `--compat-types` 的默认严格诊断下通过，
-CI 对未解析动态方法调用实行零容忍；仍开放的路由/规则及框架边界以显式
-`Dynamic` schema slot 存在，并由仓库内质量基线约束。
+可通过现有查询入口了解边界：
+
+```bash
+calcit query context respo-router.schema/path-segments --format edn
+calcit query tests respo-router.schema/path-segments
+calcit analyze check-public --ns respo-router.schema --ns respo-router.parser --ns respo-router.format --ns respo-router.core --ns respo-router.listener --format json
+```
 
 The deployment workflow pins the `tiye.me` ED25519 host key and verifies its
 fingerprint before using strict SSH host-key checking. Rotate both the key line
@@ -124,8 +136,12 @@ COS Action 固定到正式 1.2.0 的发布提交，配置 `public-base-url` 启�
 同仓库 PR 前缀为 `Respo/respo-router.calcit/pr/<PR>/<run-id>/<attempt>/`，
 每个 PR 独立排队，与生产队列分开。生产 COS 前缀、SSH 与服务器部署路径不变，
 不取消正在上传的任务；Fork PR 仅构建，不使用部署 secrets。
-本次只交付 COS/CDN 配置，保留现有依赖与全部质量门禁，未升级或新增 alpha。
-Calcit 0.28 的严格类型迁移仍在独立候选中，不能据本次构建认定升级完成。
+
+### 限制
+
+- 路由规则、任意 tag 的匿名 Enum payload 和 query 值仍是兼容开放数据，不能把外层 Enum 声明理解为全部 payload 已验证。
+- browser listener 与 URL 写入仍使用现有 JS FFI；native 回归只执行纯解析、格式化与边界测试。
+- 本预发布升级不改变路由 IR、URL 转义或浏览器历史策略。
 
 ### License
 

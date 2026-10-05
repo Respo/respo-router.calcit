@@ -1,14 +1,15 @@
 {
-  "version": "0.8.28-alpha.4",
+  "version": "0.8.28-alpha.5",
   "dependencies": {
-    "@calcit/procs": "0.27.0",
+    "@calcit/procs": "0.29.0-alpha.6",
     "bottom-tip": "^0.1.5",
     "cirru-color": "^0.2.4",
     "copy-text-to-clipboard": "^3.2.0",
     "dayjs": "^1.11.21"
   },
   "scripts": {
-    "test": "calcit calcit.cirru test --require-match --summary-only --format json"
+    "test": "calcit calcit.cirru test --require-match --summary-only --format json",
+    "test:js": "node scripts/test-router-js.mjs"
   },
   "devDependencies": {
     "vite": "^8.1.3"
