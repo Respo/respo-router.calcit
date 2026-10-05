@@ -59,6 +59,16 @@ jobs:
         calcit --check-only calcit.cirru
         calcit --check-only --entry test calcit.cirru
 
+    - name: Check every public router definition
+      run: |
+        set -euo pipefail
+        for entry in default test; do
+          calcit --entry "$entry" calcit.cirru analyze check-public \
+            --ns respo-router.schema --ns respo-router.parser --ns respo-router.format \
+            --ns respo-router.core --ns respo-router.listener --format json \
+            | jq -e '.data.summary.complete and .data.summary.passed and (.data.summary.definitions_selected == .data.summary.definitions_checked)'
+        done
+
     - name: Enforce static quality baselines
       run: |
         set -euo pipefail
@@ -71,6 +81,9 @@ jobs:
 
     - name: Run attached tests
       run: calcit calcit.cirru test --require-match --summary-only --format json
+
+    - name: Replay attached tests through generated JavaScript
+      run: yarn test:js
 
     - name: Select CDN asset prefix
       id: asset-path
