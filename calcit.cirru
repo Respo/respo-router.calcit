@@ -52,7 +52,9 @@
                   {} $ :class-name style-row
                   <> |Path:
                   =< 16 nil
-                  comp-code-block $ router->string (respo-router.schema/read-field store :router) router-rules
+                  comp-code-block $ router->string
+                    decode-map-as (respo-router.schema/read-field store :router) (:: 'Map 'Tag 'Dynamic)
+                    , router-rules
                 div
                   {} $ :class-name style-row
                   <> |Data:
@@ -189,7 +191,10 @@
                       ; echo old-router router (not= old-router router) (= old-router router)
                       if (not= old-router router)
                         let
-                            new-hash $ str |# $ router->string-iter | (respo-router.schema/read-field router :path) (respo-router.schema/read-field router :query) rules
+                            new-hash $ str |# $ router->string-iter |
+                              decode-map-as (respo-router.schema/read-field router :path) (:: 'List 'Dynamic)
+                              decode-map-as (respo-router.schema/read-field router :query) (:: 'Map 'String 'Dynamic)
+                              , rules
                           ; println "|force set path to:" new-hash
                           reset! *ignored? true
                           ; echo |new: new-hash
@@ -198,7 +203,10 @@
                     :history $ let
                         old-address $ str js/location.pathname js/location.search
                         old-router $ parse-address old-address rules
-                        new-address $ router->string-iter | (respo-router.schema/read-field router :path) (respo-router.schema/read-field router :query) rules
+                        new-address $ router->string-iter |
+                          decode-map-as (respo-router.schema/read-field router :path) (:: 'List 'Dynamic)
+                          decode-map-as (respo-router.schema/read-field router :query) (:: 'Map 'String 'Dynamic)
+                          , rules
                       if (not= old-router router) (js/history.pushState nil nil new-address)
                     _ $ js/console.warn "|Unknown router-mode:" router-mode
           :examples $ []
@@ -272,7 +280,10 @@
             :tags $ #{} :regression :router
         'router->string $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn router->string (router rules)
-            router->string-iter | (respo-router.schema/read-field router :path) (respo-router.schema/read-field router :query) rules
+            router->string-iter |
+              decode-map-as (respo-router.schema/read-field router :path) (:: 'List 'Dynamic)
+              decode-map-as (respo-router.schema/read-field router :query) (:: 'Map 'String 'Dynamic)
+              , rules
           :examples $ []
           :schema $ :: 'Fn $ {} (:return 'String)
             :args $ [] (:: 'Map 'Tag 'Dynamic) (:: 'List 'Dynamic)
@@ -453,6 +464,7 @@
                     &map:assoc @*store :router $ assert-type d $ :: 'Map 'Tag 'Dynamic
                   _ @*store
               reset! *store new-store
+              , &unit
           :examples $ []
           :schema $ :: 'Fn $ {} (:return 'Unit)
             :args $ [] 'Enum
@@ -477,12 +489,13 @@
             :args $ []
             :features $ #{} :js-ffi
         'mount-target $ %{} 'CodeEntry (:doc |)
-          :code $ quote $ defn mount-target () (js/document.querySelector |.app)
+          :code $ quote $ defn mount-target ()
+            unsafe-coerce (js/document.querySelector |.app) (:: 'JsNullish 'respo.dom/DomElement)
           :examples $ []
           :schema $ :: 'Fn $ {}
             :args $ []
             :features $ #{} :js-ffi
-            :return $ :: 'JsNullish 'JsObject
+            :return $ :: 'JsNullish 'respo.dom/DomElement
         'reload! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn reload! ()
             if (nil? build-errors)
