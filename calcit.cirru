@@ -168,7 +168,7 @@
     'respo-router.core $ %{} 'FileEntry
       :defs $ {}
         '*cached-router $ %{} 'CodeEntry (:doc |)
-          :code $ quote $ defatom *cached-router (Option :none)
+          :code $ quote $ defref *cached-router (Option :none)
           :examples $ []
           :schema $ :: 'Ref $ :: 'Option (:: 'Map 'Tag 'Dynamic)
         'render-url! $ %{} 'CodeEntry (:doc |)
@@ -414,7 +414,7 @@
     'respo-router.listener $ %{} 'FileEntry
       :defs $ {}
         '*ignored? $ %{} 'CodeEntry (:doc |)
-          :code $ quote $ defatom *ignored? false
+          :code $ quote $ defref *ignored? false
           :examples $ []
           :schema $ :: 'Ref 'Bool
         'listen! $ %{} 'CodeEntry (:doc |)
@@ -451,7 +451,7 @@
     'respo-router.main $ %{} 'FileEntry
       :defs $ {}
         '*store $ %{} 'CodeEntry (:doc |)
-          :code $ quote $ defatom *store (initial-store)
+          :code $ quote $ defref *store (initial-store)
           :examples $ []
           :schema $ :: 'Ref $ :: 'Map 'Tag 'Dynamic
         'dispatch! $ %{} 'CodeEntry (:doc |)
