@@ -87,8 +87,8 @@ respo-ui` release cycle.
 样式，使业务项目可以自由选择 UI 层，同时避免
 `respo-ui -> respo-router -> respo-ui` 的发布循环。
 
-当前预发布工具链为 Calcit / `@calcit/procs` `0.29.0-alpha.6`，依赖
-Respo `0.16.114-alpha.7`；版本以 `deps.cirru` 和 `package.json` 为准。
+当前稳定版候选工具链为 Calcit / `@calcit/procs` `0.29.0`，依赖
+Respo `0.16.114`；版本以 `deps.cirru` 和 `package.json` 为准，发布状态以 GitHub Release 为准。
 两个 entry 都声明 browser target，使用默认严格检查。
 
 路由仍使用上述 Map 与匿名 Enum 格式。解析器生成的路径段均为 String；
@@ -104,7 +104,7 @@ caps --strict --ci
 caps verify --toolchain
 calcit --check-only calcit.cirru
 calcit --check-only --entry test calcit.cirru
-calcit calcit.cirru analyze dynamic-methods --format json | jq -e '.data.summary.findings == 0'
+calcit calcit.cirru analyze weak-types --only dynamic-method --format json | jq -e '.data.summary.findings == 0'
 calcit calcit.cirru test --require-match --summary-only --format json
 yarn test:js
 calcit calcit.cirru js
@@ -120,7 +120,7 @@ CI 同时核对公开命名空间、原质量基线及零未解析动态方法�
 ```bash
 calcit query context respo-router.schema/path-segments --format edn
 calcit query tests respo-router.schema/path-segments
-calcit analyze check-public --ns respo-router.schema --ns respo-router.parser --ns respo-router.format --ns respo-router.core --ns respo-router.listener --format json
+calcit --check-only --ns respo-router.schema --ns respo-router.parser --ns respo-router.format --ns respo-router.core --ns respo-router.listener --format json
 ```
 
 The deployment workflow pins the `tiye.me` ED25519 host key and verifies its
@@ -141,7 +141,7 @@ COS Action 固定到正式 1.2.0 的发布提交，配置 `public-base-url` 启�
 
 - 路由规则、任意 tag 的匿名 Enum payload 和 query 值仍是兼容开放数据，不能把外层 Enum 声明理解为全部 payload 已验证。
 - browser listener 与 URL 写入仍使用现有 JS FFI；native 回归只执行纯解析、格式化与边界测试。
-- 本预发布升级不改变路由 IR、URL 转义或浏览器历史策略。
+- 本次稳定版升级不改变路由 IR、URL 转义或浏览器历史策略。
 
 ### License
 

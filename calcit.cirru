@@ -3,11 +3,11 @@
   :about "|Machine-generated snapshot. Do not edit directly — changes will be overwritten. Use `calcit query` to inspect and `calcit edit`/`calcit tree` to modify. Run `calcit docs agents --contract` before mutations; use `--full` for first orientation or changed contract digest. Manual edits must follow format and schema conventions, then run `calcit edit format`."
   :package |respo-router
   :entries $ {}
-    :default $ {} (:description |) (:init-fn 'respo-router.main/main!) (:mode :native) (:reload-fn 'respo-router.main/reload!) (:target :browser)
+    :default $ {} (:description |) (:init-fn 'respo-router.main/main!) (:mode :js) (:reload-fn 'respo-router.main/reload!) (:target :browser)
       :feature-policy $ {}
       :modules $ [] |respo.calcit/ |js-ffi/
       :type-slots $ {}
-    :test $ {} (:description "|Legacy entry; use calcit test for tests") (:init-fn 'respo-router.main/main!) (:mode :native) (:reload-fn 'respo-router.main/reload!) (:target :browser)
+    :test $ {} (:description "|Legacy entry; use calcit test for tests") (:init-fn 'respo-router.main/main!) (:mode :js) (:reload-fn 'respo-router.main/reload!) (:target :browser)
       :feature-policy $ {}
       :modules $ [] |respo.calcit/
       :type-slots $ {}
@@ -223,9 +223,9 @@
       :defs $ {}
         'fill-pattern $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn fill-pattern (acc pattern params)
-            list-match pattern
-              () acc
-              (p0 ps)
+            match (destruct-list pattern)
+              (:none) acc
+              (:some p0 ps)
                 if (string? p0)
                   recur (str acc |/ p0) ps params
                   recur
@@ -263,9 +263,9 @@
               :tags $ #{} :boundary :router
         'pick-rule $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn pick-rule (t-tag rules)
-            list-match rules
-              () $ :: :none
-              (r0 rs)
+            match (destruct-list rules)
+              (:none) (:: :none)
+              (:some r0 rs)
                 let
                     t $ assert-type (respo-router.schema/read-item r0 0) 'Tag
                   if (= t t-tag) (:: :hit r0) (recur t-tag rs)
@@ -431,7 +431,9 @@
                       , rules
                   ; println "|is ignored?" @*ignored?
                   if (not @*ignored?)
-                    flipped js/setTimeout 0 $ fn () $ dispatch! (: :router/route path-info)
+                    js/setTimeout
+                      fn () $ dispatch! $ : :router/route path-info
+                      , 0
               :history $ js/window.addEventListener |popstate $ fn (event)
                 let
                     current-address $ str js/location.pathname js/location.search
@@ -578,9 +580,9 @@
             :args $ [] 'Tag $ :: 'List 'String
         'match-pattern $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn match-pattern (acc paths pattern)
-            list-match pattern
-              () $ Option :some acc
-              (p0 ps)
+            match (destruct-list pattern)
+              (:none) (Option :some acc)
+              (:some p0 ps)
                 if (string? p0)
                   if
                     and
@@ -598,9 +600,9 @@
             :return $ :: 'Option $ :: 'List 'String
         'match-route $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn match-route (paths rules)
-            list-match rules
-              () $ :: :404 paths
-              (r0 rs)
+            match (destruct-list rules)
+              (:none) (:: :404 paths)
+              (:some r0 rs)
                 let
                     r-tag $ assert-type (respo-router.schema/read-item r0 0) 'Tag
                     pattern $ assert-type (respo-router.schema/read-item r0 1) (:: 'List 'Dynamic)
