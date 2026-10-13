@@ -88,8 +88,13 @@ respo-ui` release cycle.
 `respo-ui -> respo-router -> respo-ui` 的发布循环。
 
 当前 patch 候选工具链为 Calcit / `@calcit/procs` `0.29.3`，依赖
-Respo `0.16.117`；版本以 `deps.cirru` 和 `package.json` 为准，发布状态以 GitHub Release 为准。
+Respo `0.16.118`；版本以 `deps.cirru` 和 `package.json` 为准，发布状态以 GitHub Release 为准。
 两个 entry 都声明 browser target，使用默认严格检查。
+
+0.8.32 候选把 listener 与 demo 跳转回调明确为 `Fn<Enum, Unit>`，
+Room 与其他入口一样发送单个 Enum 操作。参数提取保留原四参数上限，
+使用一个有类型的循环检查 String，不维护逐个 arity 的类型断言。
+现有路由格式与状态树算法不变；开放 payload 在实际消费处检查。
 
 路由仍使用上述 Map 与匿名 Enum 格式。解析器生成的路径段均为 String；
 消费开放匹配结果或 `:404` payload 时，`respo-router.schema/path-segments`
@@ -104,6 +109,7 @@ caps --strict --ci
 caps verify --toolchain
 calcit --check-only calcit.cirru
 calcit --check-only --entry test calcit.cirru
+calcit fix --workflow strict --verify --format json
 calcit calcit.cirru analyze weak-types --only dynamic-method --format json | jq -e '.data.summary.findings == 0'
 calcit calcit.cirru test --require-match --summary-only --format json
 yarn test:js

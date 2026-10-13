@@ -81,7 +81,9 @@
               :query $ {}
           :examples $ []
           :schema $ :: 'Fn $ {} (:return 'Unit)
-            :args $ [] 'Dynamic 'Dynamic
+            :args $ [] 'Dynamic $ :: 'Fn
+              {} (:return 'Unit)
+                :args $ [] 'Enum
         'route-home $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn route-home (e dispatch!)
             dispatch! $ :: :router/route $ {}
@@ -89,15 +91,19 @@
               :query $ {}
           :examples $ []
           :schema $ :: 'Fn $ {} (:return 'Unit)
-            :args $ [] 'Dynamic 'Dynamic
+            :args $ [] 'Dynamic $ :: 'Fn
+              {} (:return 'Unit)
+                :args $ [] 'Enum
         'route-room $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn route-room (e dispatch!)
-            dispatch! :router/route $ {}
+            dispatch! $ :: :router/route $ {}
               :path $ [] (:: :team |t12345) (:: :room |r1234)
               :query $ {} (|a 1) (|b 2)
           :examples $ []
           :schema $ :: 'Fn $ {} (:return 'Unit)
-            :args $ [] 'Dynamic 'Dynamic
+            :args $ [] 'Dynamic $ :: 'Fn
+              {} (:return 'Unit)
+                :args $ [] 'Enum
         'route-search $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn route-search (e dispatch!)
             dispatch! $ :: :router/route $ {}
@@ -105,7 +111,9 @@
               :query $ {}
           :examples $ []
           :schema $ :: 'Fn $ {} (:return 'Unit)
-            :args $ [] 'Dynamic 'Dynamic
+            :args $ [] 'Dynamic $ :: 'Fn
+              {} (:return 'Unit)
+                :args $ [] 'Enum
         'route-search-search $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn route-search-search (e dispatch!)
             dispatch! $ :: :router/route $ {}
@@ -113,7 +121,9 @@
               :query $ {}
           :examples $ []
           :schema $ :: 'Fn $ {} (:return 'Unit)
-            :args $ [] 'Dynamic 'Dynamic
+            :args $ [] 'Dynamic $ :: 'Fn
+              {} (:return 'Unit)
+                :args $ [] 'Enum
         'route-team $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn route-team (e dispatch!)
             dispatch! $ :: :router/route $ {}
@@ -121,7 +131,9 @@
               :query $ {}
           :examples $ []
           :schema $ :: 'Fn $ {} (:return 'Unit)
-            :args $ [] 'Dynamic 'Dynamic
+            :args $ [] 'Dynamic $ :: 'Fn
+              {} (:return 'Unit)
+                :args $ [] 'Enum
         'style-code-block $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defstyle style-code-block
             {} $ |& $ {} (:margin 0) (:padding "|8px 12px") (:white-space :pre-wrap) (:font-family :monospace) (:background-color |#f6f7f8) (:border-radius 4)
@@ -178,15 +190,14 @@
             assert "|last argument is router-mode" $ includes? (#{} :history :hash) router-mode
             if (exists? js/location)
               if
-                match
-                  assert-type @*cached-router $ :: 'Option $ :: 'Map 'Tag 'Dynamic
+                match @*cached-router
                   (:none) true
                   (:some previous) (not= router previous)
                 do
                   reset! *cached-router $ Option :some router
                   match router-mode
                     :hash $ let
-                        current-hash $ unsafe-coerce js/location.hash 'String
+                        current-hash $ js-ffi.contract/expect-string |location.hash js/location.hash
                         old-router $ parse-address (strip-sharp current-hash) rules
                       ; echo old-router router (not= old-router router) (= old-router router)
                       if (not= old-router router)
@@ -209,8 +220,9 @@
                           , rules
                       if (not= old-router router) (js/history.pushState nil nil new-address)
                     _ $ js/console.warn "|Unknown router-mode:" router-mode
+            , &unit
           :examples $ []
-          :schema $ :: 'Fn $ {} (:return 'Dynamic)
+          :schema $ :: 'Fn $ {} (:return 'Unit)
             :args $ [] (:: 'Map 'Tag 'Dynamic) (:: 'List 'Dynamic) 'Tag
             :features $ #{} :js-ffi
       :ns $ %{} 'NsEntry (:doc |)
@@ -267,7 +279,10 @@
               (:none) (:: :none)
               (:some r0 rs)
                 let
-                    t $ assert-type (respo-router.schema/read-item r0 0) 'Tag
+                    t $ match
+                      try-decode-map-as (respo-router.schema/read-item r0 0) 'Tag
+                      (:ok decoded) decoded
+                      (:err message) (raise message)
                   if (= t t-tag) (:: :hit r0) (recur t-tag rs)
           :examples $ []
           :schema $ :: 'Fn $ {} (:return 'Enum)
@@ -325,19 +340,27 @@
                 str acc query-part
               let
                   guidepost $ respo-router.schema/read-item path 0
-                  t-tag $ assert-type (respo-router.schema/read-item guidepost 0) 'Tag
+                  t-tag $ match
+                    try-decode-map-as (respo-router.schema/read-item guidepost 0) 'Tag
+                    (:ok decoded) decoded
+                    (:err message) (raise message)
                 if (= :404 t-tag)
                   str acc |/ $
                     respo-router.schema/path-segments $ respo-router.schema/read-item guidepost 1
                     , .join-string |/
                   let
-                      params $ tuple-params $ assert-type guidepost 'Enum
+                      params $ tuple-params $ if (enum? guidepost) guidepost (raise "|Invalid route guidepost")
                       rule $ pick-rule t-tag rules
                     match rule
                       (:none) (raise "|found no rule")
                       (:hit r0)
                         let
-                            piece $ fill-pattern | (respo-router.schema/read-item r0 1) params
+                            piece $ fill-pattern |
+                              match
+                                try-decode-map-as (respo-router.schema/read-item r0 1) (:: 'List 'Dynamic)
+                                (:ok decoded) decoded
+                                (:err message) (raise message)
+                              , params
                           recur (str acc piece) (rest path) query rules
           :examples $ []
           :schema $ :: 'Fn $ {} (:return 'String)
@@ -356,7 +379,9 @@
                 str acc |& $ join-strings-dynamic (&list:nth pairs i) |=
           :examples $ []
           :schema $ :: 'Fn $ {} (:return 'String)
-            :args $ [] 'Dynamic 'Number 'String
+            :args $ []
+              :: 'List $ :: 'List 'Dynamic
+              , 'Number 'String
         'stringify-query $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn stringify-query (query)
             if (nil? query) | $ let
@@ -383,22 +408,24 @@
             :args $ [] 'String
         'tuple-params $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn tuple-params (guidepost)
-            match (&enum:count guidepost)
-              1 $ []
-              2 $ [] $ assert-type (respo-router.schema/read-item guidepost 1) 'String
-              3 $ []
-                assert-type (respo-router.schema/read-item guidepost 1) 'String
-                assert-type (respo-router.schema/read-item guidepost 2) 'String
-              4 $ []
-                assert-type (respo-router.schema/read-item guidepost 1) 'String
-                assert-type (respo-router.schema/read-item guidepost 2) 'String
-                assert-type (respo-router.schema/read-item guidepost 3) 'String
-              5 $ []
-                assert-type (respo-router.schema/read-item guidepost 1) 'String
-                assert-type (respo-router.schema/read-item guidepost 2) 'String
-                assert-type (respo-router.schema/read-item guidepost 3) 'String
-                assert-type (respo-router.schema/read-item guidepost 4) 'String
-              _ $ raise $ str "|unknown tuple:" guidepost
+            let
+                n $ &enum:count guidepost
+              if
+                and (>= n 1) (<= n 5)
+                loop
+                    i 1
+                    acc $ []
+                  hint-fn $ {}
+                    :args $ [] 'Number $ :: 'List 'String
+                    :return $ :: 'List 'String
+                  if (< i n)
+                    let
+                        value $ respo-router.schema/read-item guidepost i
+                      if (string? value)
+                        recur (inc i) (conj acc value)
+                        raise "|[respo-router/tuple-params] expected String"
+                    , acc
+                raise $ str "|unknown tuple:" guidepost
           :examples $ []
           :schema $ :: 'Fn $ {}
             :args $ [] 'Enum
@@ -427,7 +454,7 @@
               :hash $ js/window.addEventListener |hashchange $ fn (event)
                 let
                     path-info $ parse-address
-                      strip-sharp $ unsafe-coerce js/location.hash 'String
+                      strip-sharp $ js-ffi.contract/expect-string |location.hash js/location.hash
                       , rules
                   ; println "|is ignored?" @*ignored?
                   if (not @*ignored?)
@@ -443,7 +470,10 @@
             , &unit
           :examples $ []
           :schema $ :: 'Fn $ {} (:return 'Unit)
-            :args $ [] (:: 'List 'Dynamic) 'Dynamic 'Tag
+            :args $ [] (:: 'List 'Dynamic)
+              :: 'Fn $ {} (:return 'Unit)
+                :args $ [] 'Enum
+              , 'Tag
             :features $ #{} :js-ffi
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote $ ns respo-router.listener
@@ -461,9 +491,18 @@
             let
                 new-store $ match op
                   (:states cursor s)
-                    assert-type (update-states @*store cursor s) (:: 'Map 'Tag 'Dynamic)
+                    assoc @*store :states $ respo.cursor/update-state-tree
+                      .unwrap-or (get @*store :states) ({})
+                      match
+                        try-decode-map-as cursor $ :: 'List 'Dynamic
+                        (:ok decoded) decoded
+                        (:err message) (raise message)
+                      , s
                   (:router/route d)
-                    &map:assoc @*store :router $ assert-type d $ :: 'Map 'Tag 'Dynamic
+                    assoc @*store :router $ match
+                      try-decode-map-as d $ :: 'Map 'Tag 'Dynamic
+                      (:ok decoded) decoded
+                      (:err message) (raise message)
                   _ @*store
               reset! *store new-store
               , &unit
@@ -474,7 +513,7 @@
         'initial-store $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn initial-store ()
             let
-                current-hash $ unsafe-coerce js/window.location.hash 'String
+                current-hash $ js-ffi.contract/expect-string |location.hash js/window.location.hash
               assoc schema/store :router $ parse-address (strip-sharp current-hash) router-rules
           :examples $ []
           :schema $ :: 'Fn $ {}
@@ -486,6 +525,7 @@
             add-watch! *store :changes $ fn (store prev) (render-app!)
             add-watch! *store :router-changes $ fn (store prev) (render-router!)
             println "|app started!"
+            , &unit
           :examples $ []
           :schema $ :: 'Fn $ {} (:return 'Unit)
             :args $ []
@@ -507,21 +547,34 @@
                 render-app!
                 hud! |ok~ |Ok
               hud! |error build-errors
+            , &unit
           :examples $ []
           :schema $ :: 'Fn $ {} (:return 'Unit)
             :args $ []
         'render-app! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn render-app! () (; println |render-app: @*store)
-            render! (mount-target) (comp-container @*store) dispatch!
+            render! (mount-target) (comp-container @*store)
+              fn (op)
+                hint-fn $ {}
+                  :args $ [] 'Dynamic
+                  :return 'Unit
+                if (enum? op) (dispatch! op) (raise "|Invalid Router operation")
           :examples $ []
           :schema $ :: 'Fn $ {} (:return 'Unit)
             :args $ []
         'render-router! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn render-router! ()
-            render-url! (respo-router.schema/read-field @*store :router) router-rules router-mode
+            render-url!
+              match
+                try-decode-map-as (respo-router.schema/read-field @*store :router) (:: 'Map 'Tag 'Dynamic)
+                (:ok decoded) decoded
+                (:err message) (raise message)
+              , router-rules router-mode
+            , &unit
           :examples $ []
-          :schema $ :: 'Fn $ {} (:return 'Dynamic)
+          :schema $ :: 'Fn $ {} (:return 'Unit)
             :args $ []
+            :features $ #{} :js-ffi
         'router-mode $ %{} 'CodeEntry (:doc |)
           :code $ quote $ def router-mode :hash
           :examples $ []
@@ -604,8 +657,14 @@
               (:none) (:: :404 paths)
               (:some r0 rs)
                 let
-                    r-tag $ assert-type (respo-router.schema/read-item r0 0) 'Tag
-                    pattern $ assert-type (respo-router.schema/read-item r0 1) (:: 'List 'Dynamic)
+                    r-tag $ match
+                      try-decode-map-as (respo-router.schema/read-item r0 0) 'Tag
+                      (:ok decoded) decoded
+                      (:err message) (raise message)
+                    pattern $ match
+                      try-decode-map-as (respo-router.schema/read-item r0 1) (:: 'List 'Dynamic)
+                      (:ok decoded) decoded
+                      (:err message) (raise message)
                   if
                     < (count paths) (count pattern)
                     recur paths rs
@@ -627,7 +686,12 @@
                 trimed-address $ slash-trim-left address
               let[] (segments query) (extract-address trimed-address)
                 {}
-                  :path $ parse-path ([]) segments rules
+                  :path $ parse-path ([])
+                    match
+                      try-decode-map-as segments $ :: 'List 'String
+                      (:ok decoded) decoded
+                      (:err message) (raise message)
+                    , rules
                   :query query
           :examples $ []
           :schema $ :: 'Fn $ {}
