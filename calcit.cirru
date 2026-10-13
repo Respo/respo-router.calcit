@@ -680,8 +680,8 @@
             :args $ [] (:: 'List 'String) (:: 'List 'Dynamic)
         'parse-address $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn parse-address (address rules)
-            assert (string? address) "|first argument should be a string"
-            assert (list? rules) "|second argument should be dictionary"
+            assert "|first argument should be a string" $ string? address
+            assert "|second argument should be dictionary" $ list? rules
             let
                 trimed-address $ slash-trim-left address
               let[] (segments query) (extract-address trimed-address)
