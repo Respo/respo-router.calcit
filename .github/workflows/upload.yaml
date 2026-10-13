@@ -58,6 +58,7 @@ jobs:
         set -euo pipefail
         calcit --check-only calcit.cirru
         calcit --check-only --entry test calcit.cirru
+        calcit fix --workflow strict --verify --format json | jq '{validation:.data.validation,suggestions:.data.suggestions,diagnostics:.diagnostics}'
 
     - name: Check every public router definition
       run: |
