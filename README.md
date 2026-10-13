@@ -87,8 +87,8 @@ respo-ui` release cycle.
 样式，使业务项目可以自由选择 UI 层，同时避免
 `respo-ui -> respo-router -> respo-ui` 的发布循环。
 
-当前 patch 候选工具链为 Calcit / `@calcit/procs` `0.29.1`，依赖
-Respo `0.16.116`；版本以 `deps.cirru` 和 `package.json` 为准，发布状态以 GitHub Release 为准。
+当前 patch 候选工具链为 Calcit / `@calcit/procs` `0.29.3`，依赖
+Respo `0.16.117`；版本以 `deps.cirru` 和 `package.json` 为准，发布状态以 GitHub Release 为准。
 两个 entry 都声明 browser target，使用默认严格检查。
 
 路由仍使用上述 Map 与匿名 Enum 格式。解析器生成的路径段均为 String；
