@@ -87,8 +87,11 @@ respo-ui` release cycle.
 样式，使业务项目可以自由选择 UI 层，同时避免
 `respo-ui -> respo-router -> respo-ui` 的发布循环。
 
-当前 patch 候选工具链为 Calcit / `@calcit/procs` `0.29.3`，依赖
-Respo `0.16.119`；版本以 `deps.cirru` 和 `package.json` 为准，发布状态以 GitHub Release 为准。
+使用者影响：Router `0.8.34` 候选同步 Respo `0.16.120` 和其正式 JS-FFI `0.2.3`，
+Calcit / `@calcit/procs` 仍为正式 `0.29.3`。路由 IR、URL 转义、历史策略及 API 不变。
+应用需与 UI 等其他模块协调选择同一 Respo / JS-FFI 依赖，不应放宽 Caps 严格解析；
+候选待 Respo 正式发版和原有门禁验收后才能发布。版本以 `deps.cirru` 和
+`package.json` 为准，发布状态以 GitHub Release 为准。
 两个 entry 都声明 browser target，使用默认严格检查。
 
 0.8.32 候选把 listener 与 demo 跳转回调明确为 `Fn<Enum, Unit>`，
