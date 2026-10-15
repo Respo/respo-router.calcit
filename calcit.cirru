@@ -807,11 +807,37 @@
               :tags $ #{} :boundary :router
         'read-field $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn read-field (value field)
-            either (&map:get value field)
+            either
+              .unwrap-or (get value field) nil
               raise $ str "|[respo-router/read-field] missing field: " field
           :examples $ []
           :schema $ :: 'Fn $ {} (:return 'Dynamic)
             :args $ [] (:: 'Map 'Tag 'Dynamic) 'Tag
+          :tests $ [] $ %{} 'TestEntry (:name |preserves-required-field-semantics)
+            :code $ quote $ do
+              assert= "|[respo-router/read-field] missing field: :path" $ try
+                read-field ({}) :path
+                fn (error) error
+              assert= "|[respo-router/read-field] missing field: :path" $ try
+                read-field
+                  {} $ :path nil
+                  , :path
+                fn (error) error
+              assert= false $ read-field
+                {} $ :path false
+                , :path
+              assert= 0 $ read-field
+                {} $ :path 0
+                , :path
+              assert= | $ read-field
+                {} $ :path |
+                , :path
+              assert= ([])
+                read-field
+                  {} $ :path $ []
+                  , :path
+              , &unit
+            :tags $ #{} :regression :router
         'read-item $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn read-item (values index)
             match (nth values index)

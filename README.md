@@ -10,28 +10,36 @@ Demo http://repo.respo-mvc.org/respo-router.calcit .
 
 ```cirru.no-check
 respo-router.listener :refer $ listen!
+
 respo-router.parser :refer $ parse-address
+
 respo-router.format :refer $ strip-sharp
+
 respo-router.core :refer $ render-url!
 ```
 
 ```cirru.no-check
 ; router rules
+
 def dict $ []
-  :: :room $ [] "|room-id"
-  :: :team $ [] "|team-id"
+  :: :room $ [] |room-id
+  :: :team $ [] |team-id
   :: :search $ []
 
 ; :hash | :history
+
 def mode :history
 
 ; listen to router and dispatch actions
+
 listen! dict dispatch! mode
 
 ; /a/b?c=d
+
 parse-address path dict
 
 ; render url
+
 add-watch! *store :changes $ fn (current previous)
   render-url! (:router @*store) dict mode
 ```
@@ -57,12 +65,8 @@ looks like:
 
 ```cirru
 {}
-  :path $ []
-    :: :team "|t12345"
-    :: :room "|r1234"
-  :query $ {}
-    "|a" 1
-    "|b" 2
+  :path $ [] (:: :team |t12345) (:: :room |r1234)
+  :query $ {} (|a 1) (|b 2)
 ```
 
 Some special routes:
@@ -87,14 +91,14 @@ respo-ui` release cycle.
 样式，使业务项目可以自由选择 UI 层，同时避免
 `respo-ui -> respo-router -> respo-ui` 的发布循环。
 
-使用者影响：Router `0.8.34` 候选同步 Respo `0.16.120` 和其正式 JS-FFI `0.2.3`，
-Calcit / `@calcit/procs` 仍为正式 `0.29.3`。路由 IR、URL 转义、历史策略及 API 不变。
+使用者影响：Router `0.8.35` 候选将 Calcit / `@calcit/procs` 配对到正式 `0.30.0`，
+继续使用已发布 Respo `0.16.120` 和其正式 JS-FFI `0.2.3`。路由 IR、URL 转义、历史策略及 API 不变。
 应用需与 UI 等其他模块协调选择同一 Respo / JS-FFI 依赖，不应放宽 Caps 严格解析；
-候选待 Respo 正式发版和原有门禁验收后才能发布。版本以 `deps.cirru` 和
+候选待原有门禁和 CI 验收后才能发布。版本以 `deps.cirru` 和
 `package.json` 为准，发布状态以 GitHub Release 为准。
 两个 entry 都声明 browser target，使用默认严格检查。
 
-0.8.32 候选把 listener 与 demo 跳转回调明确为 `Fn<Enum, Unit>`，
+从 0.8.32 开始，listener 与 demo 跳转回调明确为 `Fn<Enum, Unit>`，
 Room 与其他入口一样发送单个 Enum 操作。参数提取保留原四参数上限，
 使用一个有类型的循环检查 String，不维护逐个 arity 的类型断言。
 现有路由格式与状态树算法不变；开放 payload 在实际消费处检查。
@@ -123,6 +127,16 @@ yarn vite build --base=./
 `yarn test:js` 从现有 CLI 发现全部 definition `:tests`，在隔离 Snapshot 中回放
 同一份 AST 与断言，不维护第二份 JS 语义用例；原 Snapshot 不会被改写。
 CI 同时核对公开命名空间、原质量基线及零未解析动态方法。
+
+0.30 迁移仅将 `read-field` 的旧 Map 原语改为公开 `get` / Option 读取，保留
+缺失字段和显式 nil 的原错误消息，以及 false、0、空字符串、空 List 的原值。
+新增一项附带回归由现有 native/JS 入口执行；不增加脚本、测试框架或编译器规则。
+两个 browser entry 的完整 strict workflow、全部 196 个定义、28 个公开定义、
+21 项 native/JS 附带测试和原质量门禁通过。仍有 28 个不完整定义、36 处
+unresolved/schema Dynamic，原预算不变，不声称类型债务归零。
+真实消费者 Skir 0.0.30 的 48 个定义、38 个公开定义、完整 strict 与既有
+路由/真实 HTTP 测试通过；浏览器 demo 的 team、room/query、search、后退、404
+导航已验证。未声明 native browser listener 或 WASM 支持。
 
 可通过现有查询入口了解边界：
 
