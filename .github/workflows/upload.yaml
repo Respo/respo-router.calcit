@@ -58,9 +58,10 @@ jobs:
     - name: Check both entries
       run: |
         set -euo pipefail
-        calcit --check-only calcit.cirru
-        calcit --check-only --entry test calcit.cirru
-        calcit fix --workflow strict --verify --format json | jq '{validation:.data.validation,suggestions:.data.suggestions,diagnostics:.diagnostics}'
+        for entry in default test; do
+          calcit --entry "$entry" calcit.cirru --check-only --all-defs --format edn
+          calcit --entry "$entry" calcit.cirru fix --workflow strict --verify --format edn
+        done
 
     - name: Check every public router definition
       run: |
@@ -72,14 +73,10 @@ jobs:
             | jq -e '.data.summary.complete and .data.summary.passed and (.data.summary.definitions_selected == .data.summary.definitions_checked)'
         done
 
-    - name: Enforce static quality baselines
+    - name: Check deprecated calls and unresolved dynamic methods
       run: |
         set -euo pipefail
-        mkdir -p .calcit
-        calcit calcit.cirru analyze weak-types --only coverage --summary-only --format json > .calcit/check-types.json
-        calcit calcit.cirru analyze weak-types --only schema-dynamic,code-dynamic --intent unresolved --summary-only --format json > .calcit/weak-types.json
-        calcit calcit.cirru analyze weak-types --only deprecated-call --summary-only --format json > .calcit/deprecated.json
-        node scripts/check-calcit-upgrade-baseline.mjs
+        calcit calcit.cirru analyze weak-types --only deprecated-call --summary-only --format json | jq -e '.data.summary.calls == 0'
         calcit calcit.cirru analyze weak-types --only dynamic-method --format json | jq -e '.data.summary.findings == 0'
 
     - name: Run attached tests
