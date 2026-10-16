@@ -91,8 +91,8 @@ respo-ui` release cycle.
 样式，使业务项目可以自由选择 UI 层，同时避免
 `respo-ui -> respo-router -> respo-ui` 的发布循环。
 
-使用者影响：Router `0.8.35` 候选将 Calcit / `@calcit/procs` 配对到正式 `0.30.0`，
-继续使用已发布 Respo `0.16.120` 和其正式 JS-FFI `0.2.3`。路由 IR、URL 转义、历史策略及 API 不变。
+使用者影响：Router `0.8.36` 候选将 Calcit CLI / `@calcit/procs` 配对到已发布 `0.30.1-alpha.4`，
+使用正式 Respo `0.16.122` 和其正式 JS-FFI `0.2.3`。路由 IR、URL 转义、历史策略及 API 不变。
 应用需与 UI 等其他模块协调选择同一 Respo / JS-FFI 依赖，不应放宽 Caps 严格解析；
 候选待原有门禁和 CI 验收后才能发布。版本以 `deps.cirru` 和
 `package.json` 为准，发布状态以 GitHub Release 为准。
@@ -116,7 +116,11 @@ caps --strict --ci
 caps verify --toolchain
 calcit --check-only calcit.cirru
 calcit --check-only --entry test calcit.cirru
-calcit fix --workflow strict --verify --format json
+for entry in default test; do
+  calcit --entry "$entry" calcit.cirru --check-only --all-defs --format edn
+  calcit --entry "$entry" calcit.cirru fix --workflow strict --verify --format edn
+done
+calcit calcit.cirru analyze weak-types --only deprecated-call --summary-only --format json | jq -e '.data.summary.calls == 0'
 calcit calcit.cirru analyze weak-types --only dynamic-method --format json | jq -e '.data.summary.findings == 0'
 calcit calcit.cirru test --require-match --summary-only --format json
 yarn test:js
@@ -126,14 +130,15 @@ yarn vite build --base=./
 
 `yarn test:js` 从现有 CLI 发现全部 definition `:tests`，在隔离 Snapshot 中回放
 同一份 AST 与断言，不维护第二份 JS 语义用例；原 Snapshot 不会被改写。
-CI 同时核对公开命名空间、原质量基线及零未解析动态方法。
+CI 同时核对两个 entry 的全部定义、完整 strict、公开命名空间、弃用调用与未解析动态方法。
+过期的 nil/Dynamic 纯数量基线及比较脚本已移除；不提高预算、不放宽类型，不用数量变化代替语义验收。
 
-0.30 迁移仅将 `read-field` 的旧 Map 原语改为公开 `get` / Option 读取，保留
+此前 0.8.35 的 0.30 迁移仅将 `read-field` 的旧 Map 原语改为公开 `get` / Option 读取，保留
 缺失字段和显式 nil 的原错误消息，以及 false、0、空字符串、空 List 的原值。
 新增一项附带回归由现有 native/JS 入口执行；不增加脚本、测试框架或编译器规则。
 两个 browser entry 的完整 strict workflow、全部 196 个定义、28 个公开定义、
-21 项 native/JS 附带测试和原质量门禁通过。仍有 28 个不完整定义、36 处
-unresolved/schema Dynamic，原预算不变，不声称类型债务归零。
+21 项 native/JS 附带测试和当时的质量门禁通过；这组历史结果不能代替 0.8.36 的新正式配对验收。
+开放 Map/Enum payload 和宿主边界仍存在，不声称类型债务归零。
 真实消费者 Skir 0.0.30 的 48 个定义、38 个公开定义、完整 strict 与既有
 路由/真实 HTTP 测试通过；浏览器 demo 的 team、room/query、search、后退、404
 导航已验证。未声明 native browser listener 或 WASM 支持。
