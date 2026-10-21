@@ -91,8 +91,8 @@ respo-ui` release cycle.
 样式，使业务项目可以自由选择 UI 层，同时避免
 `respo-ui -> respo-router -> respo-ui` 的发布循环。
 
-使用者影响：Router `0.8.37` 候选将 Calcit CLI / `@calcit/procs` 配对到已完整发布的 `0.30.1-alpha.5`，
-使用正式 Respo `0.16.123` 兼容维护版和其正式 JS-FFI `0.2.4`。Calcit 源码与正式 `0.8.36` 相同，路由 IR、URL 转义、历史策略及 API 不变；不包含 Respo main 的 0.17 破坏性接口。正式 Calcit 0.30.1 CLI/npm 配对尚未完成，不能只升级一端。
+使用者影响：尚未发布的 Router `0.8.37` 候选改用正式 Calcit CLI / `@calcit/procs` `0.30.1`，
+使用已发布 Respo `0.16.124` 兼容维护版及其正式 JS-FFI `0.2.5`。Calcit 源码与正式 `0.8.36` 相同，路由 IR、URL 转义、历史策略及 API 不变；不包含 Respo main 的 0.17 破坏性接口。CLI 与 JS runtime 必须一起升级，不能只更新一端。既有候选尚无 tag，因此沿用 `0.8.37`，不为工具链修订增加额外版本。
 应用需与 UI 等其他模块协调选择同一 Respo / JS-FFI 依赖，不应放宽 Caps 严格解析；
 候选待原有门禁和 CI 验收后才能发布。版本以 `deps.cirru` 和
 `package.json` 为准，发布状态以 GitHub Release 为准。
