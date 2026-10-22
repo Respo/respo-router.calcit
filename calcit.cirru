@@ -6,11 +6,11 @@
     :default $ {} (:description |) (:init-fn 'respo-router.main/main!) (:mode :js) (:reload-fn 'respo-router.main/reload!) (:target :browser)
       :feature-policy $ {}
       :modules $ [] |respo.calcit/ |js-ffi/
-      :type-slots $ {}
+      :type-slots $ {} $ :dispatch-op |respo-router.schema/Op
     :test $ {} (:description "|Legacy entry; use calcit test for tests") (:init-fn 'respo-router.main/main!) (:mode :js) (:reload-fn 'respo-router.main/reload!) (:target :browser)
       :feature-policy $ {}
       :modules $ [] |respo.calcit/
-      :type-slots $ {}
+      :type-slots $ {} $ :dispatch-op |respo-router.schema/Op
   :files $ {}
     'respo-router.comp.container $ %{} 'FileEntry
       :defs $ {}
@@ -472,7 +472,7 @@
           :schema $ :: 'Fn $ {} (:return 'Unit)
             :args $ [] (:: 'List 'Dynamic)
               :: 'Fn $ {} (:return 'Unit)
-                :args $ [] 'Enum
+                :args $ [] '*dispatch-op
               , 'Tag
             :features $ #{} :js-ffi
       :ns $ %{} 'NsEntry (:doc |)
@@ -508,7 +508,7 @@
               , &unit
           :examples $ []
           :schema $ :: 'Fn $ {} (:return 'Unit)
-            :args $ [] 'Enum
+            :args $ [] 'respo-router.schema/Op
             :features $ #{} :js-ffi
         'initial-store $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn initial-store ()
@@ -553,12 +553,7 @@
             :args $ []
         'render-app! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn render-app! () (; println |render-app: @*store)
-            render! (mount-target) (comp-container @*store)
-              fn (op)
-                hint-fn $ {}
-                  :args $ [] 'Dynamic
-                  :return 'Unit
-                if (enum? op) (dispatch! op) (raise "|Invalid Router operation")
+            render! (mount-target) (comp-container @*store) dispatch!
           :examples $ []
           :schema $ :: 'Fn $ {} (:return 'Unit)
             :args $ []
@@ -674,7 +669,7 @@
                         (:none) (recur paths rs)
                         (:some params)
                           :: :hit (list-to-tuple r-tag params)
-                            slice paths (count pattern) (count paths)
+                            slice paths $ count pattern
           :examples $ []
           :schema $ :: 'Fn $ {} (:return 'Enum)
             :args $ [] (:: 'List 'String) (:: 'List 'Dynamic)
@@ -770,6 +765,13 @@
           :require $ respo-router.format :refer $ slash-trim-left
     'respo-router.schema $ %{} 'FileEntry
       :defs $ {}
+        'Op $ %{} 'CodeEntry
+          :doc "|Dispatch Op of the demo app, bound to the :dispatch-op type slot. Apps using router handlers need a `:router/route 'Dynamic` variant in their own Op."
+          :code $ quote $ defenum Op
+            :states (:: 'List 'Dynamic) 'Dynamic
+            :router/route 'Dynamic
+          :examples $ []
+          :schema $ :: 'EnumDef
         'guidepost $ %{} 'CodeEntry (:doc |)
           :code $ quote $ def guidepost
             {} (:name nil) (:data nil)
