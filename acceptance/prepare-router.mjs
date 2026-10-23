@@ -1,0 +1,40 @@
+import assert from 'node:assert/strict';
+import {execFileSync} from 'node:child_process';
+import {writeFileSync} from 'node:fs';
+const run=(...args)=>execFileSync('calcit',args,{encoding:'utf8',stdio:['ignore','pipe','pipe'],maxBuffer:8*1024*1024});
+const json=(...args)=>JSON.parse(run(...args,'--format','json'));
+const q=id=>json('query','def',id).data;
+assert.equal(run('-v').trim(),'0.30.1');
+const all=()=>{
+  const values=[];
+  for(const ns of json('query','ns').data.namespaces){
+    const listing=run('query','defs',ns),ids=listing.split('\n').filter(l=>l.startsWith('  ')).map(l=>l.trim().split(' ')[0]);
+    assert.equal(ids.length,Number(listing.match(/Definitions: (\d+)/)[1]));
+    for(const name of ids)values.push(q(`${ns}/${name}`));
+  }
+  return values;
+};
+const before=all();
+assert.equal(before.length,54);
+assert.equal(before.reduce((n,v)=>n+v.tests.length,0),21);
+const target=before.find(v=>v.id==='respo-router.config/dev?');
+assert.deepEqual(target.code,['def','dev?',['=','|dev',['option:unwrap-or',['get-env','|mode'],'|release']]]);
+assert.equal(json('query','type','calcit.core/Option').data.methods.find(m=>m.name==='.unwrap-or')?.definition,'calcit.core/option:unwrap-or');
+const code=['def','dev?',['=','|dev',[['get-env','|mode'],'.unwrap-or','|release']]];
+const ops=[['edit','def',target.id,'--overwrite','--input-format','json-ast','--code',JSON.stringify(code)]];
+writeFileSync('acceptance/before.json',JSON.stringify(before,null,2));
+writeFileSync('acceptance/operations.json',JSON.stringify(ops,null,2));
+writeFileSync('acceptance/config.txt',run('query','config'));
+const args=['edit','transaction','--file','acceptance/operations.json','--format','json'];
+const preview=JSON.parse(run(...args,'--dry-run'));
+assert.ok(preview.scoped_revision);
+writeFileSync('acceptance/preview.json',JSON.stringify(preview,null,2));
+writeFileSync('acceptance/applied.json',run(...args,'--expect-revision',preview.scoped_revision));
+const expected=structuredClone(before);
+expected.find(v=>v.id===target.id).code=code;
+assert.deepEqual(all(),expected,'Only reviewed mode expression changes; all API/tests/metadata stay identical');
+assert.equal(json('query','search','^option:|^result:','--source','project','--regex').data.summary.matches,0);
+const diff=json('analyze','program-diff','HEAD');
+assert.equal(diff.data.evidence.changes.length,1);
+assert.equal(diff.data.evidence.changes[0].path,'files/respo-router.config/defs/dev?/code');
+writeFileSync('acceptance/program-diff.json',JSON.stringify(diff,null,2));
