@@ -2,6 +2,12 @@
 respo-router in Calcit-js
 ----
 
+使用者影响：`0.8.38` 兼容候选配对已发布 Respo `0.16.126` 与其 JS-FFI `0.2.6` 图，CLI/procs 仍为正式 `0.30.1`。仅将开发模式判断的一处旧 `option:unwrap-or` 改为 `.unwrap-or`，保留 `mode` 缺失时的 release 默认值。路由 IR、URL 转义、历史策略、公开签名与原 21 项测试不变，不引入较新 main 的接口变更。UI 等消费者需配对相同正式依赖图，不能只改根 pin 或放宽 strict。
+
+实际 hash Demo 验收观察到路径参数和 query 的百分号编码原样进入 IR，不要假设读取值已经解码；本轮不改此既有行为。raw/decoded 合同与后续显式解码策略跟踪 [#81](https://github.com/Respo/respo-router.calcit/issues/81)，不在兼容 patch 中新增隐式转换或编译器规则。
+
+补丁走独立 `maintenance/0.30.1` 维护线，原完整门禁保留；维护线 PR 仅保存相对路径 artifact 用于本地验收，不读 COS/rsync 凭据，也不部署 Demo。main 与面向 main 的同仓库 PR 原预览路径、COS 内置 verify 和主机密钥校验不变。候选验收及正式 tag 发布前不可当作已发布依赖，不发布 npm。
+
 > Ported from [Respo/respo-router](https://github.com/Respo/respo).
 
 Demo http://repo.respo-mvc.org/respo-router.calcit .
@@ -91,10 +97,10 @@ respo-ui` release cycle.
 样式，使业务项目可以自由选择 UI 层，同时避免
 `respo-ui -> respo-router -> respo-ui` 的发布循环。
 
-使用者影响：尚未发布的 Router `0.8.37` 候选改用正式 Calcit CLI / `@calcit/procs` `0.30.1`，
-使用已发布 Respo `0.16.124` 兼容维护版及其正式 JS-FFI `0.2.5`。Calcit 源码与正式 `0.8.36` 相同，路由 IR、URL 转义、历史策略及 API 不变；不包含 Respo main 的 0.17 破坏性接口。CLI 与 JS runtime 必须一起升级，不能只更新一端。既有候选尚无 tag，因此沿用 `0.8.37`，不为工具链修订增加额外版本。
+此前已发布的 Router `0.8.37` 配对正式 Calcit CLI / `@calcit/procs` `0.30.1`，
+使用 Respo `0.16.124` 兼容维护版及其 JS-FFI `0.2.5`。其 Calcit 源码与正式 `0.8.36` 相同，路由 IR、URL 转义、历史策略及 API 不变；不包含 Respo main 的 0.17 破坏性接口。CLI 与 JS runtime 必须一起升级，不能只更新一端。
 应用需与 UI 等其他模块协调选择同一 Respo / JS-FFI 依赖，不应放宽 Caps 严格解析；
-候选待原有门禁和 CI 验收后才能发布。版本以 `deps.cirru` 和
+本次 `0.8.38` 候选待原有门禁和 CI 验收后才能发布。版本以 `deps.cirru` 和
 `package.json` 为准，发布状态以 GitHub Release 为准。
 两个 entry 都声明 browser target，使用默认严格检查。
 
