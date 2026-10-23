@@ -4,6 +4,8 @@ respo-router in Calcit-js
 
 使用者影响：`0.8.38` 兼容候选配对已发布 Respo `0.16.126` 与其 JS-FFI `0.2.6` 图，CLI/procs 仍为正式 `0.30.1`。仅将开发模式判断的一处旧 `option:unwrap-or` 改为 `.unwrap-or`，保留 `mode` 缺失时的 release 默认值。路由 IR、URL 转义、历史策略、公开签名与原 21 项测试不变，不引入较新 main 的接口变更。UI 等消费者需配对相同正式依赖图，不能只改根 pin 或放宽 strict。
 
+实际 hash Demo 验收观察到路径参数和 query 的百分号编码原样进入 IR，不要假设读取值已经解码；本轮不改此既有行为。raw/decoded 合同与后续显式解码策略跟踪 [#81](https://github.com/Respo/respo-router.calcit/issues/81)，不在兼容 patch 中新增隐式转换或编译器规则。
+
 补丁走独立 `maintenance/0.30.1` 维护线，原完整门禁保留；维护线 PR 仅保存相对路径 artifact 用于本地验收，不读 COS/rsync 凭据，也不部署 Demo。main 与面向 main 的同仓库 PR 原预览路径、COS 内置 verify 和主机密钥校验不变。候选验收及正式 tag 发布前不可当作已发布依赖，不发布 npm。
 
 > Ported from [Respo/respo-router](https://github.com/Respo/respo).
