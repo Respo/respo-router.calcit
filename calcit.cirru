@@ -172,7 +172,7 @@
       :defs $ {} $ 'dev?
         %{} 'CodeEntry (:doc |)
           :code $ quote $ def dev?
-            = |dev $ option:unwrap-or (get-env |mode) |release
+            = |dev $ .unwrap-or (get-env |mode) |release
           :examples $ []
           :schema $ :: 'Bool
       :ns $ %{} 'NsEntry (:doc |)
@@ -601,9 +601,9 @@
                   let
                       segments $ split address |?
                     if
-                      = (count segments) 1
+                      = (.len segments) 1
                       {}
-                      parse-query $ &list:nth segments $ dec (count segments)
+                      parse-query $ &list:nth segments $ dec (.len segments)
                   {}
                 segments $ filter (split text-path |/)
                   fn (piece)
@@ -615,7 +615,7 @@
             :return $ :: 'List 'Dynamic
         'list-to-tuple $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn list-to-tuple (r-tag ret)
-            match (count ret)
+            match (.len ret)
               0 $ :: r-tag
               1 $ :: r-tag $ &list:nth ret 0
               2 $ :: r-tag (&list:nth ret 0) (&list:nth ret 1)
@@ -661,7 +661,7 @@
                       (:ok decoded) decoded
                       (:err message) (raise message)
                   if
-                    < (count paths) (count pattern)
+                    < (.len paths) (.len pattern)
                     recur paths rs
                     let
                         ret $ match-pattern ([]) paths pattern
@@ -669,7 +669,7 @@
                         (:none) (recur paths rs)
                         (:some params)
                           :: :hit (list-to-tuple r-tag params)
-                            slice paths $ count pattern
+                            slice paths $ .len pattern
           :examples $ []
           :schema $ :: 'Fn $ {} (:return 'Enum)
             :args $ [] (:: 'List 'String) (:: 'List 'Dynamic)

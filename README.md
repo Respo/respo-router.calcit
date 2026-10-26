@@ -6,6 +6,24 @@ respo-router in Calcit-js
 
 Demo http://repo.respo-mvc.org/respo-router.calcit .
 
+### 主线 Calcit alpha.6 迁移候选
+
+使用者影响：CLI 与 `@calcit/procs` 从 `0.31.0-alpha.1` 成对升级到已发布的
+`0.31.0-alpha.6`，不要只更新一端。Respo `0.17.0-alpha.2` 的依赖图不变；
+这是现有 0.31 预发布线的迁移，不是对 0.30 稳定消费者的兼容承诺。
+模块版本暂不另增 alpha，合并及正式 tag 发布状态需分别核对。
+
+六处已确认 List 接收者的 `count` 改为 `.len`，环境 Option 使用 `.unwrap-or`；
+不改变 URL/路由 IR、转义、参数数量限制、缺失值处理、历史策略或公开签名。
+两处 `List<Dynamic>` 的元素仍是开放边界，但 `.len` 的容器合同已证明，
+不需要扩大 schema、加入强转或补业务默认值。原生与生成 JS 使用原 21 项附带测试。
+`count` 在这个版本仍受支持，原弃用门禁已经为零；本次是同步推荐调用方式，
+不把正常旧写法误报为编译器缺陷。
+
+保留两个 entry 的全定义与完整 strict、公开定义、弃用/动态方法门禁及原有构建；
+不新增迁移脚本、测试框架、安装策略例外或 COS 复验。前端仍只上传 `dist/`，
+采用 action 内置 verify，PR 预览和生产路径均不变。
+
 ### Usages
 
 ```cirru.no-check
@@ -91,7 +109,9 @@ respo-ui` release cycle.
 样式，使业务项目可以自由选择 UI 层，同时避免
 `respo-ui -> respo-router -> respo-ui` 的发布循环。
 
-使用者影响：尚未发布的 Router `0.8.37` 候选改用正式 Calcit CLI / `@calcit/procs` `0.30.1`，
+#### 0.8 稳定线的历史迁移说明
+
+Router `0.8.37` 的候选迁移改用正式 Calcit CLI / `@calcit/procs` `0.30.1`，
 使用已发布 Respo `0.16.124` 兼容维护版及其正式 JS-FFI `0.2.5`。Calcit 源码与正式 `0.8.36` 相同，路由 IR、URL 转义、历史策略及 API 不变；不包含 Respo main 的 0.17 破坏性接口。CLI 与 JS runtime 必须一起升级，不能只更新一端。既有候选尚无 tag，因此沿用 `0.8.37`，不为工具链修订增加额外版本。
 应用需与 UI 等其他模块协调选择同一 Respo / JS-FFI 依赖，不应放宽 Caps 严格解析；
 候选待原有门禁和 CI 验收后才能发布。版本以 `deps.cirru` 和
@@ -99,7 +119,7 @@ respo-ui` release cycle.
 两个 entry 都声明 browser target，使用默认严格检查。
 
 从 0.8.32 开始，listener 与 demo 跳转回调明确为 `Fn<Enum, Unit>`，
-Room 与其他入口一样发送单个 Enum 操作。参数提取保留原四参数上限，
+Room 与其他入口一样发送单个 Enum 操作。参数提取保留原有参数数量限制，
 使用一个有类型的循环检查 String，不维护逐个 arity 的类型断言。
 现有路由格式与状态树算法不变；开放 payload 在实际消费处检查。
 
@@ -169,7 +189,7 @@ COS Action 固定到正式 1.2.0 的发布提交，配置 `public-base-url` 启�
 
 - 路由规则、任意 tag 的匿名 Enum payload 和 query 值仍是兼容开放数据，不能把外层 Enum 声明理解为全部 payload 已验证。
 - browser listener 与 URL 写入仍使用现有 JS FFI；native 回归只执行纯解析、格式化与边界测试。
-- 本次稳定版升级不改变路由 IR、URL 转义或浏览器历史策略。
+- 上述稳定线迁移不改变路由 IR、URL 转义或浏览器历史策略。
 
 ### License
 
