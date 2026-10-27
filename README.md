@@ -1,6 +1,5 @@
 
-respo-router in Calcit-js
-----
+# respo-router in Calcit-js
 
 > Ported from [Respo/respo-router](https://github.com/Respo/respo).
 
