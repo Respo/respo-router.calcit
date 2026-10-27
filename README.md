@@ -7,12 +7,9 @@ Demo http://repo.respo-mvc.org/respo-router.calcit .
 
 ### 当前工具链：正式 Calcit 0.31.0
 
-本仓库提交仍为模块候选，未发布新 tag；消费者需同步 CLI/runtime 并重新生成 JS，不用候选、main 或 commit 替代已发布依赖。
+Router 0.9 系列配对正式 Calcit CLI / `@calcit/procs` `0.31.0`，使用已发布的 Respo `0.17.0-alpha.3`，通过它解析 JS-FFI `0.2.6`。消费者需同步工具链并重新生成 JS，且与 UI、Reel 等库选择同一精确依赖图；0.30 消费者不应单独混装。
 
-CLI 与 `@calcit/procs` 从 alpha.7 成对升级为已发布 `0.31.0`。
-Respo 依赖、Snapshot、路由 IR、公开 API 和部署路径保持不变。该版默认预检查会
-拒绝未证明的 Dynamic 流向；保留两个入口的原测试和完整 strict，不关闭 proof audit。
-模块依赖仍有预发布 tag，0.30 消费者不应单独混装。以下 alpha.6 迁移记录为历史。
+安装以已发布的精确 tag 和 `deps.cirru :version` 为准，main 是开发候选。本轮只更新版本元数据与配对说明，Snapshot、路由 IR、公开 API 和部署路径保持不变。两个入口继续执行原测试和完整 strict，保留默认 proof audit。以下 alpha.6 迁移记录为历史。
 
 ### Calcit alpha.6 历史迁移记录
 
