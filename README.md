@@ -11,7 +11,7 @@ Demo http://repo.respo-mvc.org/respo-router.calcit .
 
 Router 0.9 系列配对正式 Calcit CLI / `@calcit/procs` `0.32.1`，使用已发布的 Respo `0.17.1`，通过它解析 JS-FFI `0.2.9`。消费者需同步工具链并重新生成 JS，且与 UI、Reel 等库选择同一精确依赖图；0.31 消费者不应单独混装。
 
-安装以已发布的精确 tag 和 `deps.cirru :version` 为准，main 是开发候选。本轮只更新版本元数据与配对说明，Snapshot、路由 IR、公开 API 和部署路径保持不变。两个入口继续执行原测试和完整 strict，保留默认 proof audit。以下 alpha.6 迁移记录为历史。
+安装以已发布的精确 tag 和 `deps.cirru :version` 为准，main 是开发候选。本轮更新版本元数据与配对说明，并把 Snapshot 中的类型标注迁移为 0.32 的 `quote` 写法（`calcit edit format`）；路由 IR、公开 API 和部署路径保持不变。两个入口继续执行原测试和完整 strict，保留默认 proof audit。以下 alpha.6 迁移记录为历史。
 
 ### Calcit alpha.6 历史迁移记录
 
