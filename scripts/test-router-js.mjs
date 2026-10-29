@@ -37,14 +37,14 @@ try {
     operations.push(["edit", "def", `${namespace}/${helper}`, "--input-format", "json-ast", "--code",
       JSON.stringify(["defn", helper, [], test.code, "&unit"])]);
     operations.push(["edit", "schema", `${namespace}/${helper}`, "--input-format", "cirru", "--code",
-      "quote $ :: 'Fn $ {} (:args $ []) (:return 'Unit)"]);
+      "quote $ Fn (-> Unit)"]);
     calls.push([`${namespace}/${helper}`]);
   });
   const entry = "respo-router.format/replay-all-attached";
   operations.push(["edit", "def", entry, "--input-format", "json-ast", "--code",
     JSON.stringify(["defn", "replay-all-attached", [], ...calls, "&unit"])]);
   operations.push(["edit", "schema", entry, "--input-format", "cirru", "--code",
-    "quote $ :: 'Fn $ {} (:args $ []) (:return 'Unit)"]);
+    "quote $ Fn (-> Unit)"]);
   operations.push(["config", "set", "init-fn", entry]);
   operations.push(["config", "set", "reload-fn", entry]);
   const code = JSON.stringify(operations);

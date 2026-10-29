@@ -5,13 +5,15 @@
 
 Demo http://repo.respo-mvc.org/respo-router.calcit .
 
-使用者影响：本次 `0.9.0-alpha.3` 候选对齐 Respo `0.17.0-alpha.4` 与 JS-FFI `0.2.7` 的 0.31 发布图。JS-FFI 旧 `0.2.6` tag 实际声明 0.30.1；不以根检查通过代替传递依赖 tag 的配对证据，详见 [发布配对问题](https://github.com/calcit-lang/js-ffi/issues/195)。Respo 该 tag 已在原 CI 与 Demo 部署通过后发布；本模块仍须完成原门禁及自身发版，不将 main 当成已发布 tag。
+使用者影响：`0.9.0` 候选配对正式 Calcit CLI / `@calcit/procs` `0.32.1`，依赖已发布的 Respo `0.17.1` 和传递 JS-FFI `0.2.9`。应用需同步工具链并重新生成 JS，并与 UI、Reel 等模块选择一致的精确依赖图。
 
-### 当前工具链：正式 Calcit 0.31.0
+### 当前候选：Calcit 0.32.1
 
-Router 0.9 系列配对正式 Calcit CLI / `@calcit/procs` `0.31.0`，使用已发布的 Respo `0.17.0-alpha.4`，通过它解析 JS-FFI `0.2.7`。消费者需同步工具链并重新生成 JS，且与 UI、Reel 等库选择同一精确依赖图；0.30 消费者不应单独混装。
+官方工具转换 3 处类型写法；53 个定义中，52 个 schema 不变，Demo 的既有 store 常量从未标注收紧为真实 `Map<Tag,Dynamic>`。初始化写入改用同一 Map 的 `.assoc`，保留原路由解析输入和字段。路由 IR、URL 转义、参数数量限制、缺失值、历史策略与公开函数签名不变。
 
-安装以已发布的精确 tag 和 `deps.cirru :version` 为准，main 是开发候选。本轮只更新版本元数据与配对说明，Snapshot、路由 IR、公开 API 和部署路径保持不变。两个入口继续执行原测试和完整 strict，保留默认 proof audit。以下 alpha.6 迁移记录为历史。
+原 JS 测试回放器只将两个辅助函数类型模板改为当前 `Fn (-> Unit)`；原 21 项测试 AST 和断言保留。两个入口继续检查全部定义、完整 strict 和五个公开 namespace，并保留原弃用/动态方法门禁。严格 Caps 已从正式 tag 安装依赖，不使用本地模块链接替代发布图证据。
+
+工作流的四处 action SHA 改用已核对的精确正式 tag；原隔离 PR 预览、COS 内置 verify、SSH 信任配置与生产路径保持。既有一小时 npm 包年龄门禁保留，不新增校验脚本或测试框架。本地两个入口、公开定义、原 native/JS 各 21 项测试、零动态/弃用调用、构建及 Demo 的 team、room/query、search、后退、404 和深链接刷新均通过；控制台无警告或错误。候选仍需通过原 CI 与评审后发布，旧 tag 保持不变。
 
 ### Calcit alpha.6 历史迁移记录
 
@@ -186,7 +188,7 @@ rotation.
 部署流程固定 `tiye.me` 的 ED25519 主机键，并在严格 SSH 主机键校验前验证其
 指纹。服务器主机键经独立渠道确认轮换后，必须同时更新键记录与预期指纹。
 
-COS Action 固定到正式 1.2.0 的发布提交，配置 `public-base-url` 启用内置
+COS Action 固定到精确正式 tag v1.2.0，配置 `public-base-url` 启用内置
 逐文件公网 checksum 校验，沿用默认 `verify-*` 参数，不额外维护验证脚本。
 同仓库 PR 前缀为 `Respo/respo-router.calcit/pr/<PR>/<run-id>/<attempt>/`，
 每个 PR 独立排队，与生产队列分开。生产 COS 前缀、SSH 与服务器部署路径不变，
