@@ -488,7 +488,7 @@
           :code $ quote $ defn initial-store ()
             let
                 current-hash $ js-ffi.contract/expect-string |location.hash js/window.location.hash
-              assoc schema/store :router $ parse-address (strip-sharp current-hash) router-rules
+              .assoc schema/store :router $ parse-address (strip-sharp current-hash) router-rules
           :examples $ []
           :schema $ quote $ Fn
             -> $ Map Tag Dynamic
