@@ -5,11 +5,11 @@
 
 Demo http://repo.respo-mvc.org/respo-router.calcit .
 
-使用者影响：本次 `0.9.0-alpha.3` 候选对齐 Respo `0.17.0-alpha.4` 与 JS-FFI `0.2.7` 的 0.31 发布图。JS-FFI 旧 `0.2.6` tag 实际声明 0.30.1；不以根检查通过代替传递依赖 tag 的配对证据，详见 [发布配对问题](https://github.com/calcit-lang/js-ffi/issues/195)。Respo 该 tag 已在原 CI 与 Demo 部署通过后发布；本模块仍须完成原门禁及自身发版，不将 main 当成已发布 tag。
+使用者影响：本次 `0.9.0-alpha.4` 候选对齐 Calcit `0.32.1`、Respo `0.17.1` 与 JS-FFI `0.2.9`。0.32 拒绝旧的 `:: 'Fn` 类型写法，旧依赖图无法加载，须同时升级到这组精确版本并重新生成 JS。本模块仍须完成原门禁及自身发版，不将 main 当成已发布 tag。
 
-### 当前工具链：正式 Calcit 0.31.0
+### 当前工具链：正式 Calcit 0.32.1
 
-Router 0.9 系列配对正式 Calcit CLI / `@calcit/procs` `0.31.0`，使用已发布的 Respo `0.17.0-alpha.4`，通过它解析 JS-FFI `0.2.7`。消费者需同步工具链并重新生成 JS，且与 UI、Reel 等库选择同一精确依赖图；0.30 消费者不应单独混装。
+Router 0.9 系列配对正式 Calcit CLI / `@calcit/procs` `0.32.1`，使用已发布的 Respo `0.17.1`，通过它解析 JS-FFI `0.2.9`。消费者需同步工具链并重新生成 JS，且与 UI、Reel 等库选择同一精确依赖图；0.31 消费者不应单独混装。
 
 安装以已发布的精确 tag 和 `deps.cirru :version` 为准，main 是开发候选。本轮只更新版本元数据与配对说明，Snapshot、路由 IR、公开 API 和部署路径保持不变。两个入口继续执行原测试和完整 strict，保留默认 proof audit。以下 alpha.6 迁移记录为历史。
 
