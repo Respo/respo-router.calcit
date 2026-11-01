@@ -51,9 +51,9 @@ respo-router.core :refer $ render-url!
 ; router rules
 
 def dict $ []
-  :: :room $ [] |room-id
-  :: :team $ [] |team-id
-  :: :search $ []
+  :: :room $ [] |room 'room-id
+  :: :team $ [] |team 'team-id
+  :: :search $ [] |search
 
 ; :hash | :history
 
@@ -79,10 +79,18 @@ Based on a dict:
 
 ```cirru
 def dict $ []
-  :: :team $ [] |team-id
-  :: :room $ [] |room-id
-  :: :search $ []
+  :: :team $ [] |team 'team-id
+  :: :room $ [] |room 'room-id
+  :: :search $ [] |search
 ```
+
+Each pattern segment is a `respo-router.schema/RouteSegment`, a union of
+`String` (a literal path segment) and `Symbol` (a parameter). Rules are checked
+by `respo-router.schema/route-pattern` when they are read; a segment of any
+other type raises instead of being treated as a parameter.
+
+pattern 的每一段是 `RouteSegment`（`String | Symbol` 的 union）：String 是字面路径段，
+Symbol 是参数。读取规则时由 `route-pattern` 检查，其他类型的段会直接报错，不再被当作参数。
 
 Router data structure for:
 
