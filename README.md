@@ -5,7 +5,9 @@
 
 Demo http://repo.respo-mvc.org/respo-router.calcit .
 
-使用者影响：`0.9.0` 候选配对正式 Calcit CLI / `@calcit/procs` `0.32.1`，依赖已发布的 Respo `0.17.1` 和传递 JS-FFI `0.2.9`。应用需同步工具链并重新生成 JS，并与 UI、Reel 等模块选择一致的精确依赖图。
+使用者影响：`0.9.0` 候选继续配对正式 Calcit CLI / `@calcit/procs` `0.32.1`，依赖升级为已发布的 Respo `0.18.0`，传递 JS-FFI `0.2.9` 保持。应用需与 UI、Reel 等模块协调同一精确依赖图，再重新生成 JS。Respo 0.18 的 DomProps 字段改用 Option；应用若直接构造 DomProps，也需迁移，普通 props Map 保持原用法。Router 的 URL、路由 IR、公开签名和 Calcit 源码不变。
+
+0.9.0 尚未发布，因此本次继续使用原候选版本，不另增 alpha 或 patch。原全部门禁和部署路径保持；本地候选图验收与正式 tag 的 Caps 严格安装分别记录，不能相互替代。
 
 ### 当前候选：Calcit 0.32.1
 
