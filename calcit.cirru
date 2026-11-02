@@ -34,28 +34,28 @@
                   div
                     {} $ :class-name style-row-middle
                     <> |GitHub:
-                    =< 10 nil
+                    space-x 10
                     a $ {} (:href |https://github.com/Respo/respo-router) (:inner-text |Respo/router) (:target |_blank)
-                =< nil 12
+                space-y 12
                 div
                   {} $ :class-name style-row
                   <> |Entries:
-                  =< 16 nil
+                  space-x 16
                   div ({}) (render-link |home route-home) (render-link |team route-team) (render-link |room route-room) (render-link |search route-search) (render-link |search route-search-search) (render-link |404 route-404)
                 div
                   {} $ :class-name style-row
                   <> |Dict:
-                  =< 16 nil
+                  space-x 16
                   comp-code-block $ format-cirru-edn router-rules
                 div
                   {} $ :class-name style-row
                   <> |Path:
-                  =< 16 nil
+                  space-x 16
                   comp-code-block $ router->string router router-rules
                 div
                   {} $ :class-name style-row
                   <> |Data:
-                  =< 16 nil
+                  space-x 16
                   comp-code-block $ format-cirru-edn router
           :examples $ []
           :schema $ quote $ Fn respo-router.schema/Store (-> respo.schema/Component)
@@ -157,9 +157,9 @@
             respo.util.format :refer $ hsl
             respo.css :refer $ defstyle
             respo.core :refer $ defcomp div span cursor-> pre a <> img
-            respo.comp.space :refer $ =<
             respo-router.format :refer $ router->string strip-sharp
             respo-router.schema :refer $ router-rules
+            respo.comp.space :refer $ space-x space-y
     'respo-router.config $ %{} 'FileEntry
       :defs $ {} $ 'dev?
         %{} 'CodeEntry (:doc |)
