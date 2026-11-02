@@ -69,7 +69,7 @@
               <> guide
           :examples $ []
           :schema $ quote $ Fn String
-            Fn (Map Tag Dynamic)
+            Fn respo.schema/RespoEvent
               Fn respo-router.schema/Op $ -> Unit
               -> Unit
             -> respo.schema/Element
@@ -79,14 +79,14 @@
               [] $ :: :404 $ [] |missing
               , :query ({})
           :examples $ []
-          :schema $ quote $ Fn (Map Tag Dynamic)
+          :schema $ quote $ Fn respo.schema/RespoEvent
             Fn respo-router.schema/Op $ -> Unit
             -> Unit
         'route-home $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn route-home (e dispatch!)
             dispatch! $ :: :router/route $ respo-router.schema/Router :path ([]) :query ({})
           :examples $ []
-          :schema $ quote $ Fn (Map Tag Dynamic)
+          :schema $ quote $ Fn respo.schema/RespoEvent
             Fn respo-router.schema/Op $ -> Unit
             -> Unit
         'route-room $ %{} 'CodeEntry (:doc |)
@@ -96,7 +96,7 @@
               , :query
                 {} (|a 1) (|b 2)
           :examples $ []
-          :schema $ quote $ Fn (Map Tag Dynamic)
+          :schema $ quote $ Fn respo.schema/RespoEvent
             Fn respo-router.schema/Op $ -> Unit
             -> Unit
         'route-search $ %{} 'CodeEntry (:doc |)
@@ -105,7 +105,7 @@
               [] $ :: :search
               , :query ({})
           :examples $ []
-          :schema $ quote $ Fn (Map Tag Dynamic)
+          :schema $ quote $ Fn respo.schema/RespoEvent
             Fn respo-router.schema/Op $ -> Unit
             -> Unit
         'route-search-search $ %{} 'CodeEntry (:doc |)
@@ -114,7 +114,7 @@
               [] (:: :search) (:: :search)
               , :query ({})
           :examples $ []
-          :schema $ quote $ Fn (Map Tag Dynamic)
+          :schema $ quote $ Fn respo.schema/RespoEvent
             Fn respo-router.schema/Op $ -> Unit
             -> Unit
         'route-team $ %{} 'CodeEntry (:doc |)
@@ -123,7 +123,7 @@
               [] $ :: :team |t1234
               , :query ({})
           :examples $ []
-          :schema $ quote $ Fn (Map Tag Dynamic)
+          :schema $ quote $ Fn respo.schema/RespoEvent
             Fn respo-router.schema/Op $ -> Unit
             -> Unit
         'style-code-block $ %{} 'CodeEntry (:doc |)
