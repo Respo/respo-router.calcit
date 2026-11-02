@@ -52,7 +52,8 @@
                   <> |Path:
                   =< 16 nil
                   comp-code-block $ router->string
-                    decode-map-as (respo-router.schema/read-field store :router) (:: 'Map 'Tag 'Dynamic)
+                    decode-map-as (respo-router.schema/read-field store :router)
+                      quote $ Map Tag Dynamic
                     , router-rules
                 div
                   {} $ :class-name style-row
@@ -195,9 +196,11 @@
                       if (not= old-router router)
                         let
                             new-hash $ str |# $ router->string-iter |
-                              decode-map-as (respo-router.schema/read-field router :path) (:: 'List 'Dynamic)
-                              decode-map-as (respo-router.schema/read-field router :query) (:: 'Map 'String 'Dynamic)
-                              , rules
+                              decode-map-as (respo-router.schema/read-field router :path)
+                                quote $ List Dynamic
+                              decode-map-as (respo-router.schema/read-field router :query)
+                                quote $ Map String Dynamic
+                              respo-router.schema/route-rules rules
                           ; println "|force set path to:" new-hash
                           reset! *ignored? true
                           ; echo |new: new-hash
@@ -207,9 +210,11 @@
                         old-address $ str js/location.pathname js/location.search
                         old-router $ parse-address old-address rules
                         new-address $ router->string-iter |
-                          decode-map-as (respo-router.schema/read-field router :path) (:: 'List 'Dynamic)
-                          decode-map-as (respo-router.schema/read-field router :query) (:: 'Map 'String 'Dynamic)
-                          , rules
+                          decode-map-as (respo-router.schema/read-field router :path)
+                            quote $ List Dynamic
+                          decode-map-as (respo-router.schema/read-field router :query)
+                            quote $ Map String Dynamic
+                          respo-router.schema/route-rules rules
                       if (not= old-router router) (js/history.pushState nil nil new-address)
                     _ $ js/console.warn "|Unknown router-mode:" router-mode
             , &unit
@@ -228,13 +233,15 @@
             match (destruct-list pattern)
               (:none) acc
               (:some p0 ps)
-                if (string? p0)
-                  recur (str acc |/ p0) ps params
-                  recur
-                    str acc |/ $ respo-router.schema/read-item params 0
-                    , ps $ rest params
+                match p0
+                  (String text)
+                    recur (str acc |/ text) ps params
+                  (Symbol _param)
+                    recur
+                      str acc |/ $ respo-router.schema/read-item params 0
+                      , ps $ rest params
           :examples $ []
-          :schema $ quote $ Fn String (List Dynamic) (List String) (-> String)
+          :schema $ quote $ Fn String (List respo-router.schema/RouteSegment) (List String) (-> String)
         'join-strings-dynamic $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn join-strings-dynamic (xs sep)
             if (list? xs)
@@ -264,28 +271,30 @@
         'pick-rule $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn pick-rule (t-tag rules)
             match (destruct-list rules)
-              (:none) (:: :none)
+              (:none) (Option :none)
               (:some r0 rs)
-                let
-                    t $ match
-                      try-decode-map-as (respo-router.schema/read-item r0 0) 'Tag
-                      (:ok decoded) decoded
-                      (:err message) (raise message)
-                  if (= t t-tag) (:: :hit r0) (recur t-tag rs)
+                if
+                  &= t-tag $ :name r0
+                  Option :some r0
+                  recur t-tag rs
           :examples $ []
-          :schema $ quote $ Fn Tag (List Dynamic) (-> Enum)
+          :schema $ quote $ Fn Tag (List respo-router.schema/RouteRule)
+            -> $ Option respo-router.schema/RouteRule
           :tests $ [] $ %{} 'TestEntry (:name |finds-tagged-rule)
-            :code $ quote $ assert |Expected-equal-values:
-              &=
-                :: :hit $ :: :team $ [] |team 'team-id
-                pick-rule :team $ [] $ :: :team ([] |team 'team-id)
+            :code $ quote $ assert=
+              Option :some $ %{} respo-router.schema/RouteRule (:name :team)
+                :pattern $ respo-router.schema/route-pattern $ [] |team 'team-id
+              pick-rule :team $ respo-router.schema/route-rules $ []
+                :: :team $ [] |team 'team-id
             :tags $ #{} :regression :router
         'router->string $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn router->string (router rules)
             router->string-iter |
-              decode-map-as (respo-router.schema/read-field router :path) (:: 'List 'Dynamic)
-              decode-map-as (respo-router.schema/read-field router :query) (:: 'Map 'String 'Dynamic)
-              , rules
+              decode-map-as (respo-router.schema/read-field router :path)
+                quote $ List Dynamic
+              decode-map-as (respo-router.schema/read-field router :query)
+                quote $ Map String Dynamic
+              respo-router.schema/route-rules rules
           :examples $ []
           :schema $ quote $ Fn (Map Tag Dynamic) (List Dynamic) (-> String)
           :tests $ []
@@ -339,17 +348,12 @@
                       rule $ pick-rule t-tag rules
                     match rule
                       (:none) (raise "|found no rule")
-                      (:hit r0)
+                      (:some r0)
                         let
-                            piece $ fill-pattern |
-                              match
-                                try-decode-map-as (respo-router.schema/read-item r0 1) (:: 'List 'Dynamic)
-                                (:ok decoded) decoded
-                                (:err message) (raise message)
-                              , params
+                            piece $ fill-pattern | (:pattern r0) params
                           recur (str acc piece) (rest path) query rules
           :examples $ []
-          :schema $ quote $ Fn String (List Dynamic) (Map String Dynamic) (List Dynamic) (-> String)
+          :schema $ quote $ Fn String (List Dynamic) (Map String Dynamic) (List respo-router.schema/RouteRule) (-> String)
         'slash-trim-left $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn slash-trim-left (address)
             if (blank? address) | $ if (starts-with? address |/) (&str:slice address 1) address
@@ -470,13 +474,13 @@
                     assoc @*store :states $ respo.cursor/update-state-tree
                       .unwrap-or (get @*store :states) ({})
                       match
-                        try-decode-map-as cursor $ :: 'List 'Dynamic
+                        try-decode-map-as cursor $ quote $ List Dynamic
                         (:ok decoded) decoded
                         (:err message) (raise message)
                       , s
                   (:router/route d)
                     assoc @*store :router $ match
-                      try-decode-map-as d $ :: 'Map 'Tag 'Dynamic
+                      try-decode-map-as d $ quote $ Map Tag Dynamic
                       (:ok decoded) decoded
                       (:err message) (raise message)
                   _ @*store
@@ -530,7 +534,8 @@
           :code $ quote $ defn render-router! ()
             render-url!
               match
-                try-decode-map-as (respo-router.schema/read-field @*store :router) (:: 'Map 'Tag 'Dynamic)
+                try-decode-map-as (respo-router.schema/read-field @*store :router)
+                  quote $ Map Tag Dynamic
                 (:ok decoded) decoded
                 (:err message) (raise message)
               , router-rules router-mode
@@ -596,19 +601,21 @@
             match (destruct-list pattern)
               (:none) (Option :some acc)
               (:some p0 ps)
-                if (string? p0)
-                  if
-                    and
-                      not $ empty? paths
-                      = (&list:nth paths 0) p0
-                    recur acc (rest paths) ps
-                    Option :none
-                  recur
-                    conj acc $ &list:nth paths 0
-                    rest paths
-                    , ps
+                match p0
+                  (String text)
+                    if
+                      and
+                        not $ empty? paths
+                        &= (&list:nth paths 0) text
+                      recur acc (rest paths) ps
+                      Option :none
+                  (Symbol _param)
+                    recur
+                      conj acc $ &list:nth paths 0
+                      rest paths
+                      , ps
           :examples $ []
-          :schema $ quote $ Fn (List String) (List String) (List Dynamic)
+          :schema $ quote $ Fn (List String) (List String) (List respo-router.schema/RouteSegment)
             -> $ Option $ List String
         'match-route $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn match-route (paths rules)
@@ -616,14 +623,8 @@
               (:none) (:: :404 paths)
               (:some r0 rs)
                 let
-                    r-tag $ match
-                      try-decode-map-as (respo-router.schema/read-item r0 0) 'Tag
-                      (:ok decoded) decoded
-                      (:err message) (raise message)
-                    pattern $ match
-                      try-decode-map-as (respo-router.schema/read-item r0 1) (:: 'List 'Dynamic)
-                      (:ok decoded) decoded
-                      (:err message) (raise message)
+                    r-tag $ :name r0
+                    pattern $ :pattern r0
                   if
                     < (.len paths) (.len pattern)
                     recur paths rs
@@ -635,7 +636,7 @@
                           :: :hit (list-to-tuple r-tag params)
                             slice paths $ .len pattern
           :examples $ []
-          :schema $ quote $ Fn (List String) (List Dynamic) (-> Enum)
+          :schema $ quote $ Fn (List String) (List respo-router.schema/RouteRule) (-> Enum)
         'parse-address $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn parse-address (address rules)
             assert "|first argument should be a string" $ string? address
@@ -646,10 +647,10 @@
                 {}
                   :path $ parse-path ([])
                     match
-                      try-decode-map-as segments $ :: 'List 'String
+                      try-decode-map-as segments $ quote $ List String
                       (:ok decoded) decoded
                       (:err message) (raise message)
-                    , rules
+                    respo-router.schema/route-rules rules
                   :query query
           :examples $ []
           :schema $ quote $ Fn String (List Dynamic)
@@ -707,7 +708,7 @@
                 (:404 remaining)
                   append acc $ :: :404 remaining
           :examples $ []
-          :schema $ quote $ Fn (List Dynamic) (List String) (List Dynamic)
+          :schema $ quote $ Fn (List Dynamic) (List String) (List respo-router.schema/RouteRule)
             -> $ List Dynamic
         'parse-query $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn parse-query (text)
@@ -730,10 +731,21 @@
           :code $ quote $ defenum Op
             :states
               quote $ List Dynamic
-              , 'Dynamic
-            :router/route 'Dynamic
+              , Dynamic
+            :router/route Dynamic
           :examples $ []
           :schema $ quote EnumDef
+        'RouteRule $ %{} 'CodeEntry
+          :doc "|A checked router rule: the route name and its pattern. Built from the `:: :name pattern` entries of a rule list by `route-rules`."
+          :code $ quote $ defstruct RouteRule (:name Tag)
+            :pattern $ quote $ List respo-router.schema/RouteSegment
+          :examples $ []
+          :schema $ quote StructDef
+        'RouteSegment $ %{} 'CodeEntry
+          :doc "|One segment of a route pattern: a String is a literal path segment, a Symbol names a parameter, e.g. `[] |team 'team-id`."
+          :code $ quote $ defunion RouteSegment String Symbol
+          :examples $ []
+          :schema $ quote UnionDef
         'guidepost $ %{} 'CodeEntry (:doc |)
           :code $ quote $ def guidepost
             {} (:name nil) (:data nil)
@@ -808,6 +820,60 @@
                 raise $ str-spaced |Missing |item |at |index index |in: values
           :examples $ []
           :schema $ quote $ Fn Dynamic Number (-> Dynamic)
+        'route-pattern $ %{} 'CodeEntry
+          :doc "|Checks the pattern list of a router rule and returns it as `List RouteSegment`. Raises on a non-List pattern or on a segment that is neither String nor Symbol."
+          :code $ quote $ defn route-pattern (value)
+            match (data-view value)
+              (:list xs)
+                xs.map $ fn (segment)
+                  hint-fn $ Fn Dynamic $ -> respo-router.schema/RouteSegment
+                  match (data-view segment)
+                    (:string text) text
+                    (:symbol param) param
+                    _ $ raise $ str "|[respo-router/route-pattern] expected String or Symbol segment, got " (to-lispy-string segment)
+              _ $ raise "|[respo-router/route-pattern] expected List"
+          :examples $ []
+          :schema $ quote $ Fn Dynamic
+            -> $ List respo-router.schema/RouteSegment
+          :tests $ []
+            %{} 'TestEntry (:name |valid-literal-and-param)
+              :code $ quote $ assert= ([] |team 'team-id)
+                route-pattern $ [] |team 'team-id
+              :tags $ #{} :boundary :router
+            %{} 'TestEntry (:name |reject-non-list)
+              :code $ quote $ assert= "|[respo-router/route-pattern] expected List"
+                try (route-pattern |team)
+                  fn (error) error
+              :tags $ #{} :boundary :router
+            %{} 'TestEntry (:name |reject-invalid-segment)
+              :code $ quote $ assert= "|[respo-router/route-pattern] expected String or Symbol segment, got 1"
+                try
+                  route-pattern $ [] |team 1
+                  fn (error) error
+              :tags $ #{} :boundary :router
+        'route-rules $ %{} 'CodeEntry
+          :doc "|Checks a rule list such as `[] (:: :team ([] |team 'team-id))` once and returns `List RouteRule`, so parsing and formatting work on typed rules."
+          :code $ quote $ defn route-rules (rules)
+            rules.map $ fn (rule)
+              hint-fn $ Fn Dynamic $ -> respo-router.schema/RouteRule
+              let
+                  name $ match
+                    try-decode-map-as (read-item rule 0) 'Tag
+                    (:ok decoded) decoded
+                    (:err message) (raise message)
+                  pattern $ route-pattern $ read-item rule 1
+                RouteRule :name name :pattern pattern
+          :examples $ []
+          :schema $ quote $ Fn (List Dynamic)
+            -> $ List respo-router.schema/RouteRule
+          :tests $ [] $ %{} 'TestEntry (:name |typed-rules)
+            :code $ quote $ assert=
+              :: :team $ [] |team 'team-id
+              let
+                  rule $ .unwrap $ first
+                    route-rules $ [] $ :: :team ([] |team 'team-id)
+                :: (:name rule) (:pattern rule)
+            :tags $ #{} :boundary :router
         'router $ %{} 'CodeEntry (:doc |)
           :code $ quote $ def router
             {}

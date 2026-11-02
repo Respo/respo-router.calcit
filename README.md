@@ -5,11 +5,15 @@
 
 Demo http://repo.respo-mvc.org/respo-router.calcit .
 
-使用者影响：`0.9.0` 候选继续配对正式 Calcit CLI / `@calcit/procs` `0.32.1`，依赖升级为已发布的 Respo `0.18.0`，传递 JS-FFI `0.2.9` 保持。应用需与 UI、Reel 等模块协调同一精确依赖图，再重新生成 JS。Respo 0.18 的 DomProps 字段改用 Option；应用若直接构造 DomProps，也需迁移，普通 props Map 保持原用法。Router 的 URL、路由 IR、公开签名和 Calcit 源码不变。
+使用者影响：`0.9.0` 候选配对正式 Calcit CLI / `@calcit/procs` `0.34.0`（`defunion` 需要），依赖升级为已发布的 Respo `0.18.0`，传递 JS-FFI `0.2.9` 保持。应用需与 UI、Reel 等模块协调同一精确依赖图，再重新生成 JS。Respo 0.18 的 DomProps 字段改用 Option；应用若直接构造 DomProps，也需迁移，普通 props Map 保持原用法。Router 的 URL、路由 IR 和公开签名不变；路由 pattern 段只接受 String 和 Symbol，见下文 RouteSegment。
 
 0.9.0 尚未发布，因此本次继续使用原候选版本，不另增 alpha 或 patch。原全部门禁和部署路径保持；本地候选图验收与正式 tag 的 Caps 严格安装分别记录，不能相互替代。
 
-### 当前候选：Calcit 0.32.1
+### 当前候选：Calcit 0.34.0
+
+路由 pattern 段改用 `defunion RouteSegment String Symbol`，`fill-pattern`、`match-pattern` 用 `match` 类型模式代替 `string?` 分派，规则读取时由 `route-pattern` 检查。以前非 String 的段一律当参数，现在 String、Symbol 以外的段直接报错。
+
+### Calcit 0.32.1 迁移记录
 
 官方工具转换 3 处类型写法；53 个定义中，52 个 schema 不变，Demo 的既有 store 常量从未标注收紧为真实 `Map<Tag,Dynamic>`。初始化写入改用同一 Map 的 `.assoc`，保留原路由解析输入和字段。路由 IR、URL 转义、参数数量限制、缺失值、历史策略与公开函数签名不变。
 
@@ -51,9 +55,9 @@ respo-router.core :refer $ render-url!
 ; router rules
 
 def dict $ []
-  :: :room $ [] |room-id
-  :: :team $ [] |team-id
-  :: :search $ []
+  :: :room $ [] |room 'room-id
+  :: :team $ [] |team 'team-id
+  :: :search $ [] |search
 
 ; :hash | :history
 
@@ -79,10 +83,18 @@ Based on a dict:
 
 ```cirru
 def dict $ []
-  :: :team $ [] |team-id
-  :: :room $ [] |room-id
-  :: :search $ []
+  :: :team $ [] |team 'team-id
+  :: :room $ [] |room 'room-id
+  :: :search $ [] |search
 ```
+
+Each pattern segment is a `respo-router.schema/RouteSegment`, a union of
+`String` (a literal path segment) and `Symbol` (a parameter). Rules are checked
+by `respo-router.schema/route-pattern` when they are read; a segment of any
+other type raises instead of being treated as a parameter.
+
+pattern 的每一段是 `RouteSegment`（`String | Symbol` 的 union）：String 是字面路径段，
+Symbol 是参数。读取规则时由 `route-pattern` 检查，其他类型的段会直接报错，不再被当作参数。
 
 Router data structure for:
 
