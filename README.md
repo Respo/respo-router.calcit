@@ -5,9 +5,11 @@
 
 Demo http://repo.respo-mvc.org/respo-router.calcit .
 
-使用者影响：`0.9.0` 候选配对正式 Calcit CLI / `@calcit/procs` `0.34.1`，依赖升级为已发布的 Respo `0.18.0`，传递 JS-FFI `0.2.9` 保持。应用需与 UI、Reel 等模块协调同一精确依赖图，再重新生成 JS。Respo 0.18 的 DomProps 字段改用 Option；应用若直接构造 DomProps，也需迁移，普通 props Map 保持原用法。URL 格式不变；路由数据改为 `Router` struct，query 值为 `QueryValue`（String | Number），路由 pattern 段只接受 String、Symbol 和 Tag，见下文“当前候选”。
+使用者影响：`0.10.0` 候选配对正式 Calcit CLI / `@calcit/procs` `0.34.1`，依赖升级为已发布的 Respo `0.18.0`，传递 JS-FFI `0.2.9` 保持。应用需与 UI、Reel 等模块协调同一精确依赖图，再重新生成 JS。Respo 0.18 的 DomProps 字段改用 Option；应用若直接构造 DomProps，也需迁移，普通 props Map 保持原用法。URL 格式不变；路由数据改为 `Router` struct，query 值为 `QueryValue`（String | Number），路由 pattern 段只接受 String、Symbol 和 Tag，见下文“当前候选”。
 
-0.9.0 尚未发布，因此本次继续使用原候选版本，不另增 alpha 或 patch。原全部门禁和部署路径保持；本地候选图验收与正式 tag 的 Caps 严格安装分别记录，不能相互替代。
+Git `0.9.0` 已发布，仍指向旧 Map API。本候选包含之后的 Router struct、QueryValue union 和受检 pattern 改动，因此发布新的 minor **0.10.0**，不移动旧 tag。原全部门禁、HUD 和部署路径保持。
+
+本轮两个入口各 205 项全定义、35 项公开定义、完整 strict（passed，diagnostics=[]）、native / JS 各 26 项原附着测试、弃用/动态调用为零、README 与原 CDN 构建通过。UI #144 的精确源码另作候选兼容夹具，使用正式宿主图加本 Router 链接；这不是 UI 的正式依赖安装证明，发布后仍需将它的 hash 换成正式 tag 并重跑原 CI。未新增浏览器交互验收，旧浏览器记录归属历史迁移。
 
 ### 当前候选：Calcit 0.34.1
 
@@ -20,7 +22,7 @@ Demo http://repo.respo-mvc.org/respo-router.calcit .
 
 应用里 `(:path router)`、`(:query router)` 照常可用；对 router 做 `get`、`assoc`、`get-in` 或把它当 Map 存储的地方需要改成 struct 用法。
 
-### Calcit 0.34.0：RouteSegment
+### Calcit 0.34.0：RouteSegment 历史记录
 
 路由 pattern 段改用 `defunion RouteSegment String Symbol`，`fill-pattern`、`match-pattern` 用 `match` 类型模式代替 `string?` 分派，规则读取时由 `route-pattern` 检查。以前非 String 的段一律当参数，现在 String、Symbol 以外的段直接报错。
 
