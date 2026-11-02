@@ -9,7 +9,7 @@ Demo http://repo.respo-mvc.org/respo-router.calcit .
 
 使用者需同步正式 Calcit CLI / `@calcit/procs` **0.34.2**、Respo **0.19.1**（传递 JS-FFI **0.2.10**），重新安装精确依赖图并生成 JS。URL 格式、Router struct、QueryValue 和 RouteSegment union 合同保持；仍在使用旧 Map 路由数据的应用需按下文迁移。事件继续使用 RespoEvent，页面错误提示 `hud!` 保留。
 
-本候选包含 main 已合入的空路由规则跳过修复（#98），避免 `parse-address` 在非空路径上无限循环；本轮不再改动该实现或原断言，仅配对新工具链和正式依赖。0.11.1 在正式 Git tag 发布前仍是候选，既有 tag 不移动。
+本候选包含 main 已合入的空路由规则跳过修复（#98），避免 `parse-address` 在非空路径上无限循环；本轮不再改动该实现或原断言，并将 Demo 的 6 个事件回调及 render-link 参数签名从 Map 改为真实 RespoEvent，函数体保持。0.11.1 在正式 Git tag 发布前仍是候选，既有 tag 不移动。
 
 保留两个入口、公开定义、完整 strict、原 native/JS 测试及弃用/动态方法门禁。PR 沿用独立前端 COS 预览与 action 内置 verify；生产路径保持，不新增验证脚本或放宽类型。
 
