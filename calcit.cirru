@@ -346,6 +346,10 @@
                 contains? (#{} |a=1&b=2 |b=2&a=1)
                   stringify-query $ {} (|a 1) (|b 2)
               :tags $ #{} :router :unit
+            %{} 'TestEntry (:name |stringifies-string-query)
+              :code $ quote $ assert= |q=hello
+                stringify-query $ {} $ |q |hello
+              :tags $ #{} :router :unit
         'strip-sharp $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn strip-sharp (text)
             if (starts-with? text |#) (&str:slice text 1) text
@@ -516,17 +520,15 @@
         'extract-address $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn extract-address (address)
             let
-                text-path $ if (includes? address |?)
-                  &list:nth (split address |?) 0
-                  , address
-                query $ if (includes? address |?)
-                  let
-                      segments $ split address |?
-                    if
-                      = (.len segments) 1
-                      {}
-                      parse-query $ &list:nth segments $ dec (.len segments)
-                  {}
+                query-index $ .find-index address |?
+                text-path $ match query-index
+                  (:some index)
+                    .slice address 0 $ Option :some index
+                  (:none) address
+                query $ match query-index
+                  (:some index)
+                    parse-query $ .slice address (inc index) (Option :none)
+                  (:none) ({})
                 segments $ filter (split text-path |/)
                   fn (piece)
                     not $ &= | $ trim piece
@@ -636,6 +638,20 @@
                   , :query $ {}
                 parse-address |/team/t123/unknown $ [] $ :: :team ([] |team 'team-id)
               :tags $ #{} :regression :router
+            %{} 'TestEntry (:name |parses-query-string)
+              :code $ quote $ do
+                assert=
+                  respo-router.schema/Router :path ([]) :query $ {} $ |q |hello
+                  parse-address |/?q=hello $ []
+                assert=
+                  respo-router.schema/Router :path ([]) :query $ {}
+                  parse-address |/? $ []
+                assert=
+                  respo-router.schema/Router :path
+                    [] $ :: :404 $ [] "|中文😀"
+                    , :query $ {} $ |q |hello?world
+                  parse-address "|/中文😀?q=hello?world" $ []
+              :tags $ #{} :router :unit
         'parse-path $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn parse-path (acc paths rules)
             if (empty? paths) acc $ match (match-route paths rules)

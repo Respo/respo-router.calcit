@@ -115,10 +115,12 @@ Router data structure for:
 looks like:
 
 ```cirru
-respo-router.schema/Router
-  , :path $ [] (:: :team |t12345) (:: :room |r1234)
-  , :query $ {} (|a 1) (|b 2)
+respo-router.schema/Router :path
+  [] (:: :team |t12345) (:: :room |r1234)
+  , :query $ {} (|a |1) (|b |2)
 ```
+
+查询按首个 `?` 分隔，空首页路径（`/?q=hello`）保留查询值；后续 `?` 属于查询文本。
 
 Some special routes:
 
