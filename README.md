@@ -5,7 +5,7 @@
 
 Demo http://repo.respo-mvc.org/respo-router.calcit .
 
-0.11.0 候选配对 Respo 0.19.0 的名义事件 API 和 JS-FFI 0.2.10，工具链继续为 Calcit / JS 运行时 0.34.1。直接依赖 Respo 的应用与组件库需同步精确版本并重新构建。Respo 的显式 Map 事件回调须迁移到 RespoEvent；本次未修改 Router 源码和 URL 格式。候选尚待正式依赖发布后完成 Caps 验收。
+0.11.0 候选配对 Respo 0.19.0 的名义事件 API 和 JS-FFI 0.2.10，工具链继续为 Calcit / JS 运行时 0.34.1。直接依赖 Respo 的应用与组件库需同步精确版本并重新构建。Respo 的显式 Map 事件回调须迁移到 RespoEvent；路径解析算法和 URL 格式沿用 0.10.0；Demo 六处间距改用 space-x / space-y，保留原方向和尺寸。候选尚待正式依赖发布后完成 Caps 验收。
 
 使用者影响：`0.10.0` 候选配对正式 Calcit CLI / `@calcit/procs` `0.34.1`，依赖升级为已发布的 Respo `0.18.0`，传递 JS-FFI `0.2.9` 保持。应用需与 UI、Reel 等模块协调同一精确依赖图，再重新生成 JS。Respo 0.18 的 DomProps 字段改用 Option；应用若直接构造 DomProps，也需迁移，普通 props Map 保持原用法。URL 格式不变；路由数据改为 `Router` struct，query 值为 `QueryValue`（String | Number），路由 pattern 段只接受 String、Symbol 和 Tag，见下文“当前候选”。
 
