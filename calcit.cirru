@@ -227,6 +227,10 @@
                     recur
                       str acc |/ $ &list:nth params 0
                       , ps $ rest params
+                  (Tag _param)
+                    recur
+                      str acc |/ $ &list:nth params 0
+                      , ps $ rest params
           :examples $ []
           :schema $ quote $ Fn String (List respo-router.schema/RouteSegment) (List String) (-> String)
         'pick-rule $ %{} 'CodeEntry (:doc |)
@@ -272,6 +276,14 @@
                     [] $ :: :team |t1234
                     , :query $ {}
                   [] $ :: :team $ [] |team 'team-id
+              :tags $ #{} :regression :router
+            %{} 'TestEntry (:name |formats-tag-parameter)
+              :code $ quote $ assert= |/component/button
+                router->string
+                  respo-router.schema/Router :path
+                    [] $ :: :component |button
+                    , :query $ {}
+                  [] $ :: :component $ [] |component :name
               :tags $ #{} :regression :router
             %{} 'TestEntry (:name |formats-404-route)
               :code $ quote $ assert |Expected-equal-values:
@@ -565,6 +577,11 @@
                       conj acc $ &list:nth paths 0
                       rest paths
                       , ps
+                  (Tag _param)
+                    recur
+                      conj acc $ &list:nth paths 0
+                      rest paths
+                      , ps
           :examples $ []
           :schema $ quote $ Fn (List String) (List String) (List respo-router.schema/RouteSegment)
             -> $ Option $ List String
@@ -621,6 +638,13 @@
                     [] $ :: :a
                     , :query $ {}
                   parse-address |/a/b/c $ [] $ :: :a ([] |a |b |c)
+              :tags $ #{} :router :unit
+            %{} 'TestEntry (:name |parses-tag-parameter)
+              :code $ quote $ assert=
+                respo-router.schema/Router :path
+                  [] $ :: :component |button
+                  , :query $ {}
+                parse-address |/component/button $ [] $ :: :component ([] |component :name)
               :tags $ #{} :router :unit
             %{} 'TestEntry (:name |parses-404-path)
               :code $ quote $ assert |Expected-equal-values:
@@ -713,8 +737,8 @@
           :examples $ []
           :schema $ quote StructDef
         'RouteSegment $ %{} 'CodeEntry
-          :doc "|One segment of a route pattern: a String is a literal path segment, a Symbol names a parameter, e.g. `[] |team 'team-id`."
-          :code $ quote $ defunion RouteSegment String Symbol
+          :doc "|One segment of a route pattern: a String is a literal path segment, a Symbol or a Tag names a parameter, e.g. `[] |team 'team-id` or `[] |team :team-id`."
+          :code $ quote $ defunion RouteSegment String Symbol Tag
           :examples $ []
           :schema $ quote UnionDef
         'Router $ %{} 'CodeEntry
@@ -768,7 +792,7 @@
           :examples $ []
           :schema $ quote $ Fn Dynamic Number (-> Dynamic)
         'route-pattern $ %{} 'CodeEntry
-          :doc "|Checks the pattern list of a router rule and returns it as `List RouteSegment`. Raises on a non-List pattern or on a segment that is neither String nor Symbol."
+          :doc "|Checks the pattern list of a router rule and returns it as `List RouteSegment`. Raises on a non-List pattern or on a segment that is not a String, Symbol or Tag."
           :code $ quote $ defn route-pattern (value)
             match (data-view value)
               (:list xs)
@@ -777,7 +801,8 @@
                   match (data-view segment)
                     (:string text) text
                     (:symbol param) param
-                    _ $ raise $ str "|[respo-router/route-pattern] expected String or Symbol segment, got " (to-lispy-string segment)
+                    (:tag param) param
+                    _ $ raise $ str "|[respo-router/route-pattern] expected String, Symbol or Tag segment, got " (to-lispy-string segment)
               _ $ raise "|[respo-router/route-pattern] expected List"
           :examples $ []
           :schema $ quote $ Fn Dynamic
@@ -787,13 +812,17 @@
               :code $ quote $ assert= ([] |team 'team-id)
                 route-pattern $ [] |team 'team-id
               :tags $ #{} :boundary :router
+            %{} 'TestEntry (:name |valid-tag-param)
+              :code $ quote $ assert= ([] |component :name)
+                route-pattern $ [] |component :name
+              :tags $ #{} :boundary :router
             %{} 'TestEntry (:name |reject-non-list)
               :code $ quote $ assert= "|[respo-router/route-pattern] expected List"
                 try (route-pattern |team)
                   fn (error) error
               :tags $ #{} :boundary :router
             %{} 'TestEntry (:name |reject-invalid-segment)
-              :code $ quote $ assert= "|[respo-router/route-pattern] expected String or Symbol segment, got 1"
+              :code $ quote $ assert= "|[respo-router/route-pattern] expected String, Symbol or Tag segment, got 1"
                 try
                   route-pattern $ [] |team 1
                   fn (error) error
