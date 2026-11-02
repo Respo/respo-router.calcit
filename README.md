@@ -5,11 +5,21 @@
 
 Demo http://repo.respo-mvc.org/respo-router.calcit .
 
-使用者影响：`0.9.0` 候选配对正式 Calcit CLI / `@calcit/procs` `0.34.0`（`defunion` 需要），依赖升级为已发布的 Respo `0.18.0`，传递 JS-FFI `0.2.9` 保持。应用需与 UI、Reel 等模块协调同一精确依赖图，再重新生成 JS。Respo 0.18 的 DomProps 字段改用 Option；应用若直接构造 DomProps，也需迁移，普通 props Map 保持原用法。Router 的 URL、路由 IR 和公开签名不变；路由 pattern 段只接受 String 和 Symbol，见下文 RouteSegment。
+使用者影响：`0.9.0` 候选配对正式 Calcit CLI / `@calcit/procs` `0.34.1`，依赖升级为已发布的 Respo `0.18.0`，传递 JS-FFI `0.2.9` 保持。应用需与 UI、Reel 等模块协调同一精确依赖图，再重新生成 JS。Respo 0.18 的 DomProps 字段改用 Option；应用若直接构造 DomProps，也需迁移，普通 props Map 保持原用法。URL 格式不变；路由数据改为 `Router` struct，query 值为 `QueryValue`（String | Number），路由 pattern 段只接受 String 和 Symbol，见下文“当前候选”。
 
 0.9.0 尚未发布，因此本次继续使用原候选版本，不另增 alpha 或 patch。原全部门禁和部署路径保持；本地候选图验收与正式 tag 的 Caps 严格安装分别记录，不能相互替代。
 
-### 当前候选：Calcit 0.34.0
+### 当前候选：Calcit 0.34.1
+
+路由数据有了类型，公开函数不再收发 `Map Tag Dynamic`：
+
+- `respo-router.schema/Router`：`(:path (List Enum))`、`(:query (Map String QueryValue))`。`parse-address` 返回它，`router->string`、`render-url!` 接收它，`listen!` 派发的 `:router/route` 也带它。构造写 `Router :path ([] (:: :team |t1)) :query ({})`；应用 Op 里的 `:router/route` 变体可以写成 `respo-router.schema/Router`。
+- `respo-router.schema/QueryValue`：`defunion QueryValue String Number`。解析得到的 query 都是 String；手写 router 时可以放 Number，其他类型会报类型错误。
+- 删除只服务于 Map 形状的 `format/join-strings-dynamic`、`format/stringify-pairs`、`schema/read-field` 和未使用的 `schema/guidepost`。
+
+应用里 `(:path router)`、`(:query router)` 照常可用；对 router 做 `get`、`assoc`、`get-in` 或把它当 Map 存储的地方需要改成 struct 用法。
+
+### Calcit 0.34.0：RouteSegment
 
 路由 pattern 段改用 `defunion RouteSegment String Symbol`，`fill-pattern`、`match-pattern` 用 `match` 类型模式代替 `string?` 分派，规则读取时由 `route-pattern` 检查。以前非 String 的段一律当参数，现在 String、Symbol 以外的段直接报错。
 
@@ -105,9 +115,9 @@ Router data structure for:
 looks like:
 
 ```cirru
-{}
-  :path $ [] (:: :team |t12345) (:: :room |r1234)
-  :query $ {} (|a 1) (|b 2)
+respo-router.schema/Router
+  , :path $ [] (:: :team |t12345) (:: :room |r1234)
+  , :query $ {} (|a 1) (|b 2)
 ```
 
 Some special routes:
