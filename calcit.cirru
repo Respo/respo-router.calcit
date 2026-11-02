@@ -200,7 +200,7 @@
                                 quote $ List Dynamic
                               decode-map-as (respo-router.schema/read-field router :query)
                                 quote $ Map String Dynamic
-                              , rules
+                              respo-router.schema/route-rules rules
                           ; println "|force set path to:" new-hash
                           reset! *ignored? true
                           ; echo |new: new-hash
@@ -214,7 +214,7 @@
                             quote $ List Dynamic
                           decode-map-as (respo-router.schema/read-field router :query)
                             quote $ Map String Dynamic
-                          , rules
+                          respo-router.schema/route-rules rules
                       if (not= old-router router) (js/history.pushState nil nil new-address)
                     _ $ js/console.warn "|Unknown router-mode:" router-mode
             , &unit
@@ -271,21 +271,21 @@
         'pick-rule $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn pick-rule (t-tag rules)
             match (destruct-list rules)
-              (:none) (:: :none)
+              (:none) (Option :none)
               (:some r0 rs)
-                let
-                    t $ match
-                      try-decode-map-as (respo-router.schema/read-item r0 0) 'Tag
-                      (:ok decoded) decoded
-                      (:err message) (raise message)
-                  if (= t t-tag) (:: :hit r0) (recur t-tag rs)
+                if
+                  &= t-tag $ :name r0
+                  Option :some r0
+                  recur t-tag rs
           :examples $ []
-          :schema $ quote $ Fn Tag (List Dynamic) (-> Enum)
+          :schema $ quote $ Fn Tag (List respo-router.schema/RouteRule)
+            -> $ Option respo-router.schema/RouteRule
           :tests $ [] $ %{} 'TestEntry (:name |finds-tagged-rule)
-            :code $ quote $ assert |Expected-equal-values:
-              &=
-                :: :hit $ :: :team $ [] |team 'team-id
-                pick-rule :team $ [] $ :: :team ([] |team 'team-id)
+            :code $ quote $ assert=
+              Option :some $ %{} respo-router.schema/RouteRule (:name :team)
+                :pattern $ respo-router.schema/route-pattern $ [] |team 'team-id
+              pick-rule :team $ respo-router.schema/route-rules $ []
+                :: :team $ [] |team 'team-id
             :tags $ #{} :regression :router
         'router->string $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn router->string (router rules)
@@ -294,7 +294,7 @@
                 quote $ List Dynamic
               decode-map-as (respo-router.schema/read-field router :query)
                 quote $ Map String Dynamic
-              , rules
+              respo-router.schema/route-rules rules
           :examples $ []
           :schema $ quote $ Fn (Map Tag Dynamic) (List Dynamic) (-> String)
           :tests $ []
@@ -348,14 +348,12 @@
                       rule $ pick-rule t-tag rules
                     match rule
                       (:none) (raise "|found no rule")
-                      (:hit r0)
+                      (:some r0)
                         let
-                            piece $ fill-pattern |
-                              respo-router.schema/route-pattern $ respo-router.schema/read-item r0 1
-                              , params
+                            piece $ fill-pattern | (:pattern r0) params
                           recur (str acc piece) (rest path) query rules
           :examples $ []
-          :schema $ quote $ Fn String (List Dynamic) (Map String Dynamic) (List Dynamic) (-> String)
+          :schema $ quote $ Fn String (List Dynamic) (Map String Dynamic) (List respo-router.schema/RouteRule) (-> String)
         'slash-trim-left $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn slash-trim-left (address)
             if (blank? address) | $ if (starts-with? address |/) (&str:slice address 1) address
@@ -625,11 +623,8 @@
               (:none) (:: :404 paths)
               (:some r0 rs)
                 let
-                    r-tag $ match
-                      try-decode-map-as (respo-router.schema/read-item r0 0) 'Tag
-                      (:ok decoded) decoded
-                      (:err message) (raise message)
-                    pattern $ respo-router.schema/route-pattern $ respo-router.schema/read-item r0 1
+                    r-tag $ :name r0
+                    pattern $ :pattern r0
                   if
                     < (.len paths) (.len pattern)
                     recur paths rs
@@ -641,7 +636,7 @@
                           :: :hit (list-to-tuple r-tag params)
                             slice paths $ .len pattern
           :examples $ []
-          :schema $ quote $ Fn (List String) (List Dynamic) (-> Enum)
+          :schema $ quote $ Fn (List String) (List respo-router.schema/RouteRule) (-> Enum)
         'parse-address $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn parse-address (address rules)
             assert "|first argument should be a string" $ string? address
@@ -655,7 +650,7 @@
                       try-decode-map-as segments $ quote $ List String
                       (:ok decoded) decoded
                       (:err message) (raise message)
-                    , rules
+                    respo-router.schema/route-rules rules
                   :query query
           :examples $ []
           :schema $ quote $ Fn String (List Dynamic)
@@ -713,7 +708,7 @@
                 (:404 remaining)
                   append acc $ :: :404 remaining
           :examples $ []
-          :schema $ quote $ Fn (List Dynamic) (List String) (List Dynamic)
+          :schema $ quote $ Fn (List Dynamic) (List String) (List respo-router.schema/RouteRule)
             -> $ List Dynamic
         'parse-query $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn parse-query (text)
@@ -740,6 +735,12 @@
             :router/route Dynamic
           :examples $ []
           :schema $ quote EnumDef
+        'RouteRule $ %{} 'CodeEntry
+          :doc "|A checked router rule: the route name and its pattern. Built from the `:: :name pattern` entries of a rule list by `route-rules`."
+          :code $ quote $ defstruct RouteRule (:name Tag)
+            :pattern $ quote $ List respo-router.schema/RouteSegment
+          :examples $ []
+          :schema $ quote StructDef
         'RouteSegment $ %{} 'CodeEntry
           :doc "|One segment of a route pattern: a String is a literal path segment, a Symbol names a parameter, e.g. `[] |team 'team-id`."
           :code $ quote $ defunion RouteSegment String Symbol
@@ -850,6 +851,29 @@
                   route-pattern $ [] |team 1
                   fn (error) error
               :tags $ #{} :boundary :router
+        'route-rules $ %{} 'CodeEntry
+          :doc "|Checks a rule list such as `[] (:: :team ([] |team 'team-id))` once and returns `List RouteRule`, so parsing and formatting work on typed rules."
+          :code $ quote $ defn route-rules (rules)
+            rules.map $ fn (rule)
+              hint-fn $ Fn Dynamic $ -> respo-router.schema/RouteRule
+              let
+                  name $ match
+                    try-decode-map-as (read-item rule 0) 'Tag
+                    (:ok decoded) decoded
+                    (:err message) (raise message)
+                  pattern $ route-pattern $ read-item rule 1
+                RouteRule :name name :pattern pattern
+          :examples $ []
+          :schema $ quote $ Fn (List Dynamic)
+            -> $ List respo-router.schema/RouteRule
+          :tests $ [] $ %{} 'TestEntry (:name |typed-rules)
+            :code $ quote $ assert=
+              :: :team $ [] |team 'team-id
+              let
+                  rule $ .unwrap $ first
+                    route-rules $ [] $ :: :team ([] |team 'team-id)
+                :: (:name rule) (:pattern rule)
+            :tags $ #{} :boundary :router
         'router $ %{} 'CodeEntry (:doc |)
           :code $ quote $ def router
             {}
