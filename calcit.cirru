@@ -594,7 +594,8 @@
                     r-tag $ :name r0
                     pattern $ :pattern r0
                   if
-                    < (.len paths) (.len pattern)
+                    or (empty? pattern)
+                      < (.len paths) (.len pattern)
                     recur paths rs
                     let
                         ret $ match-pattern ([]) paths pattern
@@ -661,6 +662,24 @@
                     :: :404 $ [] |unknown
                   , :query $ {}
                 parse-address |/team/t123/unknown $ [] $ :: :team ([] |team 'team-id)
+              :tags $ #{} :regression :router
+            %{} 'TestEntry (:name |skips-empty-pattern)
+              :code $ quote $ do
+                assert=
+                  respo-router.schema/Router :path
+                    [] $ :: :a
+                    , :query $ {}
+                  parse-address |/a $ []
+                    :: :home $ []
+                    :: :a $ [] |a
+                assert=
+                  respo-router.schema/Router :path
+                    [] $ :: :404 $ [] |x
+                    , :query $ {}
+                  parse-address |/x $ [] $ :: :home ([])
+                assert=
+                  respo-router.schema/Router :path ([]) :query $ {}
+                  parse-address |/ $ [] $ :: :home ([])
               :tags $ #{} :regression :router
             %{} 'TestEntry (:name |parses-query-string)
               :code $ quote $ do
