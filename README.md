@@ -5,6 +5,25 @@
 
 Demo http://repo.respo-mvc.org/respo-router.calcit .
 
+### 0.9.1 兼容维护候选：使用者影响
+
+CLI / `@calcit/procs` 同步正式 **0.34.2**，依赖为已发布 Respo **0.18.1**
+（传递 JS-FFI **0.2.9**）。这是保留 Respo 0.18 事件/坐标合同的维护线，
+不能与要求 Respo 0.19 的 UI 0.14 混装。消费者需统一精确模块图并重新生成 JS。
+旧 URL、路由 IR、query 的开放值、转义及历史策略保留；不把任意 query 值伪装成有限 union。
+
+官方 formatter 规范旧类型存储；Map 现在传播固定二元 Tuple，`stringify-query` 在
+进入原 List 格式化 helper 前明确构造对应二元素 List，保留原 key/value 和遍历顺序。
+不扩大 helper 合同、删除原断言或加类型强转。其余源码逻辑与公开 schema 不变。
+本候选以已发布 0.9.0 为基点，不更新现代 main，不部署生产 Demo；正式安装以实际 Git tag 为准。
+
+本地两入口各 199 个定义、完整 strict 和 29 个公开定义、原 native/JS 各 21 项测试、
+原弃用及动态方法零调用门禁、immutable 与构建通过。官方 CLI 归一化对照确认仅
+stringify-query 的上述代码变化，原 53 个定义的 schema、附带测试及元数据不变。
+未重做本轮浏览器导航或存档验收；原维护 CI 和评审仍待最终核对。
+
+### 历史 0.9.0
+
 使用者影响：`0.9.0` 候选继续配对正式 Calcit CLI / `@calcit/procs` `0.32.1`，依赖升级为已发布的 Respo `0.18.0`，传递 JS-FFI `0.2.9` 保持。应用需与 UI、Reel 等模块协调同一精确依赖图，再重新生成 JS。Respo 0.18 的 DomProps 字段改用 Option；应用若直接构造 DomProps，也需迁移，普通 props Map 保持原用法。Router 的 URL、路由 IR、公开签名和 Calcit 源码不变。
 
 0.9.0 尚未发布，因此本次继续使用原候选版本，不另增 alpha 或 patch。原全部门禁和部署路径保持；本地候选图验收与正式 tag 的 Caps 严格安装分别记录，不能相互替代。
