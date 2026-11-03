@@ -13,6 +13,13 @@ Demo http://repo.respo-mvc.org/respo-router.calcit .
 
 保留两个入口、公开定义、完整 strict、原 native/JS 测试及弃用/动态方法门禁。PR 沿用独立前端 COS 预览与 action 内置 verify；生产路径保持，不新增验证脚本或放宽类型。
 
+### 路由规则改为 `List RouteRule`（下一版本，需要 Calcit 含 #2552 的版本）
+
+`listen!`、`parse-address`、`router->string`、`render-url!` 的 rules 参数从 `List Dynamic` 改为 `List respo-router.schema/RouteRule`，规则在调用处就由类型检查，不再在运行时解码。依赖 Calcit #2552（`'team-id` 这种 Symbol 字面量推断为 `Symbol`），所以 `[] |team 'team-id` 能直接作为 `List RouteSegment` 通过；在 0.34.2 及以前，这类字面量推断不出类型，`--check-only` 会报错。
+
+- 规则写成 `RouteRule :name :team :pattern $ [] |team 'team-id`，不再写 `:: :team $ [] |team 'team-id`。
+- 删除 `schema/route-rules` 和 `schema/route-pattern` 这两个运行时解码器；需要从外部数据读规则的应用，请在自己的边界里解码成 `RouteRule`。
+
 ### 公开路由合同（0.10 / 0.11）
 
 路由数据有了类型，公开函数不再收发 `Map Tag Dynamic`：
@@ -67,12 +74,12 @@ respo-router.core :refer $ render-url!
 ```
 
 ```cirru.no-check
-; router rules
+; router rules, List respo-router.schema/RouteRule
 
 def dict $ []
-  :: :room $ [] |room 'room-id
-  :: :team $ [] |team 'team-id
-  :: :search $ [] |search
+  RouteRule :name :room :pattern $ [] |room 'room-id
+  RouteRule :name :team :pattern $ [] |team 'team-id
+  RouteRule :name :search :pattern $ [] |search
 
 ; :hash | :history
 
@@ -96,21 +103,20 @@ add-watch! *store :changes $ fn (current previous)
 
 Based on a dict:
 
-```cirru
+```cirru.no-check
 def dict $ []
-  :: :team $ [] |team 'team-id
-  :: :room $ [] |room 'room-id
-  :: :search $ [] |search
+  RouteRule :name :team :pattern $ [] |team 'team-id
+  RouteRule :name :room :pattern $ [] |room 'room-id
+  RouteRule :name :search :pattern $ [] |search
 ```
 
 Each pattern segment is a `respo-router.schema/RouteSegment`, a union of
 `String` (a literal path segment), `Symbol` or `Tag` (a parameter, `'team-id` or
-`:team-id`). Rules are checked
-by `respo-router.schema/route-pattern` when they are read; a segment of any
-other type raises instead of being treated as a parameter.
+`:team-id`). Rules are `respo-router.schema/RouteRule` structs, so a segment of
+any other type is a type error at the call site.
 
 pattern 的每一段是 `RouteSegment`（`String | Symbol | Tag` 的 union）：String 是字面路径段，
-Symbol 或 Tag 是参数。读取规则时由 `route-pattern` 检查，其他类型的段会直接报错，不再被当作参数。
+Symbol 或 Tag 是参数。规则是 `RouteRule` struct，其他类型的段在调用处就是类型错误。
 
 Router data structure for:
 
