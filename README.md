@@ -5,11 +5,17 @@
 
 Demo http://repo.respo-mvc.org/respo-router.calcit .
 
+### 0.11.2：Calcit 0.34.2 维护线的 Respo 依赖协调
+
+使用者需同步正式 Calcit / `@calcit/procs` **0.34.2**、Respo **0.19.2** 与传递 JS-FFI **0.2.10**，重新严格安装完整依赖图并生成 JS。相对正式 0.11.1，路由 API、Snapshot、union、原测试和运行行为不变；本补丁仅协调新版 Respo 的精确依赖图。
+
+本维护分支以已发布 0.11.1 为基线，不包含 main 已引入、要求 Calcit 0.34.3 的 RouteRule 参数收紧。升级到那条新接口线时仍须另行迁移规则，不能把本补丁当作其兼容证明。保留两个入口的完整 strict、公开定义、原 native/JS、弃用与动态方法门禁及原 COS 内置 verify；候选须通过原 CI、实际页面验收和最终评审后才发 tag。
+
 ### 0.11.1 / Calcit 0.34.2
 
 使用者需同步正式 Calcit CLI / `@calcit/procs` **0.34.2**、Respo **0.19.1**（传递 JS-FFI **0.2.10**），重新安装精确依赖图并生成 JS。URL 格式、Router struct、QueryValue 和 RouteSegment union 合同保持；仍在使用旧 Map 路由数据的应用需按下文迁移。事件继续使用 RespoEvent，页面错误提示 `hud!` 保留。
 
-本候选包含 main 已合入的空路由规则跳过修复（#98），避免 `parse-address` 在非空路径上无限循环；本轮不再改动该实现或原断言，并将 Demo 的 6 个事件回调及 render-link 参数签名从 Map 改为真实 RespoEvent，函数体保持。0.11.1 在正式 Git tag 发布前仍是候选，既有 tag 不移动。
+本版本包含 main 已合入的空路由规则跳过修复（#98），避免 `parse-address` 在非空路径上无限循环；本轮不再改动该实现或原断言，并将 Demo 的 6 个事件回调及 render-link 参数签名从 Map 改为真实 RespoEvent，函数体保持。0.11.1 已发布为正式 Git tag，既有 tag 不移动。
 
 保留两个入口、公开定义、完整 strict、原 native/JS 测试及弃用/动态方法门禁。PR 沿用独立前端 COS 预览与 action 内置 verify；生产路径保持，不新增验证脚本或放宽类型。
 
