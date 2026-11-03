@@ -52,7 +52,8 @@
                   <> |Path:
                   =< 16 nil
                   comp-code-block $ router->string
-                    decode-map-as (respo-router.schema/read-field store :router) (:: 'Map 'Tag 'Dynamic)
+                    decode-map-as (respo-router.schema/read-field store :router)
+                      quote $ Map Tag Dynamic
                     , router-rules
                 div
                   {} $ :class-name style-row
@@ -195,8 +196,10 @@
                       if (not= old-router router)
                         let
                             new-hash $ str |# $ router->string-iter |
-                              decode-map-as (respo-router.schema/read-field router :path) (:: 'List 'Dynamic)
-                              decode-map-as (respo-router.schema/read-field router :query) (:: 'Map 'String 'Dynamic)
+                              decode-map-as (respo-router.schema/read-field router :path)
+                                quote $ List Dynamic
+                              decode-map-as (respo-router.schema/read-field router :query)
+                                quote $ Map String Dynamic
                               , rules
                           ; println "|force set path to:" new-hash
                           reset! *ignored? true
@@ -207,8 +210,10 @@
                         old-address $ str js/location.pathname js/location.search
                         old-router $ parse-address old-address rules
                         new-address $ router->string-iter |
-                          decode-map-as (respo-router.schema/read-field router :path) (:: 'List 'Dynamic)
-                          decode-map-as (respo-router.schema/read-field router :query) (:: 'Map 'String 'Dynamic)
+                          decode-map-as (respo-router.schema/read-field router :path)
+                            quote $ List Dynamic
+                          decode-map-as (respo-router.schema/read-field router :query)
+                            quote $ Map String Dynamic
                           , rules
                       if (not= old-router router) (js/history.pushState nil nil new-address)
                     _ $ js/console.warn "|Unknown router-mode:" router-mode
@@ -283,8 +288,10 @@
         'router->string $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn router->string (router rules)
             router->string-iter |
-              decode-map-as (respo-router.schema/read-field router :path) (:: 'List 'Dynamic)
-              decode-map-as (respo-router.schema/read-field router :query) (:: 'Map 'String 'Dynamic)
+              decode-map-as (respo-router.schema/read-field router :path)
+                quote $ List Dynamic
+              decode-map-as (respo-router.schema/read-field router :query)
+                quote $ Map String Dynamic
               , rules
           :examples $ []
           :schema $ quote $ Fn (Map Tag Dynamic) (List Dynamic) (-> String)
@@ -343,7 +350,8 @@
                         let
                             piece $ fill-pattern |
                               match
-                                try-decode-map-as (respo-router.schema/read-item r0 1) (:: 'List 'Dynamic)
+                                try-decode-map-as (respo-router.schema/read-item r0 1)
+                                  quote $ List Dynamic
                                 (:ok decoded) decoded
                                 (:err message) (raise message)
                               , params
@@ -368,7 +376,9 @@
         'stringify-query $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn stringify-query (query)
             if (nil? query) | $ let
-                pairs $ &map:to-list query
+                pairs $ map (&map:to-list query)
+                  fn (pair)
+                    [] (&list:nth pair 0) (&list:nth pair 1)
               if (empty? pairs) | $ stringify-pairs pairs 1 $ join-strings-dynamic (&list:nth pairs 0) |=
           :examples $ []
           :schema $ quote $ Fn (Map String Dynamic) (-> String)
@@ -470,13 +480,13 @@
                     assoc @*store :states $ respo.cursor/update-state-tree
                       .unwrap-or (get @*store :states) ({})
                       match
-                        try-decode-map-as cursor $ :: 'List 'Dynamic
+                        try-decode-map-as cursor $ quote $ List Dynamic
                         (:ok decoded) decoded
                         (:err message) (raise message)
                       , s
                   (:router/route d)
                     assoc @*store :router $ match
-                      try-decode-map-as d $ :: 'Map 'Tag 'Dynamic
+                      try-decode-map-as d $ quote $ Map Tag Dynamic
                       (:ok decoded) decoded
                       (:err message) (raise message)
                   _ @*store
@@ -530,7 +540,8 @@
           :code $ quote $ defn render-router! ()
             render-url!
               match
-                try-decode-map-as (respo-router.schema/read-field @*store :router) (:: 'Map 'Tag 'Dynamic)
+                try-decode-map-as (respo-router.schema/read-field @*store :router)
+                  quote $ Map Tag Dynamic
                 (:ok decoded) decoded
                 (:err message) (raise message)
               , router-rules router-mode
@@ -621,7 +632,8 @@
                       (:ok decoded) decoded
                       (:err message) (raise message)
                     pattern $ match
-                      try-decode-map-as (respo-router.schema/read-item r0 1) (:: 'List 'Dynamic)
+                      try-decode-map-as (respo-router.schema/read-item r0 1)
+                        quote $ List Dynamic
                       (:ok decoded) decoded
                       (:err message) (raise message)
                   if
@@ -646,7 +658,7 @@
                 {}
                   :path $ parse-path ([])
                     match
-                      try-decode-map-as segments $ :: 'List 'String
+                      try-decode-map-as segments $ quote $ List String
                       (:ok decoded) decoded
                       (:err message) (raise message)
                     , rules
@@ -730,8 +742,8 @@
           :code $ quote $ defenum Op
             :states
               quote $ List Dynamic
-              , 'Dynamic
-            :router/route 'Dynamic
+              , Dynamic
+            :router/route Dynamic
           :examples $ []
           :schema $ quote EnumDef
         'guidepost $ %{} 'CodeEntry (:doc |)
