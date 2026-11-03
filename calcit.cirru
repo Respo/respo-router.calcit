@@ -192,7 +192,7 @@
                       ; echo old-router router (not= old-router router) (= old-router router)
                       if (not= old-router router)
                         let
-                            new-hash $ str |# $ router->string-iter | (:path router) (:query router) (respo-router.schema/route-rules rules)
+                            new-hash $ str |# $ router->string-iter | (:path router) (:query router) rules
                           ; println "|force set path to:" new-hash
                           reset! *ignored? true
                           ; echo |new: new-hash
@@ -201,12 +201,12 @@
                     :history $ let
                         old-address $ str js/location.pathname js/location.search
                         old-router $ parse-address old-address rules
-                        new-address $ router->string-iter | (:path router) (:query router) (respo-router.schema/route-rules rules)
+                        new-address $ router->string-iter | (:path router) (:query router) rules
                       if (not= old-router router) (js/history.pushState nil nil new-address)
                     _ $ js/console.warn "|Unknown router-mode:" router-mode
             , &unit
           :examples $ []
-          :schema $ quote $ Fn respo-router.schema/Router (List Dynamic) Tag (-> Unit) (:features :js-ffi)
+          :schema $ quote $ Fn respo-router.schema/Router (List respo-router.schema/RouteRule) Tag (-> Unit) (:features :js-ffi)
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote $ ns respo-router.core
           :require
@@ -247,10 +247,10 @@
             -> $ Option respo-router.schema/RouteRule
           :tests $ [] $ %{} 'TestEntry (:name |finds-tagged-rule)
             :code $ quote $ assert=
-              Option :some $ %{} respo-router.schema/RouteRule (:name :team)
-                :pattern $ respo-router.schema/route-pattern $ [] |team 'team-id
-              pick-rule :team $ respo-router.schema/route-rules $ []
-                :: :team $ [] |team 'team-id
+              Option :some $ respo-router.schema/RouteRule :name :team :pattern $ [] |team 'team-id
+              pick-rule :team $ []
+                respo-router.schema/RouteRule :name :room :pattern $ [] |room 'room-id
+                respo-router.schema/RouteRule :name :team :pattern $ [] |team 'team-id
             :tags $ #{} :regression :router
         'query-value-text $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn query-value-text (value)
@@ -265,9 +265,9 @@
             :tags $ #{} :router :unit
         'router->string $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn router->string (router rules)
-            router->string-iter | (:path router) (:query router) (respo-router.schema/route-rules rules)
+            router->string-iter | (:path router) (:query router) rules
           :examples $ []
-          :schema $ quote $ Fn respo-router.schema/Router (List Dynamic) (-> String)
+          :schema $ quote $ Fn respo-router.schema/Router (List respo-router.schema/RouteRule) (-> String)
           :tests $ []
             %{} 'TestEntry (:name |formats-tagged-route)
               :code $ quote $ assert |Expected-equal-values:
@@ -275,7 +275,7 @@
                   respo-router.schema/Router :path
                     [] $ :: :team |t1234
                     , :query $ {}
-                  [] $ :: :team $ [] |team 'team-id
+                  [] $ respo-router.schema/RouteRule :name :team :pattern $ [] |team 'team-id
               :tags $ #{} :regression :router
             %{} 'TestEntry (:name |formats-tag-parameter)
               :code $ quote $ assert= |/component/button
@@ -283,7 +283,7 @@
                   respo-router.schema/Router :path
                     [] $ :: :component |button
                     , :query $ {}
-                  [] $ :: :component $ [] |component :name
+                  [] $ respo-router.schema/RouteRule :name :component :pattern $ [] |component :name
               :tags $ #{} :regression :router
             %{} 'TestEntry (:name |formats-404-route)
               :code $ quote $ assert |Expected-equal-values:
@@ -428,7 +428,7 @@
               _ $ js/console.warn "|unknown mode:" router-mode
             , &unit
           :examples $ []
-          :schema $ quote $ Fn (List Dynamic)
+          :schema $ quote $ Fn (List respo-router.schema/RouteRule)
             Fn *dispatch-op $ -> Unit
             , Tag (-> Unit) (:features :js-ffi)
       :ns $ %{} 'NsEntry (:doc |)
@@ -610,11 +610,11 @@
           :code $ quote $ defn parse-address (address rules)
             let
                 parts $ extract-address $ slash-trim-left address
-                path $ parse-path ([]) (:segments parts) (respo-router.schema/route-rules rules)
+                path $ parse-path ([]) (:segments parts) rules
                 query $ :query parts
               respo-router.schema/Router :path path :query query
           :examples $ []
-          :schema $ quote $ Fn String (List Dynamic) (-> respo-router.schema/Router)
+          :schema $ quote $ Fn String (List respo-router.schema/RouteRule) (-> respo-router.schema/Router)
           :tests $ []
             %{} 'TestEntry (:name |parses-empty-path)
               :code $ quote $ assert |Expected-equal-values:
@@ -629,8 +629,8 @@
                     [] (:: :a) (:: :b) (:: :a) (:: :a)
                     , :query $ {}
                   parse-address |/a/b/a/a $ []
-                    :: :a $ [] |a
-                    :: :b $ [] |b
+                    respo-router.schema/RouteRule :name :a :pattern $ [] |a
+                    respo-router.schema/RouteRule :name :b :pattern $ [] |b
               :tags $ #{} :router :unit
             %{} 'TestEntry (:name |parses-path-parameters)
               :code $ quote $ assert |Expected-equal-values:
@@ -638,14 +638,14 @@
                   respo-router.schema/Router :path
                     [] $ :: :a
                     , :query $ {}
-                  parse-address |/a/b/c $ [] $ :: :a ([] |a |b |c)
+                  parse-address |/a/b/c $ [] $ respo-router.schema/RouteRule :name :a :pattern ([] |a |b |c)
               :tags $ #{} :router :unit
             %{} 'TestEntry (:name |parses-tag-parameter)
               :code $ quote $ assert=
                 respo-router.schema/Router :path
                   [] $ :: :component |button
                   , :query $ {}
-                parse-address |/component/button $ [] $ :: :component ([] |component :name)
+                parse-address |/component/button $ [] $ respo-router.schema/RouteRule :name :component :pattern ([] |component :name)
               :tags $ #{} :router :unit
             %{} 'TestEntry (:name |parses-404-path)
               :code $ quote $ assert |Expected-equal-values:
@@ -653,7 +653,7 @@
                   respo-router.schema/Router :path
                     [] $ :: :404 $ [] |ddd
                     , :query $ {}
-                  parse-address |/ddd $ [] $ :: :a ([] |a |b |c)
+                  parse-address |/ddd $ [] $ respo-router.schema/RouteRule :name :a :pattern ([] |a |b |c)
               :tags $ #{} :router :unit
             %{} 'TestEntry (:name |preserves-partial-match-404)
               :code $ quote $ assert=
@@ -661,7 +661,7 @@
                   [] (:: :team |t123)
                     :: :404 $ [] |unknown
                   , :query $ {}
-                parse-address |/team/t123/unknown $ [] $ :: :team ([] |team 'team-id)
+                parse-address |/team/t123/unknown $ [] $ respo-router.schema/RouteRule :name :team :pattern ([] |team 'team-id)
               :tags $ #{} :regression :router
             %{} 'TestEntry (:name |skips-empty-pattern)
               :code $ quote $ do
@@ -670,16 +670,16 @@
                     [] $ :: :a
                     , :query $ {}
                   parse-address |/a $ []
-                    :: :home $ []
-                    :: :a $ [] |a
+                    respo-router.schema/RouteRule :name :home :pattern $ []
+                    respo-router.schema/RouteRule :name :a :pattern $ [] |a
                 assert=
                   respo-router.schema/Router :path
                     [] $ :: :404 $ [] |x
                     , :query $ {}
-                  parse-address |/x $ [] $ :: :home ([])
+                  parse-address |/x $ [] $ respo-router.schema/RouteRule :name :home :pattern ([])
                 assert=
                   respo-router.schema/Router :path ([]) :query $ {}
-                  parse-address |/ $ [] $ :: :home ([])
+                  parse-address |/ $ [] $ respo-router.schema/RouteRule :name :home :pattern ([])
               :tags $ #{} :regression :router
             %{} 'TestEntry (:name |parses-query-string)
               :code $ quote $ do
@@ -750,7 +750,7 @@
           :examples $ []
           :schema $ quote EnumDef
         'RouteRule $ %{} 'CodeEntry
-          :doc "|A checked router rule: the route name and its pattern. Built from the `:: :name pattern` entries of a rule list by `route-rules`."
+          :doc "|A checked router rule: the route name and its pattern. Apps write rules as `RouteRule :name :team :pattern $ [] |team 'team-id`; the pattern literal is checked as `List RouteSegment`."
           :code $ quote $ defstruct RouteRule (:name Tag)
             :pattern $ quote $ List respo-router.schema/RouteSegment
           :examples $ []
@@ -810,65 +810,6 @@
                 raise $ str-spaced |Missing |item |at |index index |in: values
           :examples $ []
           :schema $ quote $ Fn Dynamic Number (-> Dynamic)
-        'route-pattern $ %{} 'CodeEntry
-          :doc "|Checks the pattern list of a router rule and returns it as `List RouteSegment`. Raises on a non-List pattern or on a segment that is not a String, Symbol or Tag."
-          :code $ quote $ defn route-pattern (value)
-            match (data-view value)
-              (:list xs)
-                xs.map $ fn (segment)
-                  hint-fn $ Fn Dynamic $ -> respo-router.schema/RouteSegment
-                  match (data-view segment)
-                    (:string text) text
-                    (:symbol param) param
-                    (:tag param) param
-                    _ $ raise $ str "|[respo-router/route-pattern] expected String, Symbol or Tag segment, got " (to-lispy-string segment)
-              _ $ raise "|[respo-router/route-pattern] expected List"
-          :examples $ []
-          :schema $ quote $ Fn Dynamic
-            -> $ List respo-router.schema/RouteSegment
-          :tests $ []
-            %{} 'TestEntry (:name |valid-literal-and-param)
-              :code $ quote $ assert= ([] |team 'team-id)
-                route-pattern $ [] |team 'team-id
-              :tags $ #{} :boundary :router
-            %{} 'TestEntry (:name |valid-tag-param)
-              :code $ quote $ assert= ([] |component :name)
-                route-pattern $ [] |component :name
-              :tags $ #{} :boundary :router
-            %{} 'TestEntry (:name |reject-non-list)
-              :code $ quote $ assert= "|[respo-router/route-pattern] expected List"
-                try (route-pattern |team)
-                  fn (error) error
-              :tags $ #{} :boundary :router
-            %{} 'TestEntry (:name |reject-invalid-segment)
-              :code $ quote $ assert= "|[respo-router/route-pattern] expected String, Symbol or Tag segment, got 1"
-                try
-                  route-pattern $ [] |team 1
-                  fn (error) error
-              :tags $ #{} :boundary :router
-        'route-rules $ %{} 'CodeEntry
-          :doc "|Checks a rule list such as `[] (:: :team ([] |team 'team-id))` once and returns `List RouteRule`, so parsing and formatting work on typed rules."
-          :code $ quote $ defn route-rules (rules)
-            rules.map $ fn (rule)
-              hint-fn $ Fn Dynamic $ -> respo-router.schema/RouteRule
-              let
-                  name $ match
-                    try-decode-map-as (read-item rule 0) 'Tag
-                    (:ok decoded) decoded
-                    (:err message) (raise message)
-                  pattern $ route-pattern $ read-item rule 1
-                RouteRule :name name :pattern pattern
-          :examples $ []
-          :schema $ quote $ Fn (List Dynamic)
-            -> $ List respo-router.schema/RouteRule
-          :tests $ [] $ %{} 'TestEntry (:name |typed-rules)
-            :code $ quote $ assert=
-              :: :team $ [] |team 'team-id
-              let
-                  rule $ .unwrap $ first
-                    route-rules $ [] $ :: :team ([] |team 'team-id)
-                :: (:name rule) (:pattern rule)
-            :tags $ #{} :boundary :router
         'router $ %{} 'CodeEntry (:doc |)
           :code $ quote $ def router
             Router :path ([]) :query $ {}
@@ -877,11 +818,11 @@
         'router-rules $ %{} 'CodeEntry (:doc |)
           :code $ quote $ def router-rules
             []
-              :: :team $ [] |team 'team-id
-              :: :room $ [] |room 'room-id
-              :: :search $ [] |search
+              RouteRule :name :team :pattern $ [] |team 'team-id
+              RouteRule :name :room :pattern $ [] |room 'room-id
+              RouteRule :name :search :pattern $ [] |search
           :examples $ []
-          :schema $ quote $ List Enum
+          :schema $ quote $ List respo-router.schema/RouteRule
         'store $ %{} 'CodeEntry (:doc |)
           :code $ quote $ def store
             Store :router router :states $ {}
