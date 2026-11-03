@@ -13,7 +13,7 @@ Demo http://repo.respo-mvc.org/respo-router.calcit .
 
 保留两个入口、公开定义、完整 strict、原 native/JS 测试及弃用/动态方法门禁。PR 沿用独立前端 COS 预览与 action 内置 verify；生产路径保持，不新增验证脚本或放宽类型。
 
-### 路由规则改为 `List RouteRule`（下一版本，需要 Calcit 含 #2552 的版本）
+### 路由规则改为 `List RouteRule`（下一版本，需要 Calcit 0.34.3）
 
 `listen!`、`parse-address`、`router->string`、`render-url!` 的 rules 参数从 `List Dynamic` 改为 `List respo-router.schema/RouteRule`，规则在调用处就由类型检查，不再在运行时解码。依赖 Calcit #2552（`'team-id` 这种 Symbol 字面量推断为 `Symbol`），所以 `[] |team 'team-id` 能直接作为 `List RouteSegment` 通过；在 0.34.2 及以前，这类字面量推断不出类型，`--check-only` 会报错。
 
