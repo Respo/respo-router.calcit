@@ -1,3 +1,9 @@
+### Router 0.10 维护线：Calcit 0.34.2
+
+使用者影响：0.10.1 保留 0.10.0 的 Router struct 与原路径/查询协议，CLI 和 `@calcit/procs` 同步到正式 0.34.2，依赖 Respo 0.18.1。它用于仍持有 Map 事件的兼容图；不要与 Respo 0.19 / 新事件图混装。此次不回退为旧 Map Router，也不修改运行源码、类型合同或原测试。
+
+仅更新正式依赖、工具链锁文件与版本说明。完整 strict、两个入口、原 native/JS 测试及构建仍由原 CI 执行；维护分支不触发 main 的生产部署。0.10.1 验收通过前不创建正式 tag。
+
 
 # respo-router in Calcit-js
 
