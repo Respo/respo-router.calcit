@@ -451,9 +451,9 @@
                     let
                         states $ decode-map-as
                           respo.cursor/update-state-tree (:states store)
-                            decode-map-as cursor $ quote $ List Dynamic
+                            decode-map-as cursor $ List Dynamic
                             , s
-                          quote $ Map Tag Dynamic
+                          Map Tag Dynamic
                       schema/Store :router (:router store) :states states
                   (:router/route router)
                     schema/Store :router router :states $ :states store
@@ -479,8 +479,7 @@
           :schema $ quote $ Fn (-> Unit) (:features :js-ffi)
         'mount-target $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn mount-target ()
-            unsafe-coerce (js/document.querySelector |.app)
-              quote $ JsNullish respo.dom/DomElement
+            unsafe-coerce (js/document.querySelector |.app) (JsNullish respo.dom/DomElement)
           :examples $ []
           :schema $ quote $ Fn
             -> $ JsNullish respo.dom/DomElement
@@ -724,16 +723,14 @@
         'Address $ %{} 'CodeEntry
           :doc "|An address split into its non-empty path segments and its parsed query."
           :code $ quote $ defstruct Address
-            :segments $ quote $ List String
-            :query $ quote $ Map String String
+            :segments $ List String
+            :query $ Map String String
           :examples $ []
           :schema $ quote StructDef
         'Op $ %{} 'CodeEntry
           :doc "|Dispatch Op of the demo app, bound to the :dispatch-op type slot. Apps using router handlers need a `:router/route respo-router.schema/Router` variant in their own Op."
           :code $ quote $ defenum Op
-            :states
-              quote $ List Dynamic
-              , Dynamic
+            :states (List Dynamic) Dynamic
             :router/route respo-router.schema/Router
           :examples $ []
           :schema $ quote EnumDef
@@ -745,14 +742,14 @@
         'RouteMatch $ %{} 'CodeEntry
           :doc "|Result of matching the head of a path: `:hit` carries the route entry and the remaining segments, `:miss` carries the segments no rule matched."
           :code $ quote $ defenum RouteMatch
-            :hit Enum $ quote $ List String
-            :miss $ quote $ List String
+            :hit Enum $ List String
+            :miss $ List String
           :examples $ []
           :schema $ quote EnumDef
         'RouteRule $ %{} 'CodeEntry
           :doc "|A checked router rule: the route name and its pattern. Apps write rules as `RouteRule :name :team :pattern $ [] |team 'team-id`; the pattern literal is checked as `List RouteSegment`."
           :code $ quote $ defstruct RouteRule (:name Tag)
-            :pattern $ quote $ List respo-router.schema/RouteSegment
+            :pattern $ List respo-router.schema/RouteSegment
           :examples $ []
           :schema $ quote StructDef
         'RouteSegment $ %{} 'CodeEntry
@@ -763,14 +760,14 @@
         'Router $ %{} 'CodeEntry
           :doc "|Router state. `:path` holds the matched entries, such as `:: :team |t1` (route name plus String parameters) or `:: :404 ([] |a |b)` for the unmatched rest; `:query` maps names to QueryValue."
           :code $ quote $ defstruct Router
-            :path $ quote $ List Enum
-            :query $ quote $ Map String respo-router.schema/QueryValue
+            :path $ List Enum
+            :query $ Map String respo-router.schema/QueryValue
           :examples $ []
           :schema $ quote StructDef
         'Store $ %{} 'CodeEntry
           :doc "|Store of the demo app: the router state and Respo's component states."
           :code $ quote $ defstruct Store (:router respo-router.schema/Router)
-            :states $ quote $ Map Tag Dynamic
+            :states $ Map Tag Dynamic
           :examples $ []
           :schema $ quote StructDef
         'path-segments $ %{} 'CodeEntry (:doc |)
