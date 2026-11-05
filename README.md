@@ -5,9 +5,17 @@
 
 Demo http://repo.respo-mvc.org/respo-router.calcit .
 
-### 0.12.0 / Calcit 0.35.0 候选
+### 0.12.1 候选 / Calcit 0.35.1
 
-使用者注意：本候选要求正式 Calcit CLI / `@calcit/procs` **0.35.0** 和已发布 Respo **0.19.3**（JS-FFI **0.2.12**）。本模块 0.12.0 仍为候选，待正式 Git tag 发布后再更新下游依赖。已移除本地候选链接，并通过 Caps strict 从正式 tag 重新安装、验证工具链和运行原测试；旧 tag 保持不变。
+使用者注意：CLI、`deps.cirru :calcit-version` 与 `@calcit/procs` 同步正式 **0.35.1**，配对正式 Respo **0.19.4**（传递 JS-FFI **0.2.13**）。请统一精确依赖图、重新安装并生成 JS；正式 tag 发布前仍为候选。
+
+本 patch 包含已有 #105 的七处 `Enum` → `AnyEnum` 拼写。二者是同一类型，路由仍允许应用定义的异构枚举 payload，不将其收窄为 Demo 专用变体。`QueryValue`、`RouteSegment` union、`List RouteRule`、URL 格式与失败行为保持；真实开放输入保留受检解码器，页面错误提示 `hud!` 保留。
+
+原 native/JS 测试、双入口 strict、公开定义与弃用/动态方法门禁、包年龄限制和部署路径保留。查询值中 `&` / `=` 的既有往返限制仍然存在（#81），不因本次版本配对改变 URL 协议；验收和部署结果以 PR 为准。
+
+### 历史 0.12.0 / Calcit 0.35.0
+
+该版本要求正式 Calcit CLI / `@calcit/procs` **0.35.0** 和已发布 Respo **0.19.3**（JS-FFI **0.2.12**）。正式版本以对应 Git tag 为准。已移除本地候选链接，并通过 Caps strict 从正式 tag 重新安装、验证工具链和运行原测试；旧 tag 保持不变。
 
 本 minor 纳入下文已经合入 main 的 `List RouteRule` 破坏性接口：旧匿名枚举规则改为名义 `RouteRule`，具体模式成员继续使用 `RouteSegment` union。Router、QueryValue 合同和页面错误提示 `hud!` 保留。查询值未做 URL 百分号编码或解码，包含 `&` 或 `=` 等分隔符时不保证原样往返。升级后须重新安装精确配对依赖并生成 JS；原门禁和 native/JS 测试保持。
 
