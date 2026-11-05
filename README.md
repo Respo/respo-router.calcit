@@ -9,7 +9,7 @@ Demo http://repo.respo-mvc.org/respo-router.calcit .
 
 使用者注意：本候选要求正式 Calcit CLI / `@calcit/procs` **0.35.0** 和已发布 Respo **0.19.3**（JS-FFI **0.2.12**）。本模块 0.12.0 仍为候选，待正式 Git tag 发布后再更新下游依赖。已移除本地候选链接，并通过 Caps strict 从正式 tag 重新安装、验证工具链和运行原测试；旧 tag 保持不变。
 
-本 minor 纳入下文已经合入 main 的 `List RouteRule` 破坏性接口：旧匿名枚举规则改为名义 `RouteRule`，具体模式成员继续使用 `RouteSegment` union。URL 编码、Router、QueryValue 合同和页面错误提示 `hud!` 保留。升级后须重新安装精确配对依赖并生成 JS；原门禁和 native/JS 测试保持。
+本 minor 纳入下文已经合入 main 的 `List RouteRule` 破坏性接口：旧匿名枚举规则改为名义 `RouteRule`，具体模式成员继续使用 `RouteSegment` union。Router、QueryValue 合同和页面错误提示 `hud!` 保留。查询值未做 URL 百分号编码或解码，包含 `&` 或 `=` 等分隔符时不保证原样往返。升级后须重新安装精确配对依赖并生成 JS；原门禁和 native/JS 测试保持。
 
 ### 0.11.1 / Calcit 0.34.2
 
