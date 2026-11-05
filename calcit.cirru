@@ -332,7 +332,7 @@
                             piece $ fill-pattern | (:pattern r0) params
                           recur (str acc piece) (rest path) query rules
           :examples $ []
-          :schema $ quote $ Fn String (List Enum) (Map String respo-router.schema/QueryValue) (List respo-router.schema/RouteRule) (-> String)
+          :schema $ quote $ Fn String (List AnyEnum) (Map String respo-router.schema/QueryValue) (List respo-router.schema/RouteRule) (-> String)
         'slash-trim-left $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn slash-trim-left (address)
             if (blank? address) | $ if (starts-with? address |/) (&str:slice address 1) address
@@ -387,7 +387,7 @@
                     , acc
                 raise $ str "|unknown tuple:" guidepost
           :examples $ []
-          :schema $ quote $ Fn Enum
+          :schema $ quote $ Fn AnyEnum
             -> $ List String
           :tests $ [] $ %{} 'TestEntry (:name |unwraps-guidepost-parameters)
             :code $ quote $ assert |Expected-equal-values:
@@ -557,7 +557,7 @@
               5 $ :: r-tag (&list:nth ret 0) (&list:nth ret 1) (&list:nth ret 2) (&list:nth ret 3) (&list:nth ret 4)
               _ $ raise "|too many parameters"
           :examples $ []
-          :schema $ quote $ Fn Tag (List String) (-> Enum)
+          :schema $ quote $ Fn Tag (List String) (-> AnyEnum)
         'match-pattern $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn match-pattern (acc paths pattern)
             match (destruct-list pattern)
@@ -702,8 +702,8 @@
               (:miss remaining)
                 append acc $ :: :404 remaining
           :examples $ []
-          :schema $ quote $ Fn (List Enum) (List String) (List respo-router.schema/RouteRule)
-            -> $ List Enum
+          :schema $ quote $ Fn (List AnyEnum) (List String) (List respo-router.schema/RouteRule)
+            -> $ List AnyEnum
         'parse-query $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn parse-query (text)
             if
@@ -742,7 +742,7 @@
         'RouteMatch $ %{} 'CodeEntry
           :doc "|Result of matching the head of a path: `:hit` carries the route entry and the remaining segments, `:miss` carries the segments no rule matched."
           :code $ quote $ defenum RouteMatch
-            :hit Enum $ List String
+            :hit AnyEnum $ List String
             :miss $ List String
           :examples $ []
           :schema $ quote EnumDef
@@ -760,7 +760,7 @@
         'Router $ %{} 'CodeEntry
           :doc "|Router state. `:path` holds the matched entries, such as `:: :team |t1` (route name plus String parameters) or `:: :404 ([] |a |b)` for the unmatched rest; `:query` maps names to QueryValue."
           :code $ quote $ defstruct Router
-            :path $ List Enum
+            :path $ List AnyEnum
             :query $ Map String respo-router.schema/QueryValue
           :examples $ []
           :schema $ quote StructDef
