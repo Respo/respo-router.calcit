@@ -5,7 +5,11 @@
 
 Demo http://repo.respo-mvc.org/respo-router.calcit .
 
-### 0.12.1 候选 / Calcit 0.35.1
+### 0.12.2 候选 / Calcit 0.37.0
+
+使用者注意：CLI、`deps.cirru :calcit-version` 与 `@calcit/procs` 同步正式 **0.37.0**，配对正式 Respo **0.19.5**（传递 JS-FFI **0.2.13**）。0.37.0 把字符串写的 type slot 绑定改为载入错误；本版用官方 `edit format` 把 entry 里的 `:dispatch-op` 绑定改成 symbol，运行逻辑与公开 API 不变。下游固定本版 tag 后重新安装并生成 JS。
+
+### 历史 0.12.1 / Calcit 0.35.1
 
 使用者注意：CLI、`deps.cirru :calcit-version` 与 `@calcit/procs` 同步正式 **0.35.1**，配对正式 Respo **0.19.4**（传递 JS-FFI **0.2.13**）。请统一精确依赖图、重新安装并生成 JS；正式 tag 发布前仍为候选。
 
