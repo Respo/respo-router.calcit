@@ -6,11 +6,11 @@
     :default $ {} (:description |) (:init-fn 'respo-router.main/main!) (:mode :js) (:reload-fn 'respo-router.main/reload!) (:target :browser)
       :feature-policy $ {}
       :modules $ [] |respo.calcit/ |js-ffi/
-      :type-slots $ {} $ :dispatch-op |respo-router.schema/Op
+      :type-slots $ {} $ :dispatch-op 'respo-router.schema/Op
     :test $ {} (:description "|Legacy entry; use calcit test for tests") (:init-fn 'respo-router.main/main!) (:mode :js) (:reload-fn 'respo-router.main/reload!) (:target :browser)
       :feature-policy $ {}
       :modules $ [] |respo.calcit/
-      :type-slots $ {} $ :dispatch-op |respo-router.schema/Op
+      :type-slots $ {} $ :dispatch-op 'respo-router.schema/Op
   :files $ {}
     'respo-router.comp.container $ %{} 'FileEntry
       :defs $ {}
