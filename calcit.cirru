@@ -75,7 +75,7 @@
             -> respo.schema/Element
         'route-404 $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn route-404 (e dispatch!)
-            dispatch! $ :: :router/route $ respo-router.schema/Router :path
+            dispatch! $ respo-router.schema/Op :router/route $ respo-router.schema/Router :path
               [] $ :: :404 $ [] |missing
               , :query ({})
           :examples $ []
@@ -84,14 +84,14 @@
             -> Unit
         'route-home $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn route-home (e dispatch!)
-            dispatch! $ :: :router/route $ respo-router.schema/Router :path ([]) :query ({})
+            dispatch! $ respo-router.schema/Op :router/route $ respo-router.schema/Router :path ([]) :query ({})
           :examples $ []
           :schema $ quote $ Fn respo.schema/RespoEvent
             Fn respo-router.schema/Op $ -> Unit
             -> Unit
         'route-room $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn route-room (e dispatch!)
-            dispatch! $ :: :router/route $ respo-router.schema/Router :path
+            dispatch! $ respo-router.schema/Op :router/route $ respo-router.schema/Router :path
               [] (:: :team |t12345) (:: :room |r1234)
               , :query
                 {} (|a 1) (|b 2)
@@ -101,7 +101,7 @@
             -> Unit
         'route-search $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn route-search (e dispatch!)
-            dispatch! $ :: :router/route $ respo-router.schema/Router :path
+            dispatch! $ respo-router.schema/Op :router/route $ respo-router.schema/Router :path
               [] $ :: :search
               , :query ({})
           :examples $ []
@@ -110,7 +110,7 @@
             -> Unit
         'route-search-search $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn route-search-search (e dispatch!)
-            dispatch! $ :: :router/route $ respo-router.schema/Router :path
+            dispatch! $ respo-router.schema/Op :router/route $ respo-router.schema/Router :path
               [] (:: :search) (:: :search)
               , :query ({})
           :examples $ []
@@ -119,7 +119,7 @@
             -> Unit
         'route-team $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn route-team (e dispatch!)
-            dispatch! $ :: :router/route $ respo-router.schema/Router :path
+            dispatch! $ respo-router.schema/Op :router/route $ respo-router.schema/Router :path
               [] $ :: :team |t1234
               , :query ({})
           :examples $ []
@@ -452,7 +452,7 @@
                     let
                         states $ decode-map-as
                           respo.cursor/update-state-tree (:states store)
-                            decode-map-as cursor $ List Dynamic
+                            decode-map-as cursor $ List respo.schema/CoordKey
                             , s
                           Map Tag Dynamic
                       schema/Store :router (:router store) :states states
@@ -732,7 +732,7 @@
         'Op $ %{} 'CodeEntry
           :doc "|Dispatch Op of the demo app, bound to the :dispatch-op type slot. Apps using router handlers need a `:router/route respo-router.schema/Router` variant in their own Op."
           :code $ quote $ defenum Op
-            :states (List Dynamic) Dynamic
+            :states (List respo.schema/CoordKey) Dynamic
             :router/route respo-router.schema/Router
           :examples $ []
           :schema $ quote EnumDef

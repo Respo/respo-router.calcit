@@ -5,7 +5,12 @@
 
 Demo http://repo.respo-mvc.org/respo-router.calcit .
 
-### 0.12.3 候选 / Calcit 0.37.0
+### 0.12.4 候选 / Calcit 0.38.0
+
+请将 Calcit CLI 与 `@calcit/procs` 一起升级到正式 0.38.0，按 `deps.cirru` 安装依赖并重新生成 JS。路由规则、URL 和应用自定义路径枚举继续沿用原合同。
+Demo 的六个导航回调使用具名 `Op`，组件状态路径使用 `List<respo.schema/CoordKey>`。公开监听回调仍按原协议发送路由事件。
+
+### 历史 0.12.3 / Calcit 0.37.0
 
 工具链与依赖沿用 0.12.2。`list-to-tuple`、`tuple-params`、`router->string-iter`、`parse-path` 用运行时 tag 拼接或拆解路由 tuple，
 签名加上 `(:open :reflect)` 写明这里有意接受任意 enum；类型和运行时行为不变，`W_OPEN_FAMILY` 中 AnyEnum 计数归零。
