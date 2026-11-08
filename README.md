@@ -9,7 +9,7 @@ Demo http://repo.respo-mvc.org/respo-router.calcit .
 
 工具链与依赖沿用 0.12.2。`list-to-tuple`、`tuple-params`、`router->string-iter`、`parse-path` 用运行时 tag 拼接或拆解路由 tuple，
 签名加上 `(:open :reflect)` 写明这里有意接受任意 enum；类型和运行时行为不变，`W_OPEN_FAMILY` 中 AnyEnum 计数归零。
-`RouteMatch` 的 `:hit` / `:path` 字段仍是 `AnyEnum`。
+`RouteMatch` 的 `:hit` 变体和 `Router` 的 `:path` 字段（`List AnyEnum`）不是 `Fn` 签名，仍是 `AnyEnum`。
 
 ### 历史 0.12.2 / Calcit 0.37.0
 
