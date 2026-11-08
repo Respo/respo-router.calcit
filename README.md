@@ -5,7 +5,13 @@
 
 Demo http://repo.respo-mvc.org/respo-router.calcit .
 
-### 0.12.2 候选 / Calcit 0.37.0
+### 0.12.3 候选 / Calcit 0.37.0
+
+工具链与依赖沿用 0.12.2。`list-to-tuple`、`tuple-params`、`router->string-iter`、`parse-path` 用运行时 tag 拼接或拆解路由 tuple，
+签名加上 `(:open :reflect)` 写明这里有意接受任意 enum；类型和运行时行为不变，`W_OPEN_FAMILY` 中 AnyEnum 计数归零。
+`RouteMatch` 的 `:hit` / `:path` 字段仍是 `AnyEnum`。
+
+### 历史 0.12.2 / Calcit 0.37.0
 
 使用者注意：CLI、`deps.cirru :calcit-version` 与 `@calcit/procs` 同步正式 **0.37.0**，配对正式 Respo **0.19.5**（传递 JS-FFI **0.2.13**）。0.37.0 把字符串写的 type slot 绑定改为载入错误；本版用官方 `edit format` 把 entry 里的 `:dispatch-op` 绑定改成 symbol，运行逻辑与公开 API 不变。下游固定本版 tag 后重新安装并生成 JS。
 
