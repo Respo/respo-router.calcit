@@ -332,7 +332,7 @@
                             piece $ fill-pattern | (:pattern r0) params
                           recur (str acc piece) (rest path) query rules
           :examples $ []
-          :schema $ quote $ Fn String (List AnyEnum) (Map String respo-router.schema/QueryValue) (List respo-router.schema/RouteRule) (-> String)
+          :schema $ quote $ Fn String (List AnyEnum) (Map String respo-router.schema/QueryValue) (List respo-router.schema/RouteRule) (-> String) (:open :reflect)
         'slash-trim-left $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn slash-trim-left (address)
             if (blank? address) | $ if (starts-with? address |/) (&str:slice address 1) address
@@ -389,6 +389,7 @@
           :examples $ []
           :schema $ quote $ Fn AnyEnum
             -> $ List String
+            :open :reflect
           :tests $ [] $ %{} 'TestEntry (:name |unwraps-guidepost-parameters)
             :code $ quote $ assert |Expected-equal-values:
               &= ([] |t1234)
@@ -557,7 +558,7 @@
               5 $ :: r-tag (&list:nth ret 0) (&list:nth ret 1) (&list:nth ret 2) (&list:nth ret 3) (&list:nth ret 4)
               _ $ raise "|too many parameters"
           :examples $ []
-          :schema $ quote $ Fn Tag (List String) (-> AnyEnum)
+          :schema $ quote $ Fn Tag (List String) (-> AnyEnum) (:open :reflect)
         'match-pattern $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn match-pattern (acc paths pattern)
             match (destruct-list pattern)
@@ -704,6 +705,7 @@
           :examples $ []
           :schema $ quote $ Fn (List AnyEnum) (List String) (List respo-router.schema/RouteRule)
             -> $ List AnyEnum
+            :open :reflect
         'parse-query $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn parse-query (text)
             if
