@@ -602,7 +602,7 @@
                       match ret
                         (:none) (recur paths rs)
                         (:some params)
-                          respo-router.schema/RouteMatch :hit (list-to-tuple r-tag params)
+                          respo-router.schema/RouteMatch :hit (respo-router.schema/RouteEntry :name r-tag :params params)
                             slice paths $ .len pattern
           :examples $ []
           :schema $ quote $ Fn (List String) (List respo-router.schema/RouteRule) (-> respo-router.schema/RouteMatch)
@@ -699,7 +699,9 @@
           :code $ quote $ defn parse-path (acc paths rules)
             if (empty? paths) acc $ match (match-route paths rules)
               (:hit entry remaining)
-                recur (append acc entry) remaining rules
+                recur
+                  append acc $ list-to-tuple (:name entry) (:params entry)
+                  , remaining rules
               (:miss remaining)
                 append acc $ :: :404 remaining
           :examples $ []
@@ -741,10 +743,16 @@
           :code $ quote $ defunion QueryValue String Number
           :examples $ []
           :schema $ quote UnionDef
+        'RouteEntry $ %{} 'CodeEntry
+          :doc "|A matched route name and its ordered String parameters before tuple encoding."
+          :code $ quote $ defstruct RouteEntry (:name Tag)
+            :params $ List String
+          :examples $ []
+          :schema $ quote StructDef
         'RouteMatch $ %{} 'CodeEntry
           :doc "|Result of matching the head of a path: `:hit` carries the route entry and the remaining segments, `:miss` carries the segments no rule matched."
           :code $ quote $ defenum RouteMatch
-            :hit AnyEnum $ List String
+            :hit respo-router.schema/RouteEntry $ List String
             :miss $ List String
           :examples $ []
           :schema $ quote EnumDef
