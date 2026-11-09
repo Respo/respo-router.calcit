@@ -606,6 +606,14 @@
                             slice paths $ .len pattern
           :examples $ []
           :schema $ quote $ Fn (List String) (List respo-router.schema/RouteRule) (-> respo-router.schema/RouteMatch)
+          :tests $ [] $ %{} 'TestEntry (:name |returns-typed-hit-and-remaining-path)
+            :code $ quote $ let
+                rules $ [] $ respo-router.schema/RouteRule :name :team :pattern ([] |team :id |room :room-id)
+                entry $ respo-router.schema/RouteEntry :name :team :params $ [] |abc |blue
+              assert=
+                respo-router.schema/RouteMatch :hit entry $ [] |rest
+                match-route ([] |team |abc |room |blue |rest) rules
+            :tags $ #{} :regression :router
         'parse-address $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn parse-address (address rules)
             let
