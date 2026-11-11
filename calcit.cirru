@@ -235,11 +235,15 @@
           :schema $ quote $ Fn String (List respo-router.schema/RouteSegment) (List String) (-> String)
         'format-route-entry $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn format-route-entry (entry rules)
-            match
-              pick-rule (:name entry) rules
-              (:none) (raise "|found no rule")
-              (:some rule)
-                fill-pattern | (:pattern rule) (:params entry)
+            match (:pattern entry)
+              (:some pattern)
+                fill-pattern | pattern $ :params entry
+              (:none)
+                match
+                  pick-rule (:name entry) rules
+                  (:none) (raise "|found no rule")
+                  (:some rule)
+                    fill-pattern | (:pattern rule) (:params entry)
           :examples $ []
           :schema $ quote $ Fn respo-router.schema/RouteEntry (List respo-router.schema/RouteRule) (-> String)
         'pick-rule $ %{} 'CodeEntry (:doc |)
@@ -332,7 +336,7 @@
                     respo-router.schema/path-segments $ respo-router.schema/read-item guidepost 1
                     , .join-string |/
                   let
-                      entry $ respo-router.schema/RouteEntry :name t-tag :params $ tuple-params guidepost
+                      entry $ respo-router.schema/RouteEntry :name t-tag :params (tuple-params guidepost) :pattern None
                       piece $ format-route-entry entry rules
                     recur (str acc piece) (rest path) query rules
           :examples $ []
@@ -348,8 +352,9 @@
                       str acc $ format-route-entry entry rules
                     (:unmatched segments)
                       str acc |/ $ .join-string segments |/
+                rooted-path $ if (empty? path) |/ path
                 query $ stringify-query $ :query router
-              if (empty? query) path $ str path |? query
+              if (empty? query) rooted-path $ str rooted-path |? query
           :examples $ []
           :schema $ quote $ Fn respo-router.schema/ParsedRouter (List respo-router.schema/RouteRule) (-> String)
           :tests $ []
@@ -364,6 +369,22 @@
                   rules $ [] $ respo-router.schema/RouteRule :name :deep :pattern ([] |deep :a :b :c :d :e)
                   address |/deep/1/2/3/4/5
                 assert= address $ router->string-typed (respo-router.parser/parse-address-typed address rules) rules
+              :tags $ #{} :regression :router
+            %{} 'TestEntry (:name |root-path-with-and-without-query)
+              :code $ quote $ do
+                assert= |/ $ router->string-typed
+                  respo-router.parser/parse-address-typed |/ $ []
+                  []
+                assert= |/?q=1 $ router->string-typed
+                  respo-router.parser/parse-address-typed |/?q=1 $ []
+                  []
+              :tags $ #{} :regression :router
+            %{} 'TestEntry (:name |uses-the-matched-pattern-with-duplicate-names)
+              :code $ quote $ let
+                  rules $ []
+                    respo-router.schema/RouteRule :name :team :pattern $ [] |old :id
+                    respo-router.schema/RouteRule :name :team :pattern $ [] |team :id
+                assert= |/team/abc $ router->string-typed (respo-router.parser/parse-address-typed |/team/abc rules) rules
               :tags $ #{} :regression :router
         'slash-trim-left $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn slash-trim-left (address)
@@ -634,14 +655,16 @@
                       match ret
                         (:none) (recur paths rs)
                         (:some params)
-                          respo-router.schema/RouteMatch :hit (respo-router.schema/RouteEntry :name r-tag :params params)
+                          respo-router.schema/RouteMatch :hit
+                            respo-router.schema/RouteEntry :name r-tag :params params :pattern $ Some pattern
                             slice paths $ .len pattern
           :examples $ []
           :schema $ quote $ Fn (List String) (List respo-router.schema/RouteRule) (-> respo-router.schema/RouteMatch)
           :tests $ [] $ %{} 'TestEntry (:name |returns-typed-hit-and-remaining-path)
             :code $ quote $ let
                 rules $ [] $ respo-router.schema/RouteRule :name :team :pattern ([] |team :id |room :room-id)
-                entry $ respo-router.schema/RouteEntry :name :team :params $ [] |abc |blue
+                entry $ respo-router.schema/RouteEntry :name :team :params ([] |abc |blue) :pattern $ Some
+                  :pattern $ &list:nth rules 0
               assert=
                 respo-router.schema/RouteMatch :hit entry $ [] |rest
                 match-route ([] |team |abc |room |blue |rest) rules
@@ -748,7 +771,8 @@
           :tests $ [] $ %{} 'TestEntry (:name |typed-path-preserves-hit-miss-and-query)
             :code $ quote $ let
                 rules $ [] $ respo-router.schema/RouteRule :name :team :pattern ([] |team :id)
-                entry $ respo-router.schema/RouteEntry :name :team :params $ [] |abc
+                entry $ respo-router.schema/RouteEntry :name :team :params ([] |abc) :pattern $ Some
+                  :pattern $ &list:nth rules 0
               assert=
                 respo-router.schema/ParsedRouter :path
                   [] (respo-router.schema/RouteStep :matched entry)
@@ -828,6 +852,7 @@
           :doc "|A matched route name and its ordered String parameters before tuple encoding."
           :code $ quote $ defstruct RouteEntry (:name Tag)
             :params $ List String
+            :pattern $ Option $ List respo-router.schema/RouteSegment
           :examples $ []
           :schema $ quote StructDef
         'RouteMatch $ %{} 'CodeEntry
