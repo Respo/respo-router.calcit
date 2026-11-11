@@ -13,6 +13,8 @@ Demo http://repo.respo-mvc.org/respo-router.calcit .
 其中 `:path` 是 `List RouteStep`，`:matched` 携带 `RouteEntry`，`:unmatched` 携带未匹配的路径片段。
 从 URL 解析的查询值为 String。旧 `parse-address` 和监听入口继续返回元组路径。
 
+使用 `respo-router.format/router->string-typed` 可直接格式化 `ParsedRouter`。该入口保留未匹配路径后的查询参数，也支持同一条规则包含四个以上的参数。旧 `router->string` 继续接受应用自定义的元组路径。
+
 Demo 的六个导航回调使用具名 `Op`，组件状态路径使用 `List<respo.schema/CoordKey>`。公开监听回调仍按原协议发送路由事件。
 
 ### 历史 0.12.3 / Calcit 0.37.0

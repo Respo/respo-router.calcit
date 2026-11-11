@@ -233,6 +233,15 @@
                       , ps $ rest params
           :examples $ []
           :schema $ quote $ Fn String (List respo-router.schema/RouteSegment) (List String) (-> String)
+        'format-route-entry $ %{} 'CodeEntry (:doc |)
+          :code $ quote $ defn format-route-entry (entry rules)
+            match
+              pick-rule (:name entry) rules
+              (:none) (raise "|found no rule")
+              (:some rule)
+                fill-pattern | (:pattern rule) (:params entry)
+          :examples $ []
+          :schema $ quote $ Fn respo-router.schema/RouteEntry (List respo-router.schema/RouteRule) (-> String)
         'pick-rule $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn pick-rule (t-tag rules)
             match (destruct-list rules)
@@ -323,16 +332,39 @@
                     respo-router.schema/path-segments $ respo-router.schema/read-item guidepost 1
                     , .join-string |/
                   let
-                      params $ tuple-params guidepost
-                      rule $ pick-rule t-tag rules
-                    match rule
-                      (:none) (raise "|found no rule")
-                      (:some r0)
-                        let
-                            piece $ fill-pattern | (:pattern r0) params
-                          recur (str acc piece) (rest path) query rules
+                      entry $ respo-router.schema/RouteEntry :name t-tag :params $ tuple-params guidepost
+                      piece $ format-route-entry entry rules
+                    recur (str acc piece) (rest path) query rules
           :examples $ []
           :schema $ quote $ Fn String (List AnyEnum) (Map String respo-router.schema/QueryValue) (List respo-router.schema/RouteRule) (-> String) (:open :reflect)
+        'router->string-typed $ %{} 'CodeEntry
+          :doc "|Format a ParsedRouter directly. Retains the query after an unmatched tail and accepts any number of typed route parameters."
+          :code $ quote $ defn router->string-typed (router rules)
+            let
+                path $ foldl (:path router) | $ fn (acc step)
+                  hint-fn $ Fn String respo-router.schema/RouteStep $ -> String
+                  match step
+                    (:matched entry)
+                      str acc $ format-route-entry entry rules
+                    (:unmatched segments)
+                      str acc |/ $ .join-string segments |/
+                query $ stringify-query $ :query router
+              if (empty? query) path $ str path |? query
+          :examples $ []
+          :schema $ quote $ Fn respo-router.schema/ParsedRouter (List respo-router.schema/RouteRule) (-> String)
+          :tests $ []
+            %{} 'TestEntry (:name |typed-unmatched-tail-retains-query)
+              :code $ quote $ let
+                  rules $ [] $ respo-router.schema/RouteRule :name :team :pattern ([] |team :id)
+                  address |/team/abc/tail?q=1
+                assert= address $ router->string-typed (respo-router.parser/parse-address-typed address rules) rules
+              :tags $ #{} :regression :router
+            %{} 'TestEntry (:name |typed-path-supports-five-parameters)
+              :code $ quote $ let
+                  rules $ [] $ respo-router.schema/RouteRule :name :deep :pattern ([] |deep :a :b :c :d :e)
+                  address |/deep/1/2/3/4/5
+                assert= address $ router->string-typed (respo-router.parser/parse-address-typed address rules) rules
+              :tags $ #{} :regression :router
         'slash-trim-left $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn slash-trim-left (address)
             if (blank? address) | $ if (starts-with? address |/) (&str:slice address 1) address
