@@ -5,10 +5,16 @@
 
 Demo http://repo.respo-mvc.org/respo-router.calcit .
 
-### 0.12.5 候选 / Calcit 0.40.0
+### 0.12.6 候选 / Calcit 0.41.0
 
-请将 Calcit CLI 与 `@calcit/procs` 一起升级到正式 0.40.0，按 `deps.cirru` 安装依赖并重新生成 JS。路由规则、URL 和应用自定义路径枚举继续沿用原合同。
+请将 Calcit CLI 与 `@calcit/procs` 一起升级到正式 0.41.0，按 `deps.cirru` 安装依赖并重新生成 JS。路由规则、URL 和应用自定义路径枚举继续沿用原合同。
 直接调用 `match-route` 时，`RouteMatch :hit` 的首个载荷现在是 `RouteEntry`，用 `:name` 和 `:params` 读取路由名和有序字符串参数。`parse-address` 返回的 `Router.path` 仍使用原元组。
+新代码可调用 `respo-router.parser/parse-address-typed` 获取 `ParsedRouter`。
+其中 `:path` 是 `List RouteStep`，`:matched` 携带 `RouteEntry`，`:unmatched` 携带未匹配的路径片段。
+从 URL 解析的查询值为 String。旧 `parse-address` 和监听入口继续返回元组路径。
+
+使用 `respo-router.format/router->string-typed` 可直接格式化 `ParsedRouter`。该入口保留未匹配路径后的查询参数，也支持同一条规则包含四个以上的参数。旧 `router->string` 继续接受应用自定义的元组路径。
+
 Demo 的六个导航回调使用具名 `Op`，组件状态路径使用 `List<respo.schema/CoordKey>`。公开监听回调仍按原协议发送路由事件。
 
 ### 历史 0.12.3 / Calcit 0.37.0
