@@ -206,7 +206,7 @@
                     _ $ js/console.warn "|Unknown router-mode:" router-mode
             , &unit
           :examples $ []
-          :schema $ quote $ Fn respo-router.schema/Router (List respo-router.schema/RouteRule) Tag (-> Unit) (:features :js-ffi)
+          :schema $ quote $ Fn respo-router.schema/Router (List respo-router.schema/RouteRule) Tag (-> Unit) (:features :js-ffi :state)
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote $ ns respo-router.core
           :require
@@ -484,7 +484,7 @@
           :examples $ []
           :schema $ quote $ Fn (List respo-router.schema/RouteRule)
             Fn *dispatch-op $ -> Unit
-            , Tag (-> Unit) (:features :js-ffi)
+            , Tag (-> Unit) (:features :js-ffi :state)
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote $ ns respo-router.listener
           :require
@@ -514,7 +514,7 @@
               reset! *store new-store
               , &unit
           :examples $ []
-          :schema $ quote $ Fn schema/Op (-> Unit) (:features :js-ffi)
+          :schema $ quote $ Fn schema/Op (-> Unit) (:features :js-ffi :state)
         'initial-store $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn initial-store ()
             let
@@ -530,7 +530,7 @@
             println "|app started!"
             , &unit
           :examples $ []
-          :schema $ quote $ Fn (-> Unit) (:features :js-ffi)
+          :schema $ quote $ Fn (-> Unit) (:features :io :js-ffi :state)
         'mount-target $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn mount-target ()
             unsafe-coerce (js/document.querySelector |.app) (JsNullish respo.dom/DomElement)
@@ -549,18 +549,18 @@
               hud! |error build-errors
             , &unit
           :examples $ []
-          :schema $ quote $ Fn (-> Unit)
+          :schema $ quote $ Fn (-> Unit) (:features :state)
         'render-app! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn render-app! () (; println |render-app: @*store)
             render! (mount-target) (comp-container @*store) dispatch!
           :examples $ []
-          :schema $ quote $ Fn (-> Unit)
+          :schema $ quote $ Fn (-> Unit) (:features :state)
         'render-router! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn render-router! ()
             render-url! (:router @*store) router-rules router-mode
             , &unit
           :examples $ []
-          :schema $ quote $ Fn (-> Unit) (:features :js-ffi)
+          :schema $ quote $ Fn (-> Unit) (:features :js-ffi :state)
         'router-mode $ %{} 'CodeEntry (:doc |)
           :code $ quote $ def router-mode :hash
           :examples $ []
