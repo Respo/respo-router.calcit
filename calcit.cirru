@@ -899,8 +899,9 @@
                 if (string? segment) segment $ raise "|[respo-router/path-segments] expected String segment"
               raise "|[respo-router/path-segments] expected List"
           :examples $ []
-          :schema $ quote $ Fn Dynamic
+          :schema $ quote $ Fn Input
             -> $ List String
+            :generics Input
           :tests $ []
             %{} 'TestEntry (:name |valid-empty)
               :code $ quote $ assert= ([])
@@ -928,7 +929,7 @@
               (:none)
                 raise $ str-spaced |Missing |item |at |index index |in: values
           :examples $ []
-          :schema $ quote $ Fn Dynamic Number (-> Dynamic)
+          :schema $ quote $ Fn Input Number (-> Dynamic) (:generics Input)
         'router $ %{} 'CodeEntry (:doc |)
           :code $ quote $ def router
             Router :path ([]) :query $ {}
