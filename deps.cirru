@@ -1,4 +1,4 @@
 
 {} (:calcit-version |0.42.1)
   :version |0.12.6
-  :dependencies $ {} (|Respo/respo.calcit |0.19.6)
+  :dependencies $ {} (|Respo/respo.calcit |0.19.9)
