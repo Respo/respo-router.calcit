@@ -138,6 +138,23 @@ add-watch! *store :changes $ fn (current previous)
   render-url! (:router @*store) dict mode
 ```
 
+### 读取具名路径
+
+只需解析地址或格式化路径时，可使用 `parse-address-typed` 和 `router->string-typed`。用 `RouteStep` 的 `:matched` 和 `:unmatched` 分支读取路径，避免在应用中按位置拆解匿名枚举。下面的例子同时保留匹配参数 `abc`、未匹配尾段 `tail` 和查询参数 `q=1`。
+
+```cirru.no-check
+let
+    rules $ [] $ respo-router.schema/RouteRule :name :team :pattern ([] |team :id)
+    parsed $ respo-router.parser/parse-address-typed |/team/abc/tail?q=1 rules
+  map (:path parsed) $ fn (step)
+    match step
+      (:matched entry) (println (:name entry) (:params entry))
+      (:unmatched remaining) (println remaining)
+  respo-router.format/router->string-typed parsed rules
+```
+
+浏览器监听仍由 `listen!` 派发使用旧路径的 `Router`。上面的具名入口适合直接读取 URL 的调用方。
+
 ### Router IR
 
 Based on a dict:
