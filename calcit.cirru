@@ -422,26 +422,29 @@
           :schema $ quote $ Fn String (-> String)
         'tuple-params $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn tuple-params (guidepost)
-            let
-                n $ &enum:count guidepost
-              if
-                and (>= n 1) (<= n 5)
-                loop
-                    i 1
-                    acc $ []
-                  hint-fn $ Fn Number (List String)
-                    -> $ List String
-                  if (< i n)
-                    let
-                        value $ respo-router.schema/read-item guidepost i
-                      if (string? value)
-                        recur (inc i) (conj acc value)
-                        raise "|[respo-router/tuple-params] expected String"
-                    , acc
-                raise $ str "|unknown tuple:" guidepost
+            if (enum? guidepost)
+              let
+                  n $ &enum:count guidepost
+                if
+                  and (>= n 1) (<= n 5)
+                  loop
+                      i 1
+                      acc $ []
+                    hint-fn $ Fn Number (List String)
+                      -> $ List String
+                    if (< i n)
+                      let
+                          value $ respo-router.schema/read-item guidepost i
+                        if (string? value)
+                          recur (inc i) (conj acc value)
+                          raise "|[respo-router/tuple-params] expected String"
+                      , acc
+                  raise $ str "|unknown tuple:" guidepost
+              raise $ str "|unknown tuple:" guidepost
           :examples $ []
-          :schema $ quote $ Fn AnyEnum
+          :schema $ quote $ Fn Input
             -> $ List String
+            :generics Input
             :open :reflect
           :tests $ [] $ %{} 'TestEntry (:name |unwraps-guidepost-parameters)
             :code $ quote $ assert |Expected-equal-values:
