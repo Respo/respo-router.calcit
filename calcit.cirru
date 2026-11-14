@@ -463,34 +463,52 @@
           :code $ quote $ defn listen! (rules dispatch! router-mode)
             assert "|first argument should be a list" $ list? rules
             assert "|second argument shoud be dispatch function" $ fn? dispatch!
+            listen-address! rules parse-address
+              fn (router)
+                dispatch! $ : :router/route router
+                , &unit
+              , router-mode
+          :examples $ []
+          :schema $ quote $ Fn (List respo-router.schema/RouteRule)
+            Fn *dispatch-op $ -> Unit
+            , Tag (-> Unit) (:features :js-ffi :state)
+        'listen-address! $ %{} 'CodeEntry
+          :doc "|Register a browser listener with a parser and a callback that share the same route type."
+          :code $ quote $ defn listen-address! (rules parse-route notify! router-mode)
             assert (str "|invalid router-demo: " router-mode)
               includes? (#{} :history :hash) router-mode
             match router-mode
               :hash $ js/window.addEventListener |hashchange $ fn (event)
                 let
-                    path-info $ parse-address
+                    path-info $ parse-route
                       strip-sharp $ js-ffi.contract/expect-string |location.hash js/location.hash
                       , rules
-                  ; println "|is ignored?" @*ignored?
                   if (not @*ignored?)
                     js/setTimeout
-                      fn () $ dispatch! $ : :router/route path-info
+                      fn () $ notify! path-info
                       , 0
               :history $ js/window.addEventListener |popstate $ fn (event)
                 let
                     current-address $ str js/location.pathname js/location.search
-                    path-info $ parse-address current-address rules
-                  dispatch! $ : :router/route path-info
+                  notify! $ parse-route current-address rules
               _ $ js/console.warn "|unknown mode:" router-mode
             , &unit
           :examples $ []
           :schema $ quote $ Fn (List respo-router.schema/RouteRule)
-            Fn *dispatch-op $ -> Unit
+            Fn String (List respo-router.schema/RouteRule) (-> Route)
+            Fn Route $ -> Unit
+            , Tag (-> Unit) (:generics Route) (:features :js-ffi :state)
+        'listen-typed! $ %{} 'CodeEntry
+          :doc "|Listen for browser navigation with a ParsedRouter callback."
+          :code $ quote $ defn listen-typed! (rules notify! router-mode) (listen-address! rules parse-address-typed notify! router-mode)
+          :examples $ []
+          :schema $ quote $ Fn (List respo-router.schema/RouteRule)
+            Fn respo-router.schema/ParsedRouter $ -> Unit
             , Tag (-> Unit) (:features :js-ffi :state)
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote $ ns respo-router.listener
           :require
-            respo-router.parser :refer $ parse-address
+            respo-router.parser :refer $ parse-address parse-address-typed
             respo-router.format :refer $ strip-sharp
     'respo-router.main $ %{} 'FileEntry
       :defs $ {}
