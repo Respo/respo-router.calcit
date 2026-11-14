@@ -328,12 +328,12 @@
               let
                   guidepost $ &list:nth path 0
                   t-tag $ match
-                    try-decode-map-as (respo-router.schema/read-item guidepost 0) 'Tag
+                    respo-router.schema/read-item guidepost 0 $ fn (item) (try-decode-map-as item 'Tag)
                     (:ok decoded) decoded
                     (:err message) (raise message)
                 if (= :404 t-tag)
                   str acc |/ $
-                    respo-router.schema/path-segments $ respo-router.schema/read-item guidepost 1
+                    respo-router.schema/read-item guidepost 1 respo-router.schema/path-segments
                     , .join-string |/
                   let
                       entry $ respo-router.schema/RouteEntry :name t-tag :params (tuple-params guidepost) :pattern None
@@ -434,10 +434,9 @@
                       -> $ List String
                     if (< i n)
                       let
-                          value $ respo-router.schema/read-item guidepost i
-                        if (string? value)
-                          recur (inc i) (conj acc value)
-                          raise "|[respo-router/tuple-params] expected String"
+                          value $ respo-router.schema/read-item guidepost i $ fn (item)
+                            if (string? item) item $ raise "|[respo-router/tuple-params] expected String"
+                        recur (inc i) (conj acc value)
                       , acc
                   raise $ str "|unknown tuple:" guidepost
               raise $ str "|unknown tuple:" guidepost
@@ -926,13 +925,16 @@
                   fn (error) error
               :tags $ #{} :boundary :router
         'read-item $ %{} 'CodeEntry (:doc |)
-          :code $ quote $ defn read-item (values index)
+          :code $ quote $ defn read-item (values index decode)
             match (nth values index)
-              (:some item) item
+              (:some item) (decode item)
               (:none)
                 raise $ str-spaced |Missing |item |at |index index |in: values
           :examples $ []
-          :schema $ quote $ Fn Input Number (-> Dynamic) (:generics Input)
+          :schema $ quote $ Fn Input Number
+            Fn Dynamic $ -> Output
+            -> Output
+            :generics Input Output
         'router $ %{} 'CodeEntry (:doc |)
           :code $ quote $ def router
             Router :path ([]) :query $ {}
