@@ -15,6 +15,7 @@ Demo http://repo.respo-mvc.org/respo-router.calcit .
 新代码可调用 `respo-router.parser/parse-address-typed` 获取 `ParsedRouter`。
 其中 `:path` 是 `List RouteStep`，`:matched` 携带 `RouteEntry`，`:unmatched` 携带未匹配的路径片段。
 从 URL 解析的查询值为 String。旧 `parse-address` 和监听入口继续返回元组路径。
+需要监听浏览器导航的新代码可用 `respo-router.listener/listen-typed!`。参数为路由规则、`Fn ParsedRouter (-> Unit)` 回调和 `:hash` 或 `:history`。回调直接收到具名路径，旧 `listen!` 继续发送 `:router/route` 事件。
 
 使用 `respo-router.format/router->string-typed` 可直接格式化 `ParsedRouter`。该入口保留未匹配路径后的查询参数，也支持同一条规则包含四个以上的参数。旧 `router->string` 继续接受应用自定义的元组路径。
 

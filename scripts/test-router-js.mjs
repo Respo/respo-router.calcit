@@ -56,6 +56,32 @@ try {
   assert.equal(typeof generated.replay_all_attached, "function");
   generated.replay_all_attached();
   console.log(`Generated JS replay passed: ${listed.selected}/${listed.selected} original attached ASTs`);
+  run("--emit-path", output, "calcit.cirru", "js");
+  // Browser listeners are exercised against the emitted module without opening a browser.
+  const listener = await import(pathToFileURL(path.join(output, "respo-router.listener.mjs")).href);
+  const core = await import(pathToFileURL(path.join(output, "calcit.core.mjs")).href);
+  const parser = await import(pathToFileURL(path.join(output, "respo-router.parser.mjs")).href);
+  const schema = await import(pathToFileURL(path.join(output, "respo-router.schema.mjs")).href);
+  const handlers = new Map();
+  globalThis.window = { addEventListener: (event, handler) => handlers.set(event, handler) };
+  globalThis.location = { pathname: "/missing", search: "?q=1", hash: "#/missing?q=1" };
+  const rules = core._$L_();
+  const { history, hash } = core.init_tags(["history", "hash"]);
+  const expected = parser.parse_address_typed("/missing?q=1", rules);
+  let received;
+  listener.listen_typed_$x_(rules, route => { received = route; }, history);
+  handlers.get("popstate")({});
+  assert.ok(core._$n__$e_(received, expected));
+  received = undefined;
+  await new Promise(resolve => {
+    listener.listen_typed_$x_(rules, route => { received = route; resolve(); }, hash);
+    handlers.get("hashchange")({});
+    assert.equal(received, undefined);
+  });
+  assert.ok(core._$n__$e_(received, expected));
+  listener.listen_$x_(rules, operation => { received = operation; }, history);
+  handlers.get("popstate")({});
+  assert.ok(core._$n__$e_(received, core._PCT__$o__$o_(schema.Op, core.newTag("router/route"), parser.parse_address("/missing?q=1", rules))));
 } finally {
   assert.deepEqual(readFileSync(path.join(root, "calcit.cirru")), original, "Canonical Snapshot changed during replay");
   // This uniquely created child contains only this run's copied Snapshot and output.
