@@ -470,7 +470,7 @@
               , router-mode
           :examples $ []
           :schema $ quote $ Fn (List respo-router.schema/RouteRule)
-            Fn *dispatch-op $ -> Unit
+            Fn *dispatch-op (-> Unit) (:features :state)
             , Tag (-> Unit) (:features :js-ffi :state)
         'listen-address! $ %{} 'CodeEntry
           :doc "|Register a browser listener with a parser and a callback that share the same route type."
@@ -569,12 +569,12 @@
               hud! |error build-errors
             , &unit
           :examples $ []
-          :schema $ quote $ Fn (-> Unit) (:features :state)
+          :schema $ quote $ Fn (-> Unit) (:features :io :state)
         'render-app! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn render-app! () (; println |render-app: @*store)
             render! (mount-target) (comp-container @*store) dispatch!
           :examples $ []
-          :schema $ quote $ Fn (-> Unit) (:features :state)
+          :schema $ quote $ Fn (-> Unit) (:features :io :state)
         'render-router! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn render-router! ()
             render-url! (:router @*store) router-rules router-mode
