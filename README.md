@@ -5,9 +5,9 @@
 
 Demo http://repo.respo-mvc.org/respo-router.calcit .
 
-### 0.12.8 / Calcit 0.43.0
+### 0.12.9 / Calcit 0.43.0
 
-依赖对齐 Respo 0.19.10 及其 JS-FFI 0.2.18。
+依赖对齐 Respo 0.19.11 及其 JS-FFI 0.2.18。
 
 请将 Calcit CLI 与 `@calcit/procs` 一起升级到 0.43.0，按 `deps.cirru` 安装依赖并重新生成 JS。路由规则、URL 和应用自定义路径枚举继续沿用原合同。
 按 0.43 效果边界，`render-url!` 和 `listen!` 的 `Fn` schema 声明 `:state` / `:io`，调用它们的函数也要声明对应效果，否则检查会失败。
