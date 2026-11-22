@@ -5,6 +5,10 @@
 
 Demo http://repo.respo-mvc.org/respo-router.calcit .
 
+### 0.12.12 / Calcit 0.44.0
+
+新增 `render-url-typed!`，允许直接使用 `ParsedRouter` 更新浏览器地址。旧路由 API 和数据格式保持兼容；新入口的 query 值为字符串。此版本在正式 tag 发布前仍为候选。
+
 ### 0.12.11 / Calcit 0.44.0
 
 依赖对齐正式 Respo 0.19.13 及其 JS-FFI 0.2.19。应用需要统一依赖图、重新安装并生成 JS；路由协议和公开 API 没有改动。该版本在正式 tag 发布前仍为候选。
@@ -22,6 +26,8 @@ Demo http://repo.respo-mvc.org/respo-router.calcit .
 需要监听浏览器导航的新代码可用 `respo-router.listener/listen-typed!`。参数为路由规则、`Fn ParsedRouter (-> Unit)` 回调和 `:hash` 或 `:history`。回调直接收到具名路径，旧 `listen!` 继续发送 `:router/route` 事件。
 
 使用 `respo-router.format/router->string-typed` 可直接格式化 `ParsedRouter`。该入口保留未匹配路径后的查询参数，也支持同一条规则包含四个以上的参数。旧 `router->string` 继续接受应用自定义的元组路径。
+
+浏览器地址可用 `respo-router.core/render-url-typed!` 直接根据 `ParsedRouter` 更新，参数依次为路由、规则和 `:hash` / `:history`。重复路由不会重复写入；与旧 `render-url!` 交替使用时，会重新检查实际地址。`ParsedRouter` 的 query 值是字符串，旧接口支持的数值应先显式转换。
 
 Demo 的六个导航回调使用具名 `Op`，组件状态路径使用 `List<respo.schema/CoordKey>`。公开监听回调仍按原协议发送路由事件。
 
