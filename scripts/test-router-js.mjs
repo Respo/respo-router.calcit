@@ -65,6 +65,7 @@ try {
   const handlers = new Map();
   globalThis.window = { addEventListener: (event, handler) => handlers.set(event, handler) };
   globalThis.location = { pathname: "/missing", search: "?q=1", hash: "#/missing?q=1" };
+  Object.defineProperty(location, "href", { get: () => `http://localhost${location.pathname}${location.search}${location.hash}` });
   const rules = core._$L_();
   const { history, hash } = core.init_tags(["history", "hash"]);
   const expected = parser.parse_address_typed("/missing?q=1", rules);
@@ -104,6 +105,28 @@ try {
   await new Promise(resolve => setTimeout(resolve, 10));
   render.render_url_$x_(legacy("/one"), rules, hash);
   assert.equal(location.hash, "#/one");
+  const beforeSpaces = pushes;
+  const spaced = typed("/?q=hello world");
+  render.render_url_typed_$x_(spaced, rules, history);
+  render.render_url_typed_$x_(spaced, rules, history);
+  assert.equal(pushes, beforeSpaces + 1, "URL-encoded query should not create duplicate history");
+  const tag = core.newTag;
+  const make = core._$n__PCT__$M_;
+  const numeric = make(schema.Router, tag("path"), core._$L_(), tag("query"), core._$n__$M_("n", 1));
+  render.render_url_$x_(numeric, rules, history);
+  const beforeNumeric = pushes;
+  render.render_url_typed_$x_(typed("/?n=1"), rules, history);
+  render.render_url_$x_(numeric, rules, history);
+  assert.equal(pushes, beforeNumeric, "equivalent typed render should preserve legacy cache");
+  const pattern = core._$L_("team", tag("id"));
+  const teamRules = core._$L_(make(schema.RouteRule, tag("name"), tag("team"), tag("pattern"), pattern));
+  const routeEntry = make(schema.RouteEntry, tag("name"), tag("team"), tag("params"), core._$L_("t1"), tag("pattern"), core.None);
+  const step = core._PCT__$o__$o_(schema.RouteStep, tag("matched"), routeEntry);
+  const manual = make(schema.ParsedRouter, tag("path"), core._$L_(step), tag("query"), core._$n__$M_());
+  const beforeManual = pushes;
+  render.render_url_typed_$x_(manual, teamRules, history);
+  render.render_url_typed_$x_(manual, teamRules, history);
+  assert.equal(pushes, beforeManual + 1, "route pattern metadata should not create duplicate history");
 } finally {
   assert.deepEqual(readFileSync(path.join(root, "calcit.cirru")), original, "Canonical Snapshot changed during replay");
   // This uniquely created child contains only this run's copied Snapshot and output.
