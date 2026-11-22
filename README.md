@@ -5,6 +5,10 @@
 
 Demo http://repo.respo-mvc.org/respo-router.calcit .
 
+### 0.12.12 / Calcit 0.44.0
+
+新增 `render-url-typed!`，允许直接使用 `ParsedRouter` 更新浏览器地址。旧路由 API 和数据格式保持兼容；新入口的 query 值为字符串。此版本在正式 tag 发布前仍为候选。
+
 ### 0.12.11 / Calcit 0.44.0
 
 依赖对齐正式 Respo 0.19.13 及其 JS-FFI 0.2.19。应用需要统一依赖图、重新安装并生成 JS；路由协议和公开 API 没有改动。该版本在正式 tag 发布前仍为候选。
