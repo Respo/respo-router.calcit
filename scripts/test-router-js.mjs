@@ -82,6 +82,28 @@ try {
   listener.listen_$x_(rules, operation => { received = operation; }, history);
   handlers.get("popstate")({});
   assert.ok(core._$n__$e_(received, core._PCT__$o__$o_(schema.Op, core.newTag("router/route"), parser.parse_address("/missing?q=1", rules))));
+  const render = await import(pathToFileURL(path.join(output, "respo-router.core.mjs")).href);
+  let pushes = 0;
+  globalThis.history = { pushState(_state, _title, address) {
+    pushes++;
+    const url = new URL(address, "http://localhost");
+    location.pathname = url.pathname;
+    location.search = url.search;
+  } };
+  const legacy = address => parser.parse_address(address, rules);
+  const typed = address => parser.parse_address_typed(address, rules);
+  render.render_url_$x_(legacy("/one"), rules, history);
+  render.render_url_typed_$x_(typed("/two?q=1"), rules, history);
+  render.render_url_typed_$x_(typed("/two?q=1"), rules, history);
+  assert.equal(pushes, 2);
+  render.render_url_$x_(legacy("/one"), rules, history);
+  assert.equal(location.pathname, "/one");
+  assert.equal(pushes, 3);
+  render.render_url_typed_$x_(typed("/three?q=1"), rules, hash);
+  assert.equal(location.hash, "#/three?q=1");
+  await new Promise(resolve => setTimeout(resolve, 10));
+  render.render_url_$x_(legacy("/one"), rules, hash);
+  assert.equal(location.hash, "#/one");
 } finally {
   assert.deepEqual(readFileSync(path.join(root, "calcit.cirru")), original, "Canonical Snapshot changed during replay");
   // This uniquely created child contains only this run's copied Snapshot and output.

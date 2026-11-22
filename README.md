@@ -23,6 +23,8 @@ Demo http://repo.respo-mvc.org/respo-router.calcit .
 
 使用 `respo-router.format/router->string-typed` 可直接格式化 `ParsedRouter`。该入口保留未匹配路径后的查询参数，也支持同一条规则包含四个以上的参数。旧 `router->string` 继续接受应用自定义的元组路径。
 
+浏览器地址可用 `respo-router.core/render-url-typed!` 直接根据 `ParsedRouter` 更新，参数依次为路由、规则和 `:hash` / `:history`。重复路由不会重复写入；与旧 `render-url!` 交替使用时，会重新检查实际地址。`ParsedRouter` 的 query 值是字符串，旧接口支持的数值应先显式转换。
+
 Demo 的六个导航回调使用具名 `Op`，组件状态路径使用 `List<respo.schema/CoordKey>`。公开监听回调仍按原协议发送路由事件。
 
 ### 历史 0.12.3 / Calcit 0.37.0

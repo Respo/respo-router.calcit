@@ -207,6 +207,29 @@
             , &unit
           :examples $ []
           :schema $ quote $ Fn respo-router.schema/Router (List respo-router.schema/RouteRule) Tag (-> Unit) (:features :js-ffi :state)
+        'render-url-typed! $ %{} 'CodeEntry (:doc |)
+          :code $ quote $ defn render-url-typed! (router rules router-mode)
+            assert "|last argument is router-mode" $ includes? (#{} :history :hash) router-mode
+            when (exists? js/location) (reset! *cached-router None)
+              match router-mode
+                :hash $ let
+                    current-hash $ js-ffi.contract/expect-string |location.hash js/location.hash
+                    old-router $ respo-router.parser/parse-address-typed (strip-sharp current-hash) rules
+                  when (not= old-router router)
+                    let
+                        new-hash $ str |# $ respo-router.format/router->string-typed router rules
+                      reset! *ignored? true
+                      set! js/location.hash new-hash
+                      js/setTimeout $ fn () $ reset! *ignored? false
+                :history $ let
+                    old-address $ str js/location.pathname js/location.search
+                    old-router $ respo-router.parser/parse-address-typed old-address rules
+                  when (not= old-router router)
+                    js/history.pushState nil nil $ respo-router.format/router->string-typed router rules
+                _ $ js/console.warn "|Unknown router-mode:" router-mode
+            , &unit
+          :examples $ []
+          :schema $ quote $ Fn respo-router.schema/ParsedRouter (List respo-router.schema/RouteRule) Tag (-> Unit) (:features :js-ffi :state)
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote $ ns respo-router.core
           :require
