@@ -5,9 +5,9 @@
 
 Demo http://repo.respo-mvc.org/respo-router.calcit .
 
-### 0.12.17 候选 / Calcit 0.45.1
+### 0.12.17 / Calcit 0.45.1
 
-配套正式 Respo 0.19.18、Calcit 和 `@calcit/procs` 0.45.1；请统一依赖图并重新生成 JS。路由 API 和数据格式不变，待正式标签发布后升级。
+配套正式 Respo 0.19.18、Calcit 和 `@calcit/procs` 0.45.1；请统一依赖图并重新生成 JS。路由 API 和数据格式不变。
 
 ### 0.12.15 / Calcit 0.44.0
 
@@ -23,7 +23,7 @@ Demo http://repo.respo-mvc.org/respo-router.calcit .
 
 ### 0.12.12 / Calcit 0.44.0
 
-新增 `render-url-typed!`，允许直接使用 `ParsedRouter` 更新浏览器地址。旧路由 API 和数据格式保持兼容；新入口的 query 值为字符串。此版本在正式 tag 发布前仍为候选。
+新增 `render-url-typed!`，允许直接使用 `ParsedRouter` 更新浏览器地址。旧路由 API 和数据格式保持兼容；新入口的 query 值为字符串。
 
 ### 0.12.11 / Calcit 0.44.0
 
@@ -182,7 +182,7 @@ let
   respo-router.format/router->string-typed parsed rules
 ```
 
-浏览器监听仍由 `listen!` 派发使用旧路径的 `Router`。上面的具名入口适合直接读取 URL 的调用方。
+浏览器监听可使用 `listen-typed!` 接收 `ParsedRouter`，并用 `render-url-typed!` 更新地址；旧的 `listen!` 继续派发 `Router`，其 `:path` 条目使用路由名标签和字符串参数，例如 `:: :team |t1`；未匹配的剩余路径使用 `:404` 条目。
 
 ### Router IR
 
