@@ -182,7 +182,7 @@ let
   respo-router.format/router->string-typed parsed rules
 ```
 
-浏览器监听可使用 `listen-typed!` 接收 `ParsedRouter`，并用 `render-url-typed!` 更新地址；旧的 `listen!` 继续派发使用匿名路径的 `Router`。
+浏览器监听可使用 `listen-typed!` 接收 `ParsedRouter`，并用 `render-url-typed!` 更新地址；旧的 `listen!` 继续派发 `Router`，其 `:path` 条目使用路由名标签和字符串参数，例如 `:: :team |t1`；未匹配的剩余路径使用 `:404` 条目。
 
 ### Router IR
 
