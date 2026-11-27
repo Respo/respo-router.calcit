@@ -5,6 +5,10 @@
 
 Demo http://repo.respo-mvc.org/respo-router.calcit .
 
+### 0.12.18 / Calcit 0.46.0
+
+候选 0.12.18 配套正式 Respo 0.20.0、JS-FFI 0.2.26、Calcit 和 `@calcit/procs` 0.46.0；请统一依赖图并重新生成 JS。路由 API 和数据格式不变，正式版本以 Git tag 为准。
+
 ### 0.12.17 / Calcit 0.45.1
 
 配套正式 Respo 0.19.18、Calcit 和 `@calcit/procs` 0.45.1；请统一依赖图并重新生成 JS。路由 API 和数据格式不变。
@@ -175,10 +179,12 @@ add-watch! *store :changes $ fn (current previous)
 let
     rules $ [] $ respo-router.schema/RouteRule :name :team :pattern ([] |team :id)
     parsed $ respo-router.parser/parse-address-typed |/team/abc/tail?q=1 rules
-  map (:path parsed) $ fn (step)
-    match step
-      (:matched entry) (println (:name entry) (:params entry))
-      (:unmatched remaining) (println remaining)
+  map (:path parsed)
+    fn (step)
+      match step
+        (:matched entry)
+          println (:name entry) (:params entry)
+        (:unmatched remaining) (println remaining)
   respo-router.format/router->string-typed parsed rules
 ```
 
