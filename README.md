@@ -5,6 +5,10 @@
 
 Demo http://repo.respo-mvc.org/respo-router.calcit .
 
+### 0.12.19 / Calcit 0.47.0
+
+迁移适配正式 Respo 0.20.1、JS-FFI 0.2.26、Calcit 和 `@calcit/procs` 0.47.0；请统一依赖图并重新生成 JS。路由 API 和数据格式不变，正式版本以 Git tag 为准。
+
 ### 0.12.18 / Calcit 0.46.0
 
 候选 0.12.18 配套正式 Respo 0.20.0、JS-FFI 0.2.26、Calcit 和 `@calcit/procs` 0.46.0；请统一依赖图并重新生成 JS。路由 API 和数据格式不变，正式版本以 Git tag 为准。
