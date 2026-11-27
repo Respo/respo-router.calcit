@@ -202,7 +202,7 @@
                         old-address $ str js/location.pathname js/location.search
                         old-router $ parse-address old-address rules
                         new-address $ router->string-iter | (:path router) (:query router) rules
-                      if (not= old-router router) (js/history.pushState nil nil new-address)
+                      if (not= old-router router) (js-ffi.browser/history-push-state! new-address)
                     _ $ js/console.warn "|Unknown router-mode:" router-mode
             , &unit
           :examples $ []
@@ -229,7 +229,7 @@
                       target-address $ str (target-url :pathname) (target-url :search)
                       old-router $ respo-router.parser/parse-address-typed old-address rules
                       target-router $ respo-router.parser/parse-address-typed target-address rules
-                    when (not= old-router target-router) (reset! *cached-router None) (js/history.pushState nil nil target-address)
+                    when (not= old-router target-router) (reset! *cached-router None) (js-ffi.browser/history-push-state! target-address)
                   _ $ js/console.warn "|Unknown router-mode:" router-mode
             , &unit
           :examples $ []
@@ -449,28 +449,27 @@
           :schema $ quote $ Fn String (-> String)
         'tuple-params $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn tuple-params (guidepost)
-            if (enum? guidepost)
-              let
-                  n $ &enum:count guidepost
-                if
-                  and (>= n 1) (<= n 5)
-                  loop
-                      i 1
-                      acc $ []
-                    hint-fn $ Fn Number (List String)
-                      -> $ List String
-                    if (< i n)
-                      let
-                          value $ respo-router.schema/read-item guidepost i $ fn (item)
-                            if (string? item) item $ raise "|[respo-router/tuple-params] expected String"
-                        recur (inc i) (conj acc value)
-                      , acc
-                  raise $ str "|unknown tuple:" guidepost
-              raise $ str "|unknown tuple:" guidepost
+            let
+                n $ &enum:count guidepost
+              if
+                and (>= n 1) (<= n 5)
+                loop
+                    i 1
+                    acc $ []
+                  hint-fn $ Fn Number (List String)
+                    -> $ List String
+                  if (< i n)
+                    let
+                        value $ respo-router.schema/read-item guidepost i $ fn (item)
+                          match (try-decode-map-as item 'String)
+                            (:ok text) text
+                            (:err _) (raise "|[respo-router/tuple-params] expected String")
+                      recur (inc i) (conj acc value)
+                    , acc
+                raise $ str "|unknown tuple:" guidepost
           :examples $ []
-          :schema $ quote $ Fn Input
+          :schema $ quote $ Fn AnyEnum
             -> $ List String
-            :generics Input
             :open :reflect
           :tests $ [] $ %{} 'TestEntry (:name |unwraps-guidepost-parameters)
             :code $ quote $ assert |Expected-equal-values:
@@ -488,8 +487,6 @@
           :schema $ quote $ Ref Bool
         'listen! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn listen! (rules dispatch! router-mode)
-            assert "|first argument should be a list" $ list? rules
-            assert "|second argument shoud be dispatch function" $ fn? dispatch!
             listen-address! rules parse-address
               fn (router)
                 dispatch! $ : :router/route router
@@ -579,15 +576,14 @@
           :examples $ []
           :schema $ quote $ Fn (-> Unit) (:features :io :js-ffi :state)
         'mount-target $ %{} 'CodeEntry (:doc |)
-          :code $ quote $ defn mount-target ()
-            unsafe-coerce (js/document.querySelector |.app) (JsNullish respo.dom/DomElement)
+          :code $ quote $ defn mount-target () (respo.ffi.browser/query-selector |.app)
           :examples $ []
           :schema $ quote $ Fn
-            -> $ JsNullish respo.dom/DomElement
+            -> $ Option respo.dom/DomElement
             :features :js-ffi
         'reload! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn reload! ()
-            if (nil? build-errors)
+            if (js-nullish? build-errors)
               do (clear-cache!) (remove-watch! *store :changes) (remove-watch! *store :router-changes)
                 add-watch! *store :changes $ fn (store prev) (render-app!)
                 add-watch! *store :router-changes $ fn (store prev) (render-router!)
@@ -596,12 +592,15 @@
               hud! |error build-errors
             , &unit
           :examples $ []
-          :schema $ quote $ Fn (-> Unit) (:features :io :state)
+          :schema $ quote $ Fn (-> Unit) (:features :io :js-ffi :state)
         'render-app! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn render-app! () (; println |render-app: @*store)
-            render! (mount-target) (comp-container @*store) dispatch!
+            match (mount-target)
+              (:some target)
+                render! target (comp-container @*store) dispatch!
+              (:none) (raise |[Respo/render!]-expected-mount-target)
           :examples $ []
-          :schema $ quote $ Fn (-> Unit) (:features :io :state)
+          :schema $ quote $ Fn (-> Unit) (:features :io :js-ffi :state)
         'render-router! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn render-router! ()
             render-url! (:router @*store) router-rules router-mode
@@ -941,10 +940,15 @@
           :schema $ quote StructDef
         'path-segments $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn path-segments (value)
-            if (list? value)
-              value.map $ fn (segment)
-                if (string? segment) segment $ raise "|[respo-router/path-segments] expected String segment"
-              raise "|[respo-router/path-segments] expected List"
+            match
+              try-decode-map-as value $ List Dynamic
+              (:err _) (raise "|[respo-router/path-segments] expected List")
+              (:ok items)
+                items.map $ fn (segment)
+                  match (try-decode-map-as segment 'String)
+                    (:ok text) text
+                    (:err _)
+                      raise "|[respo-router/path-segments] expected String segment"
           :examples $ []
           :schema $ quote $ Fn Input
             -> $ List String
